@@ -6,18 +6,9 @@ from datetime import datetime
 from pathlib import Path
 
 # Import prompts from prompt.py
-from rcg.prompt import (
-    SYSTEM_PROMPT_FULL,
-    TOOL_SCHEMAS,
-    get_error_message,
-    get_success_message
-)
+from rcg.prompt import SYSTEM_PROMPT_FULL
 
 from transformers import pipeline
-
-# Load environment variables
-from dotenv import load_dotenv
-load_dotenv()
 
 # ============================================================================
 # Configuration
@@ -652,7 +643,7 @@ def execute_function(function_name: str, arguments: Dict[str, Any]) -> Dict[str,
 
 
 # ============================================================================
-# LLM Controller (OpenAI Integration)
+# LLM Controller
 # ============================================================================
 
 class LLMController:
@@ -690,7 +681,7 @@ class LLMController:
             print(f"[LLM Controller] Logging to {self.log_file}")
     
     def process_command(self, user_input: str) -> Dict[str, Any]:
-        """Process user command using OpenAI function calling."""
+        """Process user command using wrapper function calling."""
         # Log user input
         if self.enable_logging:
             self._write_log("─" * 80)
@@ -709,45 +700,55 @@ class LLMController:
 
             assistant_message = response[0]["generated_text"][-1]["content"]
 
+            # Add to history
+            self.conversation_history.append({"role": "assistant", "content": assistant_message})
+
             # Try to parse manual function call from text
-            parsed = self._parse_manual_function_call(assistant_message)
+            parsed_functions = self._parse_manual_function_call(assistant_message)
 
             # Check for function call
-            if parsed:
-                # Found manual function call!
-                function_name, function_args = parsed
+            if parsed_functions:
+                function_names = []
+                function_args_list = []
+                function_results = []
+                result_message = ""
 
-                # Log manual function call
-                if self.enable_logging:
-                    self._write_log(f"MANUAL FUNCTION CALL DETECTED: {function_name}")
-                    self._write_log(f"Arguments: {json.dumps(function_args, indent=2, ensure_ascii=False)}")
-                    self._write_log("")
+                for parsed in parsed_functions:
+                    # Found manual function call!
+                    function_name, function_args_str = parsed
+                    function_names.append(function_name)
+                    function_args = json.loads(function_args_str)
+                    function_args_list.append(function_args)
 
-                if LLMConfig.SHOW_FUNCTION_CALLS:
-                    print(f"\n[LLM] Manual function call: {function_name}")
-                    print(f"[LLM] Arguments: {json.dumps(function_args, indent=2)}")
+                    # Log manual function call
+                    if self.enable_logging:
+                        self._write_log(f"MANUAL FUNCTION CALL DETECTED: {function_name}")
+                        self._write_log(f"Arguments: {json.dumps(function_args, indent=2, ensure_ascii=False)}")
+                        self._write_log("")
 
-                # Execute function
-                function_result = execute_function(function_name, function_args)
+                    if LLMConfig.SHOW_FUNCTION_CALLS:
+                        print(f"\n[LLM] Manual function call: {function_name}")
+                        print(f"[LLM] Arguments: {json.dumps(function_args, indent=2)}")
 
-                # Log function result
-                if self.enable_logging:
-                    self._write_log(f"FUNCTION RESULT:")
-                    self._write_log(f"  Success: {function_result.get('success', False)}")
-                    self._write_log(f"  Message: {function_result.get('message', 'N/A')}")
-                    if function_result.get('data'):
-                        data_str = json.dumps(function_result['data'], indent=2, ensure_ascii=False)
-                        self._write_log(f"  Data: {data_str}")
-                    self._write_log("")
+                    # Execute function
+                    function_result = execute_function(function_name, function_args)
+                    function_results.append(function_result if function_result else {})
 
-                # Add to history
-                self.conversation_history.append({"role": "assistant", "content": assistant_message})
+                    # Log function result
+                    if self.enable_logging:
+                        self._write_log(f"FUNCTION RESULT:")
+                        self._write_log(f"  Success: {function_result.get('success', False)}")
+                        self._write_log(f"  Message: {function_result.get('message', 'N/A')}")
+                        if function_result.get('data'):
+                            data_str = json.dumps(function_result['data'], indent=2, ensure_ascii=False)
+                            self._write_log(f"  Data: {data_str}")
+                        self._write_log("")
 
-                # Create user message with function result
-                result_message = f"Function {function_name} returned: {json.dumps(function_result)}"
-                self.conversation_history.append({"role": "user", "content": result_message})
+                    # Create user message with function result
+                    result_message += f"Function {function_name} returned: {json.dumps(function_result)}\n"
 
                 # Get final response
+                self.conversation_history.append({"role": "user", "content": result_message})
                 final_response = self.model(
                     self.conversation_history,
                     temperature=LLMConfig.TEMPERATURE,
@@ -770,9 +771,9 @@ class LLMController:
 
                 return {
                     "success": True,
-                    "function_called": [function_name],
-                    "function_args": [function_args],
-                    "function_result": [function_result],
+                    "function_called": function_names,
+                    "function_args": function_args_list,
+                    "function_result": function_results,
                     "llm_response": final_message
                 }
             else:
@@ -823,33 +824,27 @@ class LLMController:
         """
         import re
 
+        found_functions = []
+
         # Remove <think> tag content
         text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
 
         # Find JSON-formatted function calls
         # Pattern matches: {"function": "xxx", "args": {...}}
         json_pattern = r'\{["\']function["\']\s*:\s*["\'](\w+)["\']\s*,\s*["\']args["\']\s*:\s*(\{[^}]*\})\s*\}'
-
-        match = re.search(json_pattern, text)
-        if match:
-            function_name = match.group(1)
-            args_str = match.group(2)
-            try:
-                function_args = json.loads(args_str)
-                return (function_name, function_args)
-            except:
-                pass
+        matches = re.findall(json_pattern, text)
+        for match in matches:
+            function_name = match[0]
+            args_str = match[1]
+            found_functions.append((function_name, args_str))
 
         # Also try matching JSON in code blocks
         code_block_pattern = r'```json\s*\n\s*\{["\']function["\']\s*:\s*["\'](\w+)["\']\s*,\s*["\']args["\']\s*:\s*(\{[^}]*\})\s*\}\s*\n\s*```'
-        match = re.search(code_block_pattern, text, re.DOTALL)
-        if match:
-            function_name = match.group(1)
-            args_str = match.group(2)
-            try:
-                function_args = json.loads(args_str)
-                return (function_name, function_args)
-            except:
-                pass
+        matches = re.findall(code_block_pattern, text, re.DOTALL)
+        for match in matches:
+            function_name = match[0]
+            args_str = match[1]
+            if (function_name, args_str) not in found_functions:
+                found_functions.append((function_name, args_str))
 
-        return None
+        return found_functions
