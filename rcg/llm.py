@@ -7,20 +7,13 @@ from pathlib import Path
 
 # Import prompts from prompt.py
 from rcg.prompt import (
-    SYSTEM_PROMPT,
+    SYSTEM_PROMPT_FULL,
     TOOL_SCHEMAS,
     get_error_message,
     get_success_message
 )
 
-# Try to import OpenAI
-try:
-    from openai import OpenAI
-    OPENAI_AVAILABLE = True
-except ImportError:
-    OPENAI_AVAILABLE = False
-    OpenAI = None
-    print("[Warning] OpenAI package not installed. Install with: pip install openai")
+from transformers import pipeline
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -30,16 +23,10 @@ load_dotenv()
 # Configuration
 # ============================================================================
 class LLMConfig:
-    """Configuration for LLM API."""
-
-    # OpenAI API settings (using custom Qwen3 API endpoint)
-    API_KEY = os.getenv("OPENAI_API_KEY", "")
-
-    # NOTE: BASE_URL typically ends with /v1
-    BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-    
+    """Configuration for LLM."""
+  
     # Use models supportting function calling
-    MODEL = os.getenv("OPENAI_MODEL", "gpt-5.1")
+    MODEL = os.getenv("MODEL", "Qwen/Qwen2.5-Coder-3B-Instruct")
 
     # Temperature and other params
     TEMPERATURE = 0.7
@@ -49,37 +36,9 @@ class LLMConfig:
     VERBOSE = True
     SHOW_FUNCTION_CALLS = True
 
-    # OpenAI client instance (v1.0+ API)
-    _client = None
-
-    @classmethod
-    def get_client(cls):
-        """Get or create OpenAI client instance."""
-        if not OPENAI_AVAILABLE:
-            raise RuntimeError("OpenAI package not available")
-
-        if cls._client is None:
-            cls._client = OpenAI(
-                api_key=cls.API_KEY,
-                base_url=cls.BASE_URL
-            )
-        return cls._client
-
-    @classmethod
-    def set_api_key(cls, api_key: str):
-        """Set OpenAI API key."""
-        cls.API_KEY = api_key
-        cls._client = None  # Reset client to use new key
-
-    @classmethod
-    def set_base_url(cls, base_url: str):
-        """Set OpenAI base URL."""
-        cls.BASE_URL = base_url
-        cls._client = None  # Reset client to use new URL
-
     @classmethod
     def set_model(cls, model: str):
-        """Set OpenAI model."""
+        """Set model."""
         cls.MODEL = model
 
 
@@ -98,17 +57,15 @@ _grasped_object = None
 _grasped_object_id = None
 
 
-def initialize(env, robot, gripper, unity_lock=None, api_key: Optional[str] = None, base_url: Optional[str] = None):
+def initialize(env, robot, gripper, unity_lock=None):
     """
-    Initialize LLM system with environment and API settings.
+    Initialize LLM system with environment.
 
     Args:
         env: KinovaTestEnv instance
         robot: Robot ControllerAttr instance
         gripper: Gripper ControllerAttr instance
         unity_lock: Optional threading.Lock for Unity communication thread safety
-        api_key: Optional OpenAI API key (uses env variable if not provided)
-        base_url: Optional OpenAI base URL (uses default if not provided)
 
     Example:
         from rcg.env import KinovaTestEnv
@@ -117,7 +74,7 @@ def initialize(env, robot, gripper, unity_lock=None, api_key: Optional[str] = No
         env = KinovaTestEnv()
         robot = env.get_kinova()
         gripper = env.get_gripper()
-        llm.initialize(env, robot, gripper, api_key="sk-...")
+        llm.initialize(env, robot, gripper)
     """
     global _global_env, _global_robot, _global_gripper, _unity_lock
 
@@ -150,19 +107,8 @@ def initialize(env, robot, gripper, unity_lock=None, api_key: Optional[str] = No
     except Exception as e:
         print(f"[LLM Warning] Could not set initial pose: {e}")
 
-    # Configure API
-    if api_key:
-        LLMConfig.set_api_key(api_key)
-    elif LLMConfig.API_KEY:
-        LLMConfig.set_api_key(LLMConfig.API_KEY)
-
-    if base_url:
-        LLMConfig.set_base_url(base_url)
-
     print(f"[LLM] Initialized")
     print(f"[LLM] Model: {LLMConfig.MODEL}")
-    print(f"[LLM] Base URL: {LLMConfig.BASE_URL}")
-    print(f"[LLM] API Key: {'Set' if LLMConfig.API_KEY else 'Not set'}")
 
 
 def _check_initialization():
@@ -712,26 +658,20 @@ def execute_function(function_name: str, arguments: Dict[str, Any]) -> Dict[str,
 class LLMController:
     """LLM controller for processing natural language commands."""
     
-    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None, enable_logging: bool = True):
+    def __init__(self, model_name: Optional[str] = None, enable_logging: bool = True):
         """Initialize LLM controller."""
-        if not OPENAI_AVAILABLE:
-            raise ImportError("OpenAI package not installed")
 
         # Set API configuration
-        if api_key:
-            LLMConfig.set_api_key(api_key)
-        if base_url:
-            LLMConfig.set_base_url(base_url)
-        if model:
-            LLMConfig.MODEL = model
+        if model_name:
+            LLMConfig.MODEL = model_name
 
-        if not LLMConfig.API_KEY:
-            raise ValueError("OpenAI API key not set")
+        # Initialize model from HuggingFace
+        self.model = pipeline(task="text-generation", model=LLMConfig.MODEL, dtype="auto", device_map="auto")
 
         # Initialize conversation history
         self.conversation_history = [{
             "role": "system",
-            "content": SYSTEM_PROMPT
+            "content": SYSTEM_PROMPT_FULL
         }]
 
         # Initialize logging
@@ -743,7 +683,6 @@ class LLMController:
             self.log_file = log_dir / f"llm_{timestamp}.log"
             self._write_log(f"=== LLM Session Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
             self._write_log(f"Model: {LLMConfig.MODEL}")
-            self._write_log(f"Base URL: {LLMConfig.BASE_URL}")
             self._write_log("")
 
         print(f"[LLM Controller] Initialized with {LLMConfig.MODEL}")
@@ -761,84 +700,66 @@ class LLMController:
         self.conversation_history.append({"role": "user", "content": user_input})
 
         try:
-            # Call OpenAI API (v1.0+ API)
-            client = LLMConfig.get_client()
-            response = client.chat.completions.create(
-                model=LLMConfig.MODEL,
-                messages=self.conversation_history,
-                tools=TOOL_SCHEMAS,
-                tool_choice="auto",
-                parallel_tool_calls=True,
+            # Call model
+            response = self.model(
+                self.conversation_history,
                 temperature=LLMConfig.TEMPERATURE,
-                max_completion_tokens=LLMConfig.MAX_TOKENS
+                max_new_tokens=LLMConfig.MAX_TOKENS
             )
 
-            message = response.choices[0].message
+            assistant_message = response[0]["generated_text"][-1]["content"]
+
+            # Try to parse manual function call from text
+            parsed = self._parse_manual_function_call(assistant_message)
 
             # Check for function call
-            if hasattr(message, 'tool_calls') and message.tool_calls:
-                function_names = []
-                function_args_list = []
-                function_results = []
+            if parsed:
+                # Found manual function call!
+                function_name, function_args = parsed
 
-                for call in message.tool_calls:
-                    function_name = call.function.name
-                    function_names.append(function_name)
-                    function_args = json.loads(call.function.arguments)
-                    function_args_list.append(function_args)
+                # Log manual function call
+                if self.enable_logging:
+                    self._write_log(f"MANUAL FUNCTION CALL DETECTED: {function_name}")
+                    self._write_log(f"Arguments: {json.dumps(function_args, indent=2, ensure_ascii=False)}")
+                    self._write_log("")
 
-                    # Log function call
-                    if self.enable_logging:
-                        self._write_log(f"FUNCTION CALL: {function_name}")
-                        self._write_log(f"Arguments: {json.dumps(function_args, indent=2, ensure_ascii=False)}")
-                        self._write_log("")
+                if LLMConfig.SHOW_FUNCTION_CALLS:
+                    print(f"\n[LLM] Manual function call: {function_name}")
+                    print(f"[LLM] Arguments: {json.dumps(function_args, indent=2)}")
 
-                    if LLMConfig.SHOW_FUNCTION_CALLS:
-                        print(f"\n[LLM] Calling function: {function_name}")
-                        print(f"[LLM] Arguments: {json.dumps(function_args, indent=2)}")
+                # Execute function
+                function_result = execute_function(function_name, function_args)
 
-                    # Execute function
-                    function_result = execute_function(function_name, function_args)
-                    function_results.append(function_result if function_result else {})
+                # Log function result
+                if self.enable_logging:
+                    self._write_log(f"FUNCTION RESULT:")
+                    self._write_log(f"  Success: {function_result.get('success', False)}")
+                    self._write_log(f"  Message: {function_result.get('message', 'N/A')}")
+                    if function_result.get('data'):
+                        data_str = json.dumps(function_result['data'], indent=2, ensure_ascii=False)
+                        self._write_log(f"  Data: {data_str}")
+                    self._write_log("")
 
-                    # Log function result
-                    if self.enable_logging:
-                        self._write_log(f"FUNCTION RESULT:")
-                        self._write_log(f"  Success: {function_result.get('success', False)}")
-                        self._write_log(f"  Message: {function_result.get('message', 'N/A')}")
-                        if function_result.get('data'):
-                            data_str = json.dumps(function_result['data'], indent=2, ensure_ascii=False)
-                            self._write_log(f"  Data: {data_str}")
-                        self._write_log("")
-                    
-                    # Add to history
-                    self.conversation_history.append({
-                        "role": "assistant",
-                        "content": None,
-                        "tool_calls": [{
-                            "function": {"name": function_name, "arguments": json.dumps(function_args)}, 
-                            "type": call.type, 
-                            "id": call.id
-                        }]
-                    })
-                    
-                    self.conversation_history.append({
-                        "tool_call_id": call.id,
-                        "role": "tool",
-                        "type": "function_tool_output",
-                        "name": function_name,
-                        "content": json.dumps(function_result)
-                    })
-                
+                # Add to history
+                self.conversation_history.append({"role": "assistant", "content": assistant_message})
+
+                # Create user message with function result
+                result_message = f"Function {function_name} returned: {json.dumps(function_result)}"
+                self.conversation_history.append({"role": "user", "content": result_message})
+
                 # Get final response
-                final_response = client.chat.completions.create(
-                    model=LLMConfig.MODEL,
-                    messages=self.conversation_history,
+                final_response = self.model(
+                    self.conversation_history,
                     temperature=LLMConfig.TEMPERATURE,
-                    max_completion_tokens=LLMConfig.MAX_TOKENS
+                    max_new_tokens=LLMConfig.MAX_TOKENS
                 )
 
-                final_message = final_response.choices[0].message.content
+                final_message = final_response[0]["generated_text"][-1]["content"]
+
+                # Remove <think> tags from final message
+                import re
+                final_message = re.sub(r'<think>.*?</think>', '', final_message, flags=re.DOTALL).strip()
+
                 self.conversation_history.append({"role": "assistant", "content": final_message})
 
                 # Log LLM response
@@ -849,25 +770,25 @@ class LLMController:
 
                 return {
                     "success": True,
-                    "function_called": function_names,
-                    "function_args": function_args_list,
-                    "function_result": function_results,
+                    "function_called": [function_name],
+                    "function_args": [function_args],
+                    "function_result": [function_result],
                     "llm_response": final_message
                 }
             else:
                 # No function call at all
-                self.conversation_history.append({"role": "assistant", "content": message.content})
+                self.conversation_history.append({"role": "assistant", "content": assistant_message})
 
                 # Log LLM response
                 if self.enable_logging:
                     self._write_log(f"LLM RESPONSE (no function call):")
-                    self._write_log(message.content)
+                    self._write_log(assistant_message)
                     self._write_log("")
 
                 return {
                     "success": True,
                     "function_called": None,
-                    "llm_response": message.content
+                    "llm_response": assistant_message
                 }
         
         except Exception as e:
