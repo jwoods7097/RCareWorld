@@ -8,6 +8,7 @@ from pathlib import Path
 # Import prompts from prompt.py
 from rcg.prompt import SYSTEM_PROMPT_FULL
 
+import torch
 from transformers import pipeline
 
 # ============================================================================
@@ -20,7 +21,7 @@ class LLMConfig:
     MODEL = os.getenv("MODEL", "Qwen/Qwen2.5-Coder-3B-Instruct")
 
     # Temperature and other params
-    TEMPERATURE = 0.7
+    TEMPERATURE = 0.1
     MAX_TOKENS = 2048  # None = no limit
 
     # Verbose logging
@@ -575,7 +576,7 @@ def move_to_position(
     _check_initialization()
 
     try:
-        target_position = [x, y, z]
+        target_position = [-x, y, z]
 
         def _execute_move():
             # Match direct control implementation (gradio_ui.py)
@@ -657,7 +658,7 @@ class LLMController:
             LLMConfig.MODEL = model_name
 
         # Initialize model from HuggingFace
-        self.model = pipeline(task="text-generation", model=LLMConfig.MODEL, dtype="auto", device_map="auto")
+        self.model = pipeline(task="text-generation", model=LLMConfig.MODEL, dtype=torch.bfloat16, device_map="auto")
 
         # Initialize conversation history
         self.conversation_history = [{
@@ -697,6 +698,7 @@ class LLMController:
                 temperature=LLMConfig.TEMPERATURE,
                 max_new_tokens=LLMConfig.MAX_TOKENS
             )
+            torch.cuda.empty_cache()
 
             assistant_message = response[0]["generated_text"][-1]["content"]
 
@@ -754,6 +756,7 @@ class LLMController:
                     temperature=LLMConfig.TEMPERATURE,
                     max_new_tokens=LLMConfig.MAX_TOKENS
                 )
+                torch.cuda.empty_cache()
 
                 final_message = final_response[0]["generated_text"][-1]["content"]
 
