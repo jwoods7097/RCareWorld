@@ -12,26 +12,43 @@ import torch
 from transformers import pipeline
 
 # ============================================================================
-# Configuration
+# LLM Object
 # ============================================================================
-class LLMConfig:
-    """Configuration for LLM."""
+class LLM:
+    """LLM abstraction and configuration"""
   
-    # Use models supportting function calling
-    MODEL = os.getenv("MODEL", "Qwen/Qwen2.5-Coder-3B-Instruct")
+    def __init__(self, model="Qwen/Qwen2.5-3B-Instruct", system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048):
+        # Use small <3B parameter models
+        self.model = model
+        self.pipe = pipeline(task="text-generation", model=model, dtype=torch.bfloat16, device_map="auto")
+        self.conversation_history = [{
+            "role": "system",
+            "content": system_prompt
+        }]
 
-    # Temperature and other params
-    TEMPERATURE = 0.1
-    MAX_TOKENS = 2048  # None = no limit
+        # Temperature and other generation params
+        self.temperature = temperature
+        self.max_tokens = max_tokens  # None = no limit
 
-    # Verbose logging
-    VERBOSE = True
-    SHOW_FUNCTION_CALLS = True
+    def generate(self, prompt):
+        # Call model
+        self.conversation_history.append({"role": "user", "content": prompt})
+        response = self.pipe(
+            self.conversation_history,
+            temperature=self.temperature,
+            max_new_tokens=self.max_tokens
+        )
+        torch.cuda.empty_cache()
 
-    @classmethod
-    def set_model(cls, model: str):
-        """Set model."""
-        cls.MODEL = model
+        assistant_message = response[0]["generated_text"][-1]["content"]
+
+        # Add response to history
+        self.conversation_history.append({"role": "assistant", "content": assistant_message})
+
+        return assistant_message
+    
+    def reset(self):
+        self.conversation_history = [self.conversation_history[0]]
 
 
 # ============================================================================
@@ -100,7 +117,6 @@ def initialize(env, robot, gripper, unity_lock=None):
         print(f"[LLM Warning] Could not set initial pose: {e}")
 
     print(f"[LLM] Initialized")
-    print(f"[LLM] Model: {LLMConfig.MODEL}")
 
 
 def _check_initialization():
@@ -596,6 +612,8 @@ def move_to_position(
         else:
             _execute_move()
 
+        target_position = [x, y, z]
+
         return {
             "success": True,
             "message": f"Successfully moved to position {target_position}",
@@ -650,34 +668,25 @@ def execute_function(function_name: str, arguments: Dict[str, Any]) -> Dict[str,
 class LLMController:
     """LLM controller for processing natural language commands."""
     
-    def __init__(self, model_name: Optional[str] = None, enable_logging: bool = True):
+    def __init__(self, enable_logging: bool = True, show_function_calls: bool = True):
         """Initialize LLM controller."""
 
-        # Set API configuration
-        if model_name:
-            LLMConfig.MODEL = model_name
-
-        # Initialize model from HuggingFace
-        self.model = pipeline(task="text-generation", model=LLMConfig.MODEL, dtype=torch.bfloat16, device_map="auto")
-
-        # Initialize conversation history
-        self.conversation_history = [{
-            "role": "system",
-            "content": SYSTEM_PROMPT_FULL
-        }]
+        # Initialize models
+        self.code_model = LLM(model="Qwen/Qwen2.5-Coder-3B-Instruct", system_prompt=SYSTEM_PROMPT_FULL, temperature=0.1)
 
         # Initialize logging
         self.enable_logging = enable_logging
+        self.show_function_calls = show_function_calls
         if self.enable_logging:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             log_dir = Path(__file__).parent.parent / "log"
             log_dir.mkdir(exist_ok=True)
             self.log_file = log_dir / f"llm_{timestamp}.log"
             self._write_log(f"=== LLM Session Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
-            self._write_log(f"Model: {LLMConfig.MODEL}")
+            self._write_log(f"Code Model: {self.code_model.model}")
             self._write_log("")
 
-        print(f"[LLM Controller] Initialized with {LLMConfig.MODEL}")
+        print(f"[LLM Controller] Code Model initialized with {self.code_model.model}")
         if self.enable_logging:
             print(f"[LLM Controller] Logging to {self.log_file}")
     
@@ -689,21 +698,9 @@ class LLMController:
             self._write_log(f"[{datetime.now().strftime('%H:%M:%S')}] USER: {user_input}")
             self._write_log("")
 
-        self.conversation_history.append({"role": "user", "content": user_input})
-
         try:
             # Call model
-            response = self.model(
-                self.conversation_history,
-                temperature=LLMConfig.TEMPERATURE,
-                max_new_tokens=LLMConfig.MAX_TOKENS
-            )
-            torch.cuda.empty_cache()
-
-            assistant_message = response[0]["generated_text"][-1]["content"]
-
-            # Add to history
-            self.conversation_history.append({"role": "assistant", "content": assistant_message})
+            assistant_message = self.code_model.generate(user_input)
 
             # Try to parse manual function call from text
             parsed_functions = self._parse_manual_function_call(assistant_message)
@@ -724,12 +721,12 @@ class LLMController:
 
                     # Log manual function call
                     if self.enable_logging:
-                        self._write_log(f"MANUAL FUNCTION CALL DETECTED: {function_name}")
+                        self._write_log(f"FUNCTION CALL DETECTED: {function_name}")
                         self._write_log(f"Arguments: {json.dumps(function_args, indent=2, ensure_ascii=False)}")
                         self._write_log("")
 
-                    if LLMConfig.SHOW_FUNCTION_CALLS:
-                        print(f"\n[LLM] Manual function call: {function_name}")
+                    if self.show_function_calls:
+                        print(f"\n[LLM] Function call: {function_name}")
                         print(f"[LLM] Arguments: {json.dumps(function_args, indent=2)}")
 
                     # Execute function
@@ -750,21 +747,11 @@ class LLMController:
                     result_message += f"Function {function_name} returned: {json.dumps(function_result)}\n"
 
                 # Get final response
-                self.conversation_history.append({"role": "user", "content": result_message})
-                final_response = self.model(
-                    self.conversation_history,
-                    temperature=LLMConfig.TEMPERATURE,
-                    max_new_tokens=LLMConfig.MAX_TOKENS
-                )
-                torch.cuda.empty_cache()
-
-                final_message = final_response[0]["generated_text"][-1]["content"]
+                final_message = self.code_model.generate(result_message)
 
                 # Remove <think> tags from final message
                 import re
                 final_message = re.sub(r'<think>.*?</think>', '', final_message, flags=re.DOTALL).strip()
-
-                self.conversation_history.append({"role": "assistant", "content": final_message})
 
                 # Log LLM response
                 if self.enable_logging:
@@ -803,7 +790,7 @@ class LLMController:
     
     def reset(self):
         """Reset conversation history."""
-        self.conversation_history = [self.conversation_history[0]]
+        self.code_model.reset()
         print("[LLM Controller] Conversation history reset")
         if self.enable_logging:
             self._write_log("\n" + "="*80)
