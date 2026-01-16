@@ -1,12 +1,14 @@
 import os
 import json
 import threading
+import re
 from typing import Optional, Dict, Any
 from datetime import datetime
 from pathlib import Path
+from distutils.util import strtobool
 
 # Import prompts from prompt.py
-from rcg.prompt import SYSTEM_PROMPT_FULL
+from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL
 
 import torch
 from transformers import pipeline
@@ -672,7 +674,8 @@ class LLMController:
         """Initialize LLM controller."""
 
         # Initialize models
-        self.code_model = LLM(model="Qwen/Qwen2.5-Coder-3B-Instruct", system_prompt=SYSTEM_PROMPT_FULL, temperature=0.1)
+        self.code_model = LLM(model="Qwen/Qwen2.5-Coder-3B-Instruct", system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
+        self.eval_model = LLM(model="Qwen/Qwen2.5-Coder-3B-Instruct", system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.1)
 
         # Initialize logging
         self.enable_logging = enable_logging
@@ -684,9 +687,11 @@ class LLMController:
             self.log_file = log_dir / f"llm_{timestamp}.log"
             self._write_log(f"=== LLM Session Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
             self._write_log(f"Code Model: {self.code_model.model}")
+            self._write_log(f"Eval Model: {self.eval_model.model}")
             self._write_log("")
 
         print(f"[LLM Controller] Code Model initialized with {self.code_model.model}")
+        print(f"[LLM Controller] Eval Model initialized with {self.eval_model.model}")
         if self.enable_logging:
             print(f"[LLM Controller] Logging to {self.log_file}")
     
@@ -699,11 +704,24 @@ class LLMController:
             self._write_log("")
 
         try:
-            # Call model
-            assistant_message = self.code_model.generate(user_input)
+            # Ensure generated code is correct
+            correct = False
+            eval_message = ""
+            while not correct:
+                # Call code model
+                code_message = self.code_model.generate(user_input if not eval_message else eval_message)
+
+                # Evaluate code
+                eval_message = self.eval_model.generate(f"User Request: {user_input}\nCode: {code_message}")
+                print("Eval model response:", eval_message)
+                if self.enable_logging:
+                    self._write_log(f"EVALUATOR RESULT: {eval_message}\n")
+                found = re.search(r"\b(True|False)\b", eval_message, re.IGNORECASE)
+                if found:
+                    correct = strtobool(found.group(1))
 
             # Try to parse manual function call from text
-            parsed_functions = self._parse_manual_function_call(assistant_message)
+            parsed_functions = self._parse_manual_function_call(code_message)
 
             # Check for function call
             if parsed_functions:
@@ -713,13 +731,13 @@ class LLMController:
                 result_message = ""
 
                 for parsed in parsed_functions:
-                    # Found manual function call!
+                    # Found function calls
                     function_name, function_args_str = parsed
                     function_names.append(function_name)
                     function_args = json.loads(function_args_str)
                     function_args_list.append(function_args)
 
-                    # Log manual function call
+                    # Log function call
                     if self.enable_logging:
                         self._write_log(f"FUNCTION CALL DETECTED: {function_name}")
                         self._write_log(f"Arguments: {json.dumps(function_args, indent=2, ensure_ascii=False)}")
@@ -750,7 +768,6 @@ class LLMController:
                 final_message = self.code_model.generate(result_message)
 
                 # Remove <think> tags from final message
-                import re
                 final_message = re.sub(r'<think>.*?</think>', '', final_message, flags=re.DOTALL).strip()
 
                 # Log LLM response
@@ -768,18 +785,18 @@ class LLMController:
                 }
             else:
                 # No function call at all
-                self.conversation_history.append({"role": "assistant", "content": assistant_message})
+                self.conversation_history.append({"role": "assistant", "content": code_message})
 
                 # Log LLM response
                 if self.enable_logging:
                     self._write_log(f"LLM RESPONSE (no function call):")
-                    self._write_log(assistant_message)
+                    self._write_log(code_message)
                     self._write_log("")
 
                 return {
                     "success": True,
                     "function_called": None,
-                    "llm_response": assistant_message
+                    "llm_response": code_message
                 }
         
         except Exception as e:
@@ -812,8 +829,6 @@ class LLMController:
         Manually parse JSON-formatted function calls from LLM output.
         Returns: (function_name, function_args) or None
         """
-        import re
-
         found_functions = []
 
         # Remove <think> tag content
