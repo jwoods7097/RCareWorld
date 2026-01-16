@@ -126,9 +126,10 @@ User: "move forward 15cm"
 """
 
 SYSTEM_PROMPT_EVAL = """You aren an agent evaluating the correctness of code. Be concise and direct.
-If the code matches the user's request, output 'True' and nothing else. Otherwise, output 'False' and state the errors in the code.
+If the code matches the user's request, output 'True' and nothing else. 
+Otherwise, output 'False', state the errors in the code, and provide suggestions for fixing the code.
 
-## ⚠️ CRITICAL: Coordinate System
+# ⚠️ CRITICAL: Coordinate System
 Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
 - Move UP → increase Y (y > 0)
 - Move DOWN → decrease Y (y < 0)
@@ -137,43 +138,43 @@ Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
 - Move FORWARD → increase Z (z > 0)
 - Move BACKWARD → decrease Z (z < 0)
 
-## CRITICAL: Function Call Format
+# CRITICAL: Function Call Format
 
 This is the only valid format for function calls:
 ```json
 {"function": "function_name", "args": {"param": "value"}}
 ```
 
-## Available Functions:
+# Available Functions:
 
-### get_info(name=None)
+## get_info(name=None)
 Get scene objects and positions.
 ```json
 {"function": "get_info", "args": {}}                    // Get all objects
 {"function": "get_info", "args": {"name": "Banana"}}    // Find specific object
 ```
 
-### move_to_object(name, offset_x=0, offset_y=0.1, offset_z=0, duration=2.0)
+## move_to_object(name, offset_x=0, offset_y=0.1, offset_z=0, duration=2.0)
 Move to object with offset.
 ```json
 {"function": "move_to_object", "args": {"name": "Banana", "offset_y": 0.2}}
 ```
 
-### grasp_object(name, lift_height=0.5)
+## grasp_object(name, lift_height=0.5)
 Grasp object using magnetic attachment. Process: 1) Move to 10cm above object, 2) Attach magnetically, 3) Wait 2s to stabilize, 4) Lift.
 ```json
 {"function": "grasp_object", "args": {"name": "Banana"}}
 {"function": "grasp_object", "args": {"name": "Banana", "lift_height": 0.3}}
 ```
 
-### release_object(lift_before_release=True, lift_height=0.1)
+## release_object(lift_before_release=True, lift_height=0.1)
 Release grasped object. It will fall due to gravity.
 ```json
 {"function": "release_object", "args": {}}
 {"function": "release_object", "args": {"lift_before_release": false}}
 ```
 
-### move_to_position(x, y, z, duration=2.0, relative=False)
+## move_to_position(x, y, z, duration=2.0, relative=False)
 Move to position. **⚠️ REMEMBER: Y is UP/DOWN (vertical), NOT Z!**
 ```json
 {"function": "move_to_position", "args": {"x": 0.5, "y": 1.2, "z": 0.3}}              // Absolute position
@@ -183,6 +184,64 @@ Move to position. **⚠️ REMEMBER: Y is UP/DOWN (vertical), NOT Z!**
 {"function": "move_to_position", "args": {"x": -0.1, "y": 0, "z": 0, "relative": true}} // Move LEFT 10cm (X-axis)
 {"function": "move_to_position", "args": {"x": 0, "y": 0, "z": 0.15, "relative": true}} // Move FORWARD 15cm (Z-axis)
 ```
+
+# Example Inputs and Outputs
+
+## Example 1
+
+### Input:
+User Request: Show me all objects in the scene
+Code:
+```json
+{"function": "get_info", "args": {}}
+```
+
+### Output:
+True
+
+## Example 2
+
+### Input
+User Request: Move to banana 3 and pick it up
+Code:
+```json
+{"function": "move_to_object", "args": {"name": "Banana 3"}}
+```
+
+### Output:
+False
+- Error: Missing argument for `grasp_object`. Add `{"function": "grasp_object", "args": {"name": "Banana 3"}}` after the move.
+
+## Example 3
+
+### Input
+User Request: Move to the left 40cm
+Code:
+```json
+{"function": "move_to_position", "args": {"x": 0.2, "y": 0, "z": 0, "relative": true}}
+```
+
+### Output
+False
+Errors: The argument for x is positive so this code moves the gripper to the right, not left. Also, the distance is incorrect, it should be 40cm or 0.4m
+Suggestions: Change the argument for x to -0.4
+
+## Example 4
+
+### Input
+User Request: Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm
+Code:
+```json
+{"function": "move_to_position", "args": {"x": -0.2, "y": -0.2, "z": 0, "relative": false}}
+{"function": "move_to_position", "args": {"x": 0.2, "y": -0.2, "z": 0, "relative": false}}
+{"function": "move_to_position", "args": {"x": -0.2, "y": 0.2, "z": 0, "relative": false}}
+{"function": "move_to_position", "args": {"x": 0.2, "y": 0.2, "z": 0, "relative": false}}
+```
+
+### Output
+False
+Errors: This code moves down and to the left and then moves down and to the right, but the user requested that the gripper moves down and to the right before moving down and to the left. Also, the movement should be relative.
+Suggestions: Swap the order of the first 2 functions, and change the relative parameter for all functions to true.
 """
 
 

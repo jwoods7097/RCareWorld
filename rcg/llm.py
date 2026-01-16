@@ -675,7 +675,7 @@ class LLMController:
 
         # Initialize models
         self.code_model = LLM(model="Qwen/Qwen2.5-Coder-3B-Instruct", system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
-        self.eval_model = LLM(model="Qwen/Qwen2.5-Coder-3B-Instruct", system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.1)
+        self.eval_model = LLM(model="Qwen/Qwen2.5-3B-Instruct", system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.1)
 
         # Initialize logging
         self.enable_logging = enable_logging
@@ -710,10 +710,13 @@ class LLMController:
             while not correct:
                 # Call code model
                 code_message = self.code_model.generate(user_input if not eval_message else eval_message)
+                print(f"Generated code:\n{code_message}")
+                if self.enable_logging:
+                    self._write_log(f"CODER RESULT: {code_message}\n")
 
                 # Evaluate code
                 eval_message = self.eval_model.generate(f"User Request: {user_input}\nCode: {code_message}")
-                print("Eval model response:", eval_message)
+                print(f"Evaluation: {eval_message}\n")
                 if self.enable_logging:
                     self._write_log(f"EVALUATOR RESULT: {eval_message}\n")
                 found = re.search(r"\b(True|False)\b", eval_message, re.IGNORECASE)
@@ -765,7 +768,8 @@ class LLMController:
                     result_message += f"Function {function_name} returned: {json.dumps(function_result)}\n"
 
                 # Get final response
-                final_message = self.code_model.generate(result_message)
+                # final_message = self.code_model.generate(result_message)
+                final_message = ""
 
                 # Remove <think> tags from final message
                 final_message = re.sub(r'<think>.*?</think>', '', final_message, flags=re.DOTALL).strip()
