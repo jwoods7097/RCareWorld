@@ -13,16 +13,20 @@ from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL
 import torch
 from transformers import pipeline
 
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
 # ============================================================================
 # LLM Object
 # ============================================================================
 class LLM:
     """LLM abstraction and configuration"""
+
+    MODEL = os.getenv("MODEL", "Qwen/Qwen2.5-Coder-7B-Instruct")
+    PIPE = None
   
-    def __init__(self, model="Qwen/Qwen2.5-3B-Instruct", system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048):
-        # Use small <3B parameter models
-        self.model = model
-        self.pipe = pipeline(task="text-generation", model=model, dtype=torch.bfloat16, device_map="auto")
+    def __init__(self, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048):
         self.conversation_history = [{
             "role": "system",
             "content": system_prompt
@@ -32,10 +36,24 @@ class LLM:
         self.temperature = temperature
         self.max_tokens = max_tokens  # None = no limit
 
+    @classmethod
+    def set_model(cls, model: str):
+        """Set model."""
+        cls.MODEL = model
+
+    @classmethod
+    def init_pipeline(cls):
+        """Set model."""
+        cls.PIPE = pipeline(task="text-generation", model=cls.MODEL, dtype=torch.bfloat16, device_map="auto")
+
     def generate(self, prompt):
+        # Verify that model has been instantiated
+        if self.PIPE is None:
+            raise RuntimeError("The model has not been initialized yet, run LLM.init_pipeline() first.")
+        
         # Call model
         self.conversation_history.append({"role": "user", "content": prompt})
-        response = self.pipe(
+        response = self.PIPE(
             self.conversation_history,
             temperature=self.temperature,
             max_new_tokens=self.max_tokens
@@ -674,8 +692,9 @@ class LLMController:
         """Initialize LLM controller."""
 
         # Initialize models
-        self.code_model = LLM(model="Qwen/Qwen2.5-Coder-3B-Instruct", system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
-        self.eval_model = LLM(model="Qwen/Qwen2.5-3B-Instruct", system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.1)
+        LLM.init_pipeline()
+        self.code_model = LLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
+        self.eval_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.1)
 
         # Initialize logging
         self.enable_logging = enable_logging
@@ -686,12 +705,10 @@ class LLMController:
             log_dir.mkdir(exist_ok=True)
             self.log_file = log_dir / f"llm_{timestamp}.log"
             self._write_log(f"=== LLM Session Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
-            self._write_log(f"Code Model: {self.code_model.model}")
-            self._write_log(f"Eval Model: {self.eval_model.model}")
+            self._write_log(f"Model: {LLM.MODEL}")
             self._write_log("")
 
-        print(f"[LLM Controller] Code Model initialized with {self.code_model.model}")
-        print(f"[LLM Controller] Eval Model initialized with {self.eval_model.model}")
+        print(f"[LLM Controller] Initialized with {LLM.MODEL}")
         if self.enable_logging:
             print(f"[LLM Controller] Logging to {self.log_file}")
     
