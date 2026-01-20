@@ -8,7 +8,7 @@ from pathlib import Path
 from distutils.util import strtobool
 
 # Import prompts from prompt.py
-from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL
+from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_SUMMARY
 
 import torch
 from transformers import pipeline
@@ -46,7 +46,7 @@ class LLM:
         """Set model."""
         cls.PIPE = pipeline(task="text-generation", model=cls.MODEL, dtype=torch.bfloat16, device_map="auto")
 
-    def generate(self, prompt):
+    def generate(self, prompt, memory=True):
         # Verify that model has been instantiated
         if self.PIPE is None:
             raise RuntimeError("The model has not been initialized yet, run LLM.init_pipeline() first.")
@@ -62,8 +62,12 @@ class LLM:
 
         assistant_message = response[0]["generated_text"][-1]["content"]
 
-        # Add response to history
-        self.conversation_history.append({"role": "assistant", "content": assistant_message})
+        if memory:
+            # Add response to history
+            self.conversation_history.append({"role": "assistant", "content": assistant_message})
+        else:
+            # Remove user prompt from history
+            self.conversation_history.pop()
 
         return assistant_message
     
@@ -695,6 +699,7 @@ class LLMController:
         LLM.init_pipeline()
         self.code_model = LLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
         self.eval_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.1)
+        self.summary_model = LLM(system_prompt=SYSTEM_PROMPT_SUMMARY, temperature=0.7)
 
         # Initialize logging
         self.enable_logging = enable_logging
@@ -785,8 +790,7 @@ class LLMController:
                     result_message += f"Function {function_name} returned: {json.dumps(function_result)}\n"
 
                 # Get final response
-                # final_message = self.code_model.generate(result_message)
-                final_message = ""
+                final_message = self.summary_model.generate(result_message, memory=False)
 
                 # Remove <think> tags from final message
                 final_message = re.sub(r'<think>.*?</think>', '', final_message, flags=re.DOTALL).strip()
@@ -806,8 +810,6 @@ class LLMController:
                 }
             else:
                 # No function call at all
-                self.conversation_history.append({"role": "assistant", "content": code_message})
-
                 # Log LLM response
                 if self.enable_logging:
                     self._write_log(f"LLM RESPONSE (no function call):")
