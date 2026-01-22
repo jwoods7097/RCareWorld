@@ -247,7 +247,7 @@ Suggestions: Swap the order of the first 2 functions, and change the relative pa
 """
 
 SYSTEM_PROMPT_SUMMARY = """You are a friendly assistant that controls a Kinova Gen3 robotic arm in Unity.
-Given the following function results, create a natural response.
+Given the following user request and function results, create a natural response.
 Be brief - state facts, no explanations unless asked.
 """
 

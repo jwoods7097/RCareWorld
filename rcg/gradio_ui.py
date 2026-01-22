@@ -158,7 +158,7 @@ def move_left() -> str:
     try:
         with _unity_lock:  # Thread safety
             _global_robot.IKTargetDoMove(
-                position=[MOVEMENT_DISTANCE, 0, 0],
+                position=[-MOVEMENT_DISTANCE, 0, 0],
                 duration=1.0,
                 speed_based=False,
                 relative=True
@@ -177,7 +177,7 @@ def move_right() -> str:
     try:
         with _unity_lock:  # Thread safety
             _global_robot.IKTargetDoMove(
-                position=[-MOVEMENT_DISTANCE, 0, 0],
+                position=[MOVEMENT_DISTANCE, 0, 0],
                 duration=1.0,
                 speed_based=False,
                 relative=True
@@ -259,7 +259,7 @@ def move_camera_left() -> str:
     try:
         with _unity_lock:  # Thread safety
             _global_camera.DoMove(
-                position=[MOVEMENT_DISTANCE, 0, 0],
+                position=[-MOVEMENT_DISTANCE, 0, 0],
                 duration=1.0,
                 speed_based=False,
                 relative=True
@@ -276,7 +276,7 @@ def move_camera_right() -> str:
     try:
         with _unity_lock:  # Thread safety
             _global_camera.DoMove(
-                position=[-MOVEMENT_DISTANCE, 0, 0],
+                position=[MOVEMENT_DISTANCE, 0, 0],
                 duration=1.0,
                 speed_based=False,
                 relative=True

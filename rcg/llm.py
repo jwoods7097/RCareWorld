@@ -74,6 +74,21 @@ class LLM:
     def reset(self):
         self.conversation_history = [self.conversation_history[0]]
 
+    def add_info(self):
+        try:
+            # Get index of last get_info call
+            last_index = len(self.conversation_history) - 1 - self.conversation_history[::-1].index({"role": "user", "content": "Get the current scene information"})
+            
+            # Remove last get_info call and response from history
+            self.conversation_history.pop(last_index)
+            self.conversation_history.pop(last_index)
+        except ValueError:
+            pass
+        
+        # Add current get_info data to history
+        self.conversation_history.append({"role": "user", "content": "Get the current scene information"})
+        self.conversation_history.append({"role": "assistant", "content": json.dumps(get_info()['data'], ensure_ascii=False)})
+
 
 # ============================================================================
 # Global Environment Reference
@@ -132,7 +147,7 @@ def initialize(env, robot, gripper, unity_lock=None):
     try:
         print("[LLM] Setting initial robot pose and rotation...")
         # Higher initial position: Y=1.8m (suitable for objects around Y=1.2m)
-        _global_robot.IKTargetDoMove(position=[0, 1.8, 0.5], duration=0, speed_based=False)
+        _global_robot.IKTargetDoMove(position=[0, 1.8, 0], duration=0, speed_based=False)
         _global_robot.IKTargetDoRotate(rotation=[0, 45, 180], duration=0, speed_based=False)
         _global_robot.WaitDo()
         _global_env.step(10)
@@ -616,7 +631,7 @@ def move_to_position(
     _check_initialization()
 
     try:
-        target_position = [-x, y, z]
+        target_position = [x, y, z]
 
         def _execute_move():
             # Match direct control implementation (gradio_ui.py)
@@ -635,8 +650,6 @@ def move_to_position(
                 _execute_move()
         else:
             _execute_move()
-
-        target_position = [x, y, z]
 
         return {
             "success": True,
@@ -727,12 +740,9 @@ class LLMController:
             self._write_log(f"[{datetime.now().strftime('%H:%M:%S')}] USER: {user_input}")
             self._write_log("")
 
-        # Call get_info first
-        self.code_model.conversation_history.append({"role": "user", "content": "Get the current scene information"})
-        self.eval_model.conversation_history.append({"role": "user", "content": "Get the current scene information"})
-        get_info_result = json.dumps(get_info()['data'], ensure_ascii=False)
-        self.code_model.conversation_history.append({"role": "assistant", "content": get_info_result})
-        self.eval_model.conversation_history.append({"role": "assistant", "content": get_info_result})
+        # Call get_info first, removing previous call
+        self.code_model.add_info()
+        self.eval_model.add_info()
 
         try:
             # Ensure generated code is correct
@@ -805,7 +815,7 @@ class LLMController:
                     result_message += f"Function {function_name} returned: {json.dumps(function_result)}\n"
 
                 # Get final response
-                final_message = self.summary_model.generate(result_message, memory=False)
+                final_message = self.summary_model.generate(f"User Request: {user_input}\nFunction Results:\n{result_message}", memory=False)
 
                 # Remove <think> tags from final message
                 final_message = re.sub(r'<think>.*?</think>', '', final_message, flags=re.DOTALL).strip()
