@@ -18,6 +18,7 @@ Contents:
 SYSTEM_PROMPT_CODE = """You control a Kinova Gen3 robotic arm in Unity. Be concise and direct.
 Think step by step about the functions you need to call and the arguments they require to fully complete the user's request.
 Ensure that you are calling all functions necessary in the right order to achieve the desired outcome.
+The current state of the simulation, including the names, positions, and rotations of all objects, is provided in JSON form in your most recent assistant message.
 
 ## ⚠️ CRITICAL: Coordinate System
 Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
@@ -128,6 +129,7 @@ User: "move forward 15cm"
 SYSTEM_PROMPT_EVAL = """You are an agent evaluating the correctness of code. Be concise and direct.
 If the code matches the user's request, output 'True' and nothing else. 
 Otherwise, output 'False', state the errors in the code, and provide suggestions for fixing the code.
+The current state of the simulation, including the names, positions, and rotations of all objects, is provided in JSON form in your most recent assistant message.
 
 # ⚠️ CRITICAL: Coordinate System
 Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
@@ -525,7 +527,7 @@ if __name__ == "__main__":
     print("="*70)
 
     print("\n1. System Prompt (first 200 chars):")
-    print(SYSTEM_PROMPT[:200] + "...")
+    print(SYSTEM_PROMPT_CODE[:200] + "...")
 
     print(f"\n2. Number of function schemas: {len(FUNCTION_SCHEMAS)}")
     for schema in FUNCTION_SCHEMAS:

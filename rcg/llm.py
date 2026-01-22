@@ -692,7 +692,7 @@ def execute_function(function_name: str, arguments: Dict[str, Any]) -> Dict[str,
 class LLMController:
     """LLM controller for processing natural language commands."""
     
-    def __init__(self, enable_logging: bool = True, show_function_calls: bool = True):
+    def __init__(self, enable_logging: bool = True, show_function_calls: bool = True, eval_attempts: int = 5):
         """Initialize LLM controller."""
 
         # Initialize models
@@ -716,6 +716,8 @@ class LLMController:
         print(f"[LLM Controller] Initialized with {LLM.MODEL}")
         if self.enable_logging:
             print(f"[LLM Controller] Logging to {self.log_file}")
+
+        self.eval_attempts = eval_attempts
     
     def process_command(self, user_input: str) -> Dict[str, Any]:
         """Process user command using wrapper function calling."""
@@ -725,11 +727,19 @@ class LLMController:
             self._write_log(f"[{datetime.now().strftime('%H:%M:%S')}] USER: {user_input}")
             self._write_log("")
 
+        # Call get_info first
+        self.code_model.conversation_history.append({"role": "user", "content": "Get the current scene information"})
+        self.eval_model.conversation_history.append({"role": "user", "content": "Get the current scene information"})
+        get_info_result = json.dumps(get_info()['data'], ensure_ascii=False)
+        self.code_model.conversation_history.append({"role": "assistant", "content": get_info_result})
+        self.eval_model.conversation_history.append({"role": "assistant", "content": get_info_result})
+
         try:
             # Ensure generated code is correct
             correct = False
+            eval_counter = 0
             eval_message = ""
-            while not correct:
+            while not correct and eval_counter < self.eval_attempts:
                 # Call code model
                 code_message = self.code_model.generate(user_input if not eval_message else eval_message)
                 print(f"Generated code:\n{code_message}")
@@ -744,6 +754,11 @@ class LLMController:
                 found = re.search(r"\b(True|False)\b", eval_message, re.IGNORECASE)
                 if found:
                     correct = strtobool(found.group(1))
+
+                eval_counter += 1
+
+            if eval_counter == self.eval_attempts:
+                raise RuntimeError(f'Could not generate correct code for the request "{user_input}"')
 
             # Try to parse manual function call from text
             parsed_functions = self._parse_manual_function_call(code_message)
