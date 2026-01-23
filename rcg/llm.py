@@ -8,7 +8,7 @@ from pathlib import Path
 from distutils.util import strtobool
 
 # Import prompts from prompt.py
-from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_SUMMARY
+from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL_SYNTAX, SYSTEM_PROMPT_EVAL_FUNCTION, SYSTEM_PROMPT_EVAL_ARGS, SYSTEM_PROMPT_SUMMARY
 
 import torch
 from transformers import pipeline
@@ -43,7 +43,7 @@ class LLM:
 
     @classmethod
     def init_pipeline(cls):
-        """Set model."""
+        """Initialize transformers pipeline."""
         cls.PIPE = pipeline(task="text-generation", model=cls.MODEL, dtype=torch.bfloat16, device_map="auto")
 
     def generate(self, prompt, memory=True):
@@ -705,13 +705,15 @@ def execute_function(function_name: str, arguments: Dict[str, Any]) -> Dict[str,
 class LLMController:
     """LLM controller for processing natural language commands."""
     
-    def __init__(self, enable_logging: bool = True, show_function_calls: bool = True, eval_attempts: int = 5):
+    def __init__(self, enable_logging: bool = True, show_function_calls: bool = True):
         """Initialize LLM controller."""
 
         # Initialize models
         LLM.init_pipeline()
         self.code_model = LLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
-        self.eval_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.1)
+        self.eval_syntax_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL_SYNTAX, temperature=0.1)
+        self.eval_function_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL_FUNCTION, temperature=0.1)
+        self.eval_args_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL_ARGS, temperature=0.1)
         self.summary_model = LLM(system_prompt=SYSTEM_PROMPT_SUMMARY, temperature=0.7)
 
         # Initialize logging
@@ -729,8 +731,6 @@ class LLMController:
         print(f"[LLM Controller] Initialized with {LLM.MODEL}")
         if self.enable_logging:
             print(f"[LLM Controller] Logging to {self.log_file}")
-
-        self.eval_attempts = eval_attempts
     
     def process_command(self, user_input: str) -> Dict[str, Any]:
         """Process user command using wrapper function calling."""
@@ -742,33 +742,13 @@ class LLMController:
 
         # Call get_info first, removing previous call
         self.code_model.add_info()
-        self.eval_model.add_info()
+        self.eval_args_model.add_info()
 
         try:
-            # Ensure generated code is correct
-            correct = False
-            eval_counter = 0
-            eval_message = ""
-            while not correct and eval_counter < self.eval_attempts:
-                # Call code model
-                code_message = self.code_model.generate(user_input if not eval_message else eval_message)
-                print(f"Generated code:\n{code_message}")
-                if self.enable_logging:
-                    self._write_log(f"CODER RESULT: {code_message}\n")
-
-                # Evaluate code
-                eval_message = self.eval_model.generate(f"User Request: {user_input}\nCode: {code_message}")
-                print(f"Evaluation: {eval_message}\n")
-                if self.enable_logging:
-                    self._write_log(f"EVALUATOR RESULT: {eval_message}\n")
-                found = re.search(r"\b(True|False)\b", eval_message, re.IGNORECASE)
-                if found:
-                    correct = strtobool(found.group(1))
-
-                eval_counter += 1
-
-            if eval_counter == self.eval_attempts:
-                raise RuntimeError(f'Could not generate correct code for the request "{user_input}"')
+            # Generate and evaluate code
+            code_message = self.geneval(self.eval_syntax_model, user_input, include_input_in_eval=False, name="Syntax")
+            code_message = self.geneval(self.eval_function_model, user_input, include_input_in_eval=True, code_message=code_message, name="Function")
+            code_message = self.geneval(self.eval_args_model, user_input, include_input_in_eval=True, code_message=code_message, name="Argument")
 
             # Try to parse manual function call from text
             parsed_functions = self._parse_manual_function_call(code_message)
@@ -852,6 +832,39 @@ class LLMController:
                 "success": False,
                 "error": f"LLM error: {str(e)}"
             }
+        
+    def geneval(self, eval_model, user_input, include_input_in_eval, eval_attempts=5, code_message=None, name=""):
+        """Generate and evaluate the code with the specified evaluation model."""
+        correct = False
+        eval_counter = 0
+        eval_message = ""
+        
+        # Ensure generated code is correct
+        while not correct and eval_counter < eval_attempts:
+            # Call code model
+            if code_message is None or eval_counter > 0:
+                code_message = self.code_model.generate(user_input if not eval_message else eval_message)
+                print(f"Generated code:\n{code_message}")
+                if self.enable_logging:
+                    self._write_log(f"CODER RESULT: {code_message}\n")
+
+            # Evaluate code
+            eval_prompt = f"User Request: {user_input}\nCode: {code_message}" if include_input_in_eval else f"Code: {code_message}"
+            eval_message = eval_model.generate(eval_prompt)
+            print(f"{name} Evaluation: {eval_message}\n")
+            if self.enable_logging:
+                self._write_log(f"{name} EVALUATOR RESULT: {eval_message}\n")
+            found = re.search(r"\b(True|False)\b", eval_message, re.IGNORECASE)
+            if found:
+                correct = strtobool(found.group(1))
+
+            eval_counter += 1
+
+        if eval_counter == eval_attempts:
+            raise RuntimeError(f'Generated code for the request "{user_input}" failed {name} evaluation')
+        eval_model.reset()
+
+        return code_message
     
     def reset(self):
         """Reset conversation history."""
