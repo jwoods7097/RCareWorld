@@ -8,7 +8,7 @@ from pathlib import Path
 from distutils.util import strtobool
 
 # Import prompts from prompt.py
-from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL_SYNTAX, SYSTEM_PROMPT_EVAL_FUNCTION, SYSTEM_PROMPT_EVAL_ARGS, SYSTEM_PROMPT_SUMMARY
+from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL_SYNTAX, SYSTEM_PROMPT_EVAL_FUNCTION, SYSTEM_PROMPT_EVAL_ARGS, SYSTEM_PROMPT_SUMMARY, FUNCTION_SCHEMAS
 
 import torch
 from transformers import pipeline
@@ -914,3 +914,51 @@ class LLMController:
                 found_functions.append((function_name, args_str))
 
         return found_functions
+    
+    def _static_evaluation(self, code: str) -> tuple[bool, str]:
+        """Static evaluation of generated code."""
+        
+        # Parse function calls from code
+        try:
+            functions = _parse_manual_function_call(code)
+        except:
+            return (False, f"Code is not in valid JSON format")
+            
+        result = True
+        reasoning = ""
+        
+        for function in functions:
+            function_name, function_args_str = function
+            try:
+                function_args = json.loads(function_args_str)
+            except:
+                result = False
+                reasoning += f"Arguments for function '{function_name}' are not valid JSON.\n"
+                function_args = {}
+            
+            for schema in FUNCTION_SCHEMAS:
+                # Check if function exists
+                if schema["name"] != function_name:
+                    result = False
+                    reasoning += f"Function '{function_name}' is not a valid function.\n"
+                else:
+                    # Check provided arguments
+                    for arg_name, arg_value in function_args.items():
+                        if arg_name not in schema["parameters"]["properties"]:
+                            result = False
+                            reasoning += f"Unexpected argument '{arg_name}' for function '{function_name}'.\n"
+                        else:
+                            # Check argument type
+                            expected_type = schema["parameters"]["properties"][arg_name]["type"]
+                            actual_value = function_args[arg_name]
+                            if expected_type == "string" and not isinstance(actual_value, str):
+                                result = False
+                                reasoning += f"Argument '{arg_name}' for function '{function_name}' should be a string.\n"
+                            elif expected_type == "number" and not isinstance(actual_value, (int, float)):
+                                result = False
+                                reasoning += f"Argument '{arg_name}' for function '{function_name}' should be a number.\n"
+                            elif expected_type == "boolean" and not isinstance(actual_value, bool):
+                                result = False
+                                reasoning += f"Argument '{arg_name}' for function '{function_name}' should be a boolean.\n"
+        
+        return (result, reasoning)

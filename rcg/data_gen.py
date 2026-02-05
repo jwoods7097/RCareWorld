@@ -98,17 +98,17 @@ if __name__ == "__main__":
                 prompt = prompt.replace("<distance>", str(distance), 1)
 
                 # Determine offset from direction and distance
-                if direction == "forward":
+                if direction == "up":
                     ox, oy, oz = 0, distance, 0
-                elif direction == "backward":
+                elif direction == "down":
                     ox, oy, oz = 0, -distance, 0
                 elif direction == "left":
                     ox, oy, oz = -distance, 0, 0
                 elif direction == "right":
                     ox, oy, oz = distance, 0, 0
-                elif direction == "up":
+                elif direction == "forward":
                     ox, oy, oz = 0, 0, distance
-                elif direction == "down":
+                elif direction == "backward":
                     ox, oy, oz = 0, 0, -distance
 
                 # Fill offsets in code
