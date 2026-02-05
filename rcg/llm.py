@@ -8,7 +8,7 @@ from pathlib import Path
 from distutils.util import strtobool
 
 # Import prompts from prompt.py
-from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL_SYNTAX, SYSTEM_PROMPT_EVAL_FUNCTION, SYSTEM_PROMPT_EVAL_ARGS, SYSTEM_PROMPT_SUMMARY, FUNCTION_SCHEMAS
+from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_SUMMARY, FUNCTION_SCHEMAS
 
 import torch
 from transformers import pipeline
@@ -711,9 +711,7 @@ class LLMController:
         # Initialize models
         LLM.init_pipeline()
         self.code_model = LLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
-        self.eval_syntax_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL_SYNTAX, temperature=0.1)
-        self.eval_function_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL_FUNCTION, temperature=0.1)
-        self.eval_args_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL_ARGS, temperature=0.1)
+        self.eval_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
         self.summary_model = LLM(system_prompt=SYSTEM_PROMPT_SUMMARY, temperature=0.7)
 
         # Initialize logging
@@ -742,13 +740,12 @@ class LLMController:
 
         # Call get_info first, removing previous call
         self.code_model.add_info()
-        self.eval_args_model.add_info()
+        self.eval_model.add_info()
 
         try:
             # Generate and evaluate code
-            code_message = self.geneval(self.eval_syntax_model, user_input, include_input_in_eval=False, name="Syntax")
-            code_message = self.geneval(self.eval_function_model, user_input, include_input_in_eval=True, code_message=code_message, name="Function")
-            code_message = self.geneval(self.eval_args_model, user_input, include_input_in_eval=True, code_message=code_message, name="Argument")
+            code_message = self.geneval(None, user_input, include_input_in_eval=False, name="Syntax")
+            code_message = self.geneval(self.eval_model, user_input, include_input_in_eval=True, code_message=code_message, name="Function")
 
             # Try to parse manual function call from text
             parsed_functions = self._parse_manual_function_call(code_message)
@@ -848,21 +845,27 @@ class LLMController:
                 if self.enable_logging:
                     self._write_log(f"CODER RESULT: {code_message}\n")
 
-            # Evaluate code
-            eval_prompt = f"User Request: {user_input}\nCode: {code_message}" if include_input_in_eval else f"Code: {code_message}"
-            eval_message = eval_model.generate(eval_prompt)
+            if eval_model is None:
+                # Evaluate code with static evaluator
+                correct, eval_message = self._static_evaluation(code_message)
+            else:
+                # Evaluate code with LLM
+                eval_prompt = f"User Request: {user_input}\nCode: {code_message}" if include_input_in_eval else f"Code: {code_message}"
+                eval_message = eval_model.generate(eval_prompt)
+                found = re.search(r"\b(True|False)\b", eval_message, re.IGNORECASE)
+                if found:
+                    correct = strtobool(found.group(1))
+
             print(f"{name} Evaluation: {eval_message}\n")
             if self.enable_logging:
                 self._write_log(f"{name} EVALUATOR RESULT: {eval_message}\n")
-            found = re.search(r"\b(True|False)\b", eval_message, re.IGNORECASE)
-            if found:
-                correct = strtobool(found.group(1))
 
             eval_counter += 1
 
         if eval_counter == eval_attempts:
-            raise RuntimeError(f'Generated code for the request "{user_input}" failed {name} evaluation')
-        eval_model.reset()
+            raise RuntimeError(f'Generated code failed {name} evaluation')
+        if eval_model is not None:
+            eval_model.reset()
 
         return code_message
     
@@ -920,7 +923,7 @@ class LLMController:
         
         # Parse function calls from code
         try:
-            functions = _parse_manual_function_call(code)
+            functions = self._parse_manual_function_call(code)
         except:
             return (False, f"Code is not in valid JSON format")
             
@@ -938,10 +941,7 @@ class LLMController:
             
             for schema in FUNCTION_SCHEMAS:
                 # Check if function exists
-                if schema["name"] != function_name:
-                    result = False
-                    reasoning += f"Function '{function_name}' is not a valid function.\n"
-                else:
+                if schema["name"] == function_name:
                     # Check provided arguments
                     for arg_name, arg_value in function_args.items():
                         if arg_name not in schema["parameters"]["properties"]:
@@ -950,15 +950,18 @@ class LLMController:
                         else:
                             # Check argument type
                             expected_type = schema["parameters"]["properties"][arg_name]["type"]
-                            actual_value = function_args[arg_name]
-                            if expected_type == "string" and not isinstance(actual_value, str):
+                            if expected_type == "string" and not isinstance(arg_value, str):
                                 result = False
                                 reasoning += f"Argument '{arg_name}' for function '{function_name}' should be a string.\n"
-                            elif expected_type == "number" and not isinstance(actual_value, (int, float)):
+                            elif expected_type == "number" and not isinstance(arg_value, (int, float)):
                                 result = False
                                 reasoning += f"Argument '{arg_name}' for function '{function_name}' should be a number.\n"
-                            elif expected_type == "boolean" and not isinstance(actual_value, bool):
+                            elif expected_type == "boolean" and not isinstance(arg_value, bool):
                                 result = False
                                 reasoning += f"Argument '{arg_name}' for function '{function_name}' should be a boolean.\n"
+                    break
+            else:
+                result = False
+                reasoning += f"Function '{function_name}' is not a valid function.\n"
         
-        return (result, reasoning)
+        return result, f"{result}\n{reasoning}"

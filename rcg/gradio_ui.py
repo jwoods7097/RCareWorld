@@ -292,7 +292,7 @@ def move_camera_forward() -> str:
     try:
         with _unity_lock:  # Thread safety
             _global_camera.DoMove(
-                position=[0, 0, -MOVEMENT_DISTANCE],
+                position=[0, 0, MOVEMENT_DISTANCE],
                 duration=1.0,
                 speed_based=False,
                 relative=True
@@ -309,7 +309,7 @@ def move_camera_back() -> str:
     try:
         with _unity_lock:  # Thread safety
             _global_camera.DoMove(
-                position=[0, 0, MOVEMENT_DISTANCE],
+                position=[0, 0, -MOVEMENT_DISTANCE],
                 duration=1.0,
                 speed_based=False,
                 relative=True
