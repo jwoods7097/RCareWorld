@@ -176,10 +176,43 @@ if __name__ == "__main__":
 
         # Merge into single prompt and code block
         if not any([prompt == p["prompt"] for p in data]):
-            data.append({"prompt": ", ".join(prompts), "code": "\n".join(codes)})
+            data.append({"prompt": ", ".join(prompts), "correct": codes})
             i += 1
 
-    # Save to file
+    # Generate incorrect code
+    for i, item in enumerate(data):
+        code = json.loads("[" + ",".join(item["correct"]) + "]")
+
+        # Introduce errors by randomly swapping functions, deleting functions, or changing parameters
+        for _ in range(random.randint(1, 3)):
+            error_type = random.choice(["none", "swap", "delete", "change_param"])
+            idx1 = random.randint(0, len(code) - 1)
+            
+            if error_type == "swap" and len(code) > 1:
+                idx2 = idx1
+                while idx2 == idx1:
+                    idx2 = random.randint(0, len(code) - 1)
+                code[idx1], code[idx2] = code[idx2], code[idx1]
+            elif error_type == "delete" and len(code) > 1:
+                del code[idx1]
+            elif error_type == "change_param" and len(code[idx1]["args"]) > 0:
+                key, value = random.choice(list(code[idx1]["args"].items()))
+                if isinstance(value, (int, float)):
+                    code[idx1]["args"][key] = round(value + random.uniform(-1.0, 1.0), 2)
+                elif isinstance(value, str):
+                    choice = value
+                    while choice == value:
+                        choice = random.choice(objects)
+                    code[idx1]["args"][key] = choice
+                elif isinstance(value, bool):
+                    code[idx1]["args"][key] = not value
+            else:
+                pass
+
+        data[i]["incorrect"] = "\n".join([json.dumps(c) for c in code])
+        data[i]["correct"] = "\n".join(item["correct"])
+
+    # Save code to file
     os.makedirs("rcg/data", exist_ok=True)
     with open("rcg/data/generated_data.json", "w") as f:
         json.dump(data, f, indent=4)
