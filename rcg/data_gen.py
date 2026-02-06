@@ -175,7 +175,7 @@ if __name__ == "__main__":
             codes.append(code)
 
         # Merge into single prompt and code block
-        if not any([prompt == p["prompt"] for p in data]):
+        if not any(prompt == p["prompt"] for p in data):
             data.append({"prompt": ", ".join(prompts), "correct": codes})
             i += 1
 
@@ -213,6 +213,5 @@ if __name__ == "__main__":
         data[i]["correct"] = "\n".join(item["correct"])
 
     # Save code to file
-    os.makedirs("rcg/data", exist_ok=True)
     with open("rcg/data/generated_data.json", "w") as f:
         json.dump(data, f, indent=4)
