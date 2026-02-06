@@ -37,12 +37,12 @@ if __name__ == "__main__":
 
     try:
         with open("rcg/data/generated_responses.json", "r") as f:
-            length = len(json.load(f))
+            responses = json.load(f)
     except:
-        length = 0
+        responses = []
 
-    responses = []
-    for item in tqdm(data[length:500]):
+    length = len(responses)
+    for item in tqdm(data[length:]):
         eval_prompt = f"User Request: {item['prompt']}\nCode: {item['incorrect']}"
         chat = [
             {"role": "system", "content": SYSTEM_PROMPT_EVAL},
