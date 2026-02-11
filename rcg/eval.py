@@ -205,13 +205,13 @@ if __name__ == "__main__":
             # Call get_info first, removing previous call
             add_info(code_model, prompt)
             add_info(eval_model, prompt)
-            prompt = prompt.replace("*", "")
+            user_input = prompt.replace("*", "")
 
             try:
                 # Static evaluation
-                code_message = geneval(code_model, None, prompt, include_input_in_eval=False, name="Syntax")
+                code_message = geneval(code_model, None, user_input, include_input_in_eval=False, name="Syntax")
                 # Functional evaluation
-                code_message = geneval(code_model, eval_model, prompt, include_input_in_eval=True, code_message=code_message, name="Function")
+                code_message = geneval(code_model, eval_model, user_input, include_input_in_eval=True, code_message=code_message, name="Function")
                 # Final generated code
                 parsed_code = parse_manual_function_call(code_message)
                 write_log(f"Parsed Functions:\n{parsed_code}\n")
@@ -225,5 +225,8 @@ if __name__ == "__main__":
             successes += 1
             write_log(f"Duration: {duration:.1f} seconds\n")
 
+            code_model.reset()
+            eval_model.reset()
+
         avg_time = total_time / successes if successes > 0 else float('inf')
-        write_log(f"Average Duration for Prompt '{prompt}': {avg_time:.1f} seconds\n")
+        write_log(f"Average Duration for Prompt '{prompt}': {avg_time:.1f} seconds\n\n")
