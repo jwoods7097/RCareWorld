@@ -7,11 +7,17 @@ from datetime import datetime
 from pathlib import Path
 from distutils.util import strtobool
 
+# Try to import OpenAI
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    OpenAI = None
+    print("[Warning] OpenAI package not installed. Install with: pip install openai")
+
 # Import prompts from prompt.py
 from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_SUMMARY, FUNCTION_SCHEMAS
-
-import torch
-from transformers import pipeline
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -23,8 +29,17 @@ load_dotenv()
 class LLM:
     """LLM abstraction and configuration"""
 
-    MODEL = os.getenv("MODEL", "Qwen/Qwen2.5-Coder-7B-Instruct")
-    PIPE = None
+    # OpenAI API settings (using custom Qwen3 API endpoint)
+    API_KEY = os.getenv("OPENAI_API_KEY", "")
+
+    # NOTE: BASE_URL typically ends with /v1
+    BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+    
+    # Use models supportting function calling
+    MODEL = os.getenv("OPENAI_MODEL", "gpt-5.1")
+
+    # OpenAI client instance (v1.0+ API)
+    _client = None
   
     def __init__(self, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048):
         self.conversation_history = [{
@@ -37,30 +52,49 @@ class LLM:
         self.max_tokens = max_tokens  # None = no limit
 
     @classmethod
+    def set_api_key(cls, api_key: str):
+        """Set OpenAI API key."""
+        cls.API_KEY = api_key
+        cls._client = None  # Reset client to use new key
+
+    @classmethod
+    def set_base_url(cls, base_url: str):
+        """Set OpenAI base URL."""
+        cls.BASE_URL = base_url
+        cls._client = None  # Reset client to use new URL
+    
+    @classmethod
     def set_model(cls, model: str):
         """Set model."""
         cls.MODEL = model
 
     @classmethod
     def init_pipeline(cls):
-        """Initialize transformers pipeline."""
-        cls.PIPE = pipeline(task="text-generation", model=cls.MODEL, dtype=torch.bfloat16, device_map="auto")
+        """Get or create OpenAI client instance."""
+        if not OPENAI_AVAILABLE:
+            raise RuntimeError("OpenAI package not available")
+
+        if cls._client is None:
+            cls._client = OpenAI(
+                api_key=cls.API_KEY,
+                base_url=cls.BASE_URL
+            )
 
     def generate(self, prompt, memory=True):
         # Verify that model has been instantiated
-        if self.PIPE is None:
+        if self._client is None:
             raise RuntimeError("The model has not been initialized yet, run LLM.init_pipeline() first.")
         
         # Call model
         self.conversation_history.append({"role": "user", "content": prompt})
-        response = self.PIPE(
-            self.conversation_history,
+        response = self._client.chat.completions.create(
+            model=self.MODEL,
+            messages=self.conversation_history,
             temperature=self.temperature,
-            max_new_tokens=self.max_tokens
+            max_completion_tokens=self.max_tokens
         )
-        torch.cuda.empty_cache()
 
-        assistant_message = response[0]["generated_text"][-1]["content"]
+        assistant_message = response.choices[0].message.content
 
         if memory:
             # Add response to history
@@ -709,6 +743,8 @@ class LLMController:
         """Initialize LLM controller."""
 
         # Initialize models
+        if not LLM.API_KEY:
+            raise ValueError("OpenAI API key not set")
         LLM.init_pipeline()
         self.code_model = LLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
         self.eval_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
