@@ -16,6 +16,9 @@ except ImportError:
     OpenAI = None
     print("[Warning] OpenAI package not installed. Install with: pip install openai")
 
+import torch
+from transformers import pipeline
+
 # Import prompts from prompt.py
 from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_SUMMARY, FUNCTION_SCHEMAS
 
@@ -26,7 +29,7 @@ load_dotenv()
 # ============================================================================
 # LLM Object
 # ============================================================================
-class LLM:
+class OpenAILLM:
     """LLM abstraction and configuration"""
 
     # OpenAI API settings (using custom Qwen3 API endpoint)
@@ -95,6 +98,75 @@ class LLM:
         )
 
         assistant_message = response.choices[0].message.content
+
+        if memory:
+            # Add response to history
+            self.conversation_history.append({"role": "assistant", "content": assistant_message})
+        else:
+            # Remove user prompt from history
+            self.conversation_history.pop()
+
+        return assistant_message
+    
+    def reset(self):
+        self.conversation_history = [self.conversation_history[0]]
+
+    def add_info(self):
+        try:
+            # Get index of last get_info call
+            last_index = len(self.conversation_history) - 1 - self.conversation_history[::-1].index({"role": "user", "content": "Get the current scene information"})
+            
+            # Remove last get_info call and response from history
+            self.conversation_history.pop(last_index)
+            self.conversation_history.pop(last_index)
+        except ValueError:
+            pass
+        
+        # Add current get_info data to history
+        self.conversation_history.append({"role": "user", "content": "Get the current scene information"})
+        self.conversation_history.append({"role": "assistant", "content": json.dumps(get_info()['data'], ensure_ascii=False)})
+
+class LocalLLM:
+    """LLM abstraction and configuration"""
+
+    MODEL = os.getenv("MODEL", "Qwen/Qwen2.5-Coder-7B-Instruct")
+    PIPE = None
+  
+    def __init__(self, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048):
+        self.conversation_history = [{
+            "role": "system",
+            "content": system_prompt
+        }]
+
+        # Temperature and other generation params
+        self.temperature = temperature
+        self.max_tokens = max_tokens  # None = no limit
+
+    @classmethod
+    def set_model(cls, model: str):
+        """Set model."""
+        cls.MODEL = model
+
+    @classmethod
+    def init_pipeline(cls):
+        """Initialize transformers pipeline."""
+        cls.PIPE = pipeline(task="text-generation", model=cls.MODEL, dtype=torch.bfloat16, device_map="auto")
+
+    def generate(self, prompt, memory=True):
+        # Verify that model has been instantiated
+        if self.PIPE is None:
+            raise RuntimeError("The model has not been initialized yet, run LLM.init_pipeline() first.")
+        
+        # Call model
+        self.conversation_history.append({"role": "user", "content": prompt})
+        response = self.PIPE(
+            self.conversation_history,
+            temperature=self.temperature,
+            max_new_tokens=self.max_tokens
+        )
+        torch.cuda.empty_cache()
+
+        assistant_message = response[0]["generated_text"][-1]["content"]
 
         if memory:
             # Add response to history
@@ -898,10 +970,10 @@ class LLMController:
 
             eval_counter += 1
 
-        if eval_counter == eval_attempts:
-            raise RuntimeError(f'Generated code failed {name} evaluation')
         if eval_model is not None:
             eval_model.reset()
+        if eval_counter > eval_attempts:
+            raise RuntimeError(f'Generated code failed {name} evaluation')
 
         return code_message
     

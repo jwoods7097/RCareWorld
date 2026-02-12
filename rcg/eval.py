@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 from typing import Optional
 from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL
-from rcg.llm import LLM
+from rcg.llm import OpenAILLM, LocalLLM
 from distutils.util import strtobool
 from tqdm import tqdm
 
@@ -169,21 +169,21 @@ def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_atte
 
         eval_counter += 1
 
-    if eval_counter == eval_attempts:
-        raise RuntimeError(f'Generated code failed {name} evaluation')
     if eval_model is not None:
         eval_model.reset()
+    if eval_counter > eval_attempts:
+        raise RuntimeError(f'Generated code failed {name} evaluation')
 
     return code_message
 
 if __name__ == "__main__":
 
     # Initialize models
-    if not LLM.API_KEY:
+    if not OpenAILLM.API_KEY:
         raise ValueError("OpenAI API key not set")
-    LLM.init_pipeline()
-    code_model = LLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
-    eval_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
+    LocalLLM.init_pipeline()
+    code_model = LocalLLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
+    eval_model = LocalLLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
 
     # Initialize logging
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -191,7 +191,8 @@ if __name__ == "__main__":
     log_dir.mkdir(exist_ok=True)
     log_file = log_dir / f"eval_{timestamp}.log"
     write_log(f"=== LLM Evaluation Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
-    write_log(f"Model: {LLM.MODEL}")
+    write_log(f"Code Model: {code_model.MODEL}")
+    write_log(f"Eval Model: {eval_model.MODEL}")
     write_log("")
 
     # Evaluate each prompt multiple times
@@ -218,15 +219,15 @@ if __name__ == "__main__":
             except Exception as e:
                 write_log(f"Error during evaluation: {e}\n")
                 continue
+            finally:
+                code_model.reset()
+                eval_model.reset()
             
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
             total_time += duration
             successes += 1
             write_log(f"Duration: {duration:.1f} seconds\n")
-
-            code_model.reset()
-            eval_model.reset()
 
         avg_time = total_time / successes if successes > 0 else float('inf')
         write_log(f"Average Duration for Prompt '{prompt}': {avg_time:.1f} seconds\n\n")
