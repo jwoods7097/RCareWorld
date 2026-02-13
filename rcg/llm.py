@@ -1051,6 +1051,9 @@ class LLMController:
                 # Check if function exists
                 if schema["name"] == function_name:
                     # Check provided arguments
+                    if any(arg_name not in function_args for arg_name in schema["parameters"]["required"]):
+                        result = False
+                        reasoning += f"Missing required arguments for function '{function_name}'.\n"
                     for arg_name, arg_value in function_args.items():
                         if arg_name not in schema["parameters"]["properties"]:
                             result = False
