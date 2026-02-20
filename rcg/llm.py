@@ -17,7 +17,9 @@ except ImportError:
     print("[Warning] OpenAI package not installed. Install with: pip install openai")
 
 import torch
-from transformers import pipeline
+from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
+from peft.utils.hotswap import hotswap_adapter
 
 # Import prompts from prompt.py
 from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_SUMMARY, FUNCTION_SCHEMAS
@@ -167,6 +169,76 @@ class LocalLLM:
         torch.cuda.empty_cache()
 
         assistant_message = response[0]["generated_text"][-1]["content"]
+
+        if memory:
+            # Add response to history
+            self.conversation_history.append({"role": "assistant", "content": assistant_message})
+        else:
+            # Remove user prompt from history
+            self.conversation_history.pop()
+
+        return assistant_message
+    
+class LoRALLM:
+    """LLM abstraction and configuration"""
+
+    MODEL = os.getenv("MODEL", "Qwen/Qwen2.5-Coder-7B-Instruct")
+    BASE_MODEL = None
+    TOKENIZER = None
+    PEFT_MODEL = None
+  
+    def __init__(self, peft_model_id, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048):
+        # Verify that model has been instantiated
+        if self.BASE_MODEL is None:
+            raise RuntimeError("The model has not been initialized yet, run LLM.init_pipeline() first.")
+
+        # Initialize PEFT model
+        self.model_id = peft_model_id
+        if self.PEFT_MODEL is None:
+            self.PEFT_MODEL = PeftModel.from_pretrained(self.BASE_MODEL, self.model_id)
+        
+        # Initialize conversation history with system prompt
+        self.conversation_history = [{
+            "role": "system",
+            "content": system_prompt
+        }]
+
+        # Temperature and other generation params
+        self.temperature = temperature
+        self.max_tokens = max_tokens  # None = no limit
+
+    @classmethod
+    def set_model(cls, model: str):
+        """Set model."""
+        cls.MODEL = model
+
+    @classmethod
+    def init_pipeline(cls):
+        """Initialize transformers pipeline."""
+        cls.BASE_MODEL = AutoModelForCausalLM.from_pretrained(cls.MODEL, dtype=torch.bfloat16, device_map="auto")
+        cls.TOKENIZER = AutoTokenizer.from_pretrained(cls.MODEL)
+
+    def generate(self, prompt, memory=True):
+        # Verify that model has been instantiated
+        hotswap_adapter(self.PEFT_MODEL, self.model_id, adapter_name="default")
+        
+        # Tokenize input
+        self.conversation_history.append({"role": "user", "content": prompt})
+        text = self.TOKENIZER.apply_chat_template(
+            self.conversation_history, add_generation_prompt=True, tokenize=False
+        )
+        model_inputs = self.TOKENIZER([text], return_tensors="pt").to(self.PEFT_MODEL.device)
+        
+        # Generate output
+        generated_ids = self.PEFT_MODEL.generate(
+            **model_inputs,
+            temperature=self.temperature,
+            max_new_tokens=self.max_tokens
+        )
+        output_ids = generated_ids[0][len(model_inputs.input_ids[0]):]
+        torch.cuda.empty_cache()
+
+        assistant_message = self.TOKENIZER.decode(output_ids, skip_special_tokens=True)
 
         if memory:
             # Add response to history

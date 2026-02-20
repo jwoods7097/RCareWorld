@@ -3,8 +3,8 @@ import json
 from pathlib import Path
 import re
 from typing import Optional
-from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL
-from rcg.llm import OpenAILLM, LocalLLM
+from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_PLAN
+from rcg.llm import OpenAILLM, LocalLLM, LoRALLM
 from distutils.util import strtobool
 from tqdm import tqdm
 
@@ -171,7 +171,7 @@ def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_atte
 
     if eval_model is not None:
         eval_model.reset()
-    if eval_counter > eval_attempts:
+    if eval_counter >= eval_attempts and not correct:
         raise RuntimeError(f'Generated code failed {name} evaluation')
 
     return code_message
@@ -181,9 +181,11 @@ if __name__ == "__main__":
     # Initialize models
     if not OpenAILLM.API_KEY:
         raise ValueError("OpenAI API key not set")
-    LocalLLM.init_pipeline()
-    code_model = LocalLLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
-    eval_model = LocalLLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
+    LoRALLM.init_pipeline()
+    OpenAILLM.init_pipeline()
+    plan_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_PLAN, temperature=0.7)
+    code_model = LoRALLM('rcg/coder_model_sft', system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
+    eval_model = LoRALLM('rcg/eval_model_dpo', system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
 
     # Initialize logging
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -191,6 +193,7 @@ if __name__ == "__main__":
     log_dir.mkdir(exist_ok=True)
     log_file = log_dir / f"eval_{timestamp}.log"
     write_log(f"=== LLM Evaluation Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
+    write_log(f"Plan Model: {plan_model.MODEL}")
     write_log(f"Code Model: {code_model.MODEL}")
     write_log(f"Eval Model: {eval_model.MODEL}")
     write_log("")
@@ -204,15 +207,19 @@ if __name__ == "__main__":
             start_time = datetime.now()
             
             # Call get_info first, removing previous call
+            add_info(plan_model, prompt)
             add_info(code_model, prompt)
             add_info(eval_model, prompt)
             user_input = prompt.replace("*", "")
 
             try:
+                # Planning
+                planned_input = plan_model.generate(user_input)
+                write_log(f"PLANNER RESULT: {planned_input}\n")
                 # Static evaluation
-                code_message = geneval(code_model, None, user_input, include_input_in_eval=False, name="Syntax")
+                code_message = geneval(code_model, None, planned_input, include_input_in_eval=False, name="Syntax")
                 # Functional evaluation
-                code_message = geneval(code_model, eval_model, user_input, include_input_in_eval=True, code_message=code_message, name="Function")
+                code_message = geneval(code_model, eval_model, planned_input, include_input_in_eval=True, code_message=code_message, name="Function")
                 # Final generated code
                 parsed_code = parse_manual_function_call(code_message)
                 write_log(f"Parsed Functions:\n{parsed_code}\n")
