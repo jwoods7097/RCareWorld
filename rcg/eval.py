@@ -183,7 +183,7 @@ if __name__ == "__main__":
         raise ValueError("OpenAI API key not set")
     LoRALLM.init_pipeline()
     OpenAILLM.init_pipeline()
-    plan_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_PLAN, temperature=0.7)
+    plan_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_PLAN, temperature=1.0)
     code_model = LoRALLM('rcg/coder_model_sft', system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
     eval_model = LoRALLM('rcg/eval_model_dpo', system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
 

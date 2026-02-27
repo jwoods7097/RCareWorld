@@ -96,7 +96,8 @@ class OpenAILLM:
             model=self.MODEL,
             messages=self.conversation_history,
             temperature=self.temperature,
-            max_completion_tokens=self.max_tokens
+            max_completion_tokens=self.max_tokens,
+            reasoning_effort="medium"
         )
 
         assistant_message = response.choices[0].message.content
