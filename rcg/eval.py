@@ -216,13 +216,20 @@ if __name__ == "__main__":
                 # Planning
                 planned_input = plan_model.generate(user_input)
                 write_log(f"PLANNER RESULT: {planned_input}\n")
-                # Static evaluation
-                code_message = geneval(code_model, None, planned_input, include_input_in_eval=False, name="Syntax")
-                # Functional evaluation
-                code_message = geneval(code_model, eval_model, planned_input, include_input_in_eval=True, code_message=code_message, name="Function")
-                # Final generated code
-                parsed_code = parse_manual_function_call(code_message)
-                write_log(f"Parsed Functions:\n{parsed_code}\n")
+                instructions = [i.strip() for i in planned_input.splitlines() if i.strip()]
+
+                # Code each step individually
+                final_code = []
+                for instruction in instructions:
+                    print('Current instruction:', instruction)
+                    # Static evaluation
+                    code_message = geneval(code_model, None, instruction, include_input_in_eval=False, name="Syntax")
+                    # Functional evaluation
+                    code_message = geneval(code_model, eval_model, instruction, include_input_in_eval=True, code_message=code_message, name="Function")
+                    # Final generated code
+                    parsed_code = parse_manual_function_call(code_message)
+                    final_code += parsed_code
+                    write_log(f"Parsed Function:\n{parsed_code}\n")
             except Exception as e:
                 write_log(f"Error during evaluation: {e}\n")
                 continue
@@ -234,6 +241,7 @@ if __name__ == "__main__":
             duration = (end_time - start_time).total_seconds()
             total_time += duration
             successes += 1
+            write_log(f"All Parsed Functions:\n{final_code}\n")
             write_log(f"Duration: {duration:.1f} seconds\n")
 
         avg_time = total_time / successes if successes > 0 else float('inf')

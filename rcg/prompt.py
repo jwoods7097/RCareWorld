@@ -15,7 +15,7 @@ Contents:
 # System Prompts
 # ============================================================================
 
-SYSTEM_PROMPT_PLAN = """You control a Kinova Gen3 robotic arm in Unity. Be concise and direct.
+SYSTEM_PROMPT_PLAN = """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
 Given the following action templates:
 
 "show me all objects in the scene",
@@ -73,7 +73,10 @@ Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
 Move the gripper in a square
 
 ### Output
-move up 20cm, move right 20cm, move down 20cm, move left 20cm
+move up 20cm
+move right 20cm
+move down 20cm
+move left 20cm
 
 ## Example 2
 
@@ -81,7 +84,10 @@ move up 20cm, move right 20cm, move down 20cm, move left 20cm
 Pick up banana 3 and move it forward by 20cm
 
 ### Output
-move to banana 3, grasp banana 3, move [0, 0, 0.2] relative, release object
+move to banana 3
+grasp banana 3
+move [0, 0, 0.2] relative
+release object
 
 ## Example 3
 
@@ -97,7 +103,9 @@ move [0, 0, 0.1] relative
 Move to the right 15cm, up by 40cm, and left by 25cm
 
 ### Output
-move [0.15, 0, 0] relative, move [0, 0.4, 0] relative, move [-0.25, 0, 0] relative
+move [0.15, 0, 0] relative
+move [0, 0.4, 0] relative
+move [-0.25, 0, 0] relative
 
 ## Example 5
 
@@ -105,7 +113,8 @@ move [0.15, 0, 0] relative, move [0, 0.4, 0] relative, move [-0.25, 0, 0] relati
 Move up and to the right by 35cm, then move down and to the left by 35cm
 
 ### Output
-move [0.35, 0.35, 0] relative, move [-0.35, -0.35, 0] relative
+move [0.35, 0.35, 0] relative
+move [-0.35, -0.35, 0] relative
 
 ## Example 6
 
@@ -113,10 +122,21 @@ move [0.35, 0.35, 0] relative, move [-0.35, -0.35, 0] relative
 Move all bananas left 10cm
 
 ### Output
-move to banana 1, grasp banana 1, move [-0.1, 0, 0] relative, release object, move to banana 2, grasp banana 2, move [-0.1, 0, 0] relative, release object, move to banana 3, grasp banana 3, move [-0.1, 0, 0] relative, release object
+move to banana 1
+grasp banana 1
+move [-0.1, 0, 0] relative
+release object
+move to banana 2
+grasp banana 2
+move [-0.1, 0, 0] relative
+release object
+move to banana 3
+grasp banana 3
+move [-0.1, 0, 0] relative
+release object
 """
 
-SYSTEM_PROMPT_CODE = """You control a Kinova Gen3 robotic arm in Unity. Be concise and direct.
+SYSTEM_PROMPT_CODE = """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
 Think step by step about the functions you need to call and the arguments they require to fully complete the user's request.
 Ensure that you are calling all functions necessary in the right order to achieve the desired outcome.
 The current state of the simulation, including the names, positions, and rotations of all objects, is provided in JSON form in your most recent assistant message.
@@ -227,7 +247,7 @@ User: "move forward 15cm"
 4. **NEVER use Z-axis for up/down movement! Always use Y-axis!**
 """
 
-SYSTEM_PROMPT_EVAL = """You are an agent evaluating the functional correctness of robot simulation code. Be concise and direct.
+SYSTEM_PROMPT_EVAL = """You are an agent evaluating the functional correctness of robot code in a simulation with gravity. Be concise and direct.
 Ensure that all functions necessary to achieve the user's request are present and being called in the correct order.
 Also ensure that the correct arguments to fulfill the user's request are being passed into functions.
 Make sure that the direction for movement-based functions is correct as well.
