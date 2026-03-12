@@ -5,6 +5,7 @@ import re
 from typing import Optional
 from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_PLAN
 from rcg.llm import OpenAILLM, LocalLLM, LoRALLM
+from rcg.val import prompt_to_code_general
 from distutils.util import strtobool
 from tqdm import tqdm
 
@@ -141,6 +142,38 @@ def static_evaluation(code: str) -> tuple[bool, str]:
     
     return result, f"{result}\n{reasoning}"
 
+def functions_equal(functions1, functions2):
+    """Compare two parsed functions to see if they're equal."""
+
+    # Baseline check to ensure same number of functions
+    if len(functions1) != len(functions2):
+        return False
+
+    for f1, f2 in zip(functions1, functions2):
+        f1_name, f1_args_str = f1
+        f2_name, f2_args_str = f2
+
+        # Make sure functions are the same
+        if f1_name != f2_name:
+            return False
+        
+        try:
+            f1_args = json.loads(f1_args_str)
+            f2_args = json.loads(f2_args_str)
+        except:
+            return False
+        
+        # Baseline check to ensure same number of arguments
+        if len(f1_args) != len(f2_args):
+            return False
+        
+        # Make sure argument names and values are the same
+        for (a1n, a1v), (a2n, a2v) in zip(f1_args.items(), f2_args.items()):
+            if a1n != a2n or a1v != a2v:
+                return False
+    
+    return True
+
 def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_attempts=5, code_message=None, name=""):
     """Generate and evaluate the code with the specified evaluation model."""
     correct = False
@@ -152,7 +185,6 @@ def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_atte
         # Call code model
         if code_message is None or eval_counter > 0:
             code_message = code_model.generate(user_input if not eval_message else eval_message)
-            write_log(f"CODER RESULT: {code_message}\n")
 
         if eval_model is None:
             # Evaluate code with static evaluator
@@ -164,8 +196,6 @@ def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_atte
             found = re.search(r"\b(True|False)\b", eval_message, re.IGNORECASE)
             if found:
                 correct = strtobool(found.group(1))
-
-        write_log(f"{name} EVALUATOR RESULT: {eval_message}\n")
 
         eval_counter += 1
 
@@ -220,18 +250,20 @@ if __name__ == "__main__":
 
                 # Code each step individually
                 final_code = []
+                final_valid_code = []
                 for instruction in instructions:
-                    print('Current instruction:', instruction)
-                    # Static evaluation
-                    code_message = geneval(code_model, None, instruction, include_input_in_eval=False, name="Syntax")
+                    # Validate code from plan
+                    valid_code_str = prompt_to_code_general(instruction)
+                    valid_code = parse_manual_function_call(valid_code_str)
+                    final_valid_code += valid_code
                     # Functional evaluation
-                    code_message = geneval(code_model, eval_model, instruction, include_input_in_eval=True, code_message=code_message, name="Function")
+                    code_message = geneval(code_model, eval_model, instruction, include_input_in_eval=True, name="Function")
+                    # Static evaluation
+                    code_message = geneval(code_model, None, instruction, include_input_in_eval=False, code_message=code_message, name="Syntax")
                     # Final generated code
                     parsed_code = parse_manual_function_call(code_message)
                     final_code += parsed_code
-                    write_log(f"Parsed Function:\n{parsed_code}\n")
             except Exception as e:
-                write_log(f"Error during evaluation: {e}\n")
                 continue
             finally:
                 code_model.reset()
@@ -240,9 +272,9 @@ if __name__ == "__main__":
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
             total_time += duration
-            successes += 1
-            write_log(f"All Parsed Functions:\n{final_code}\n")
-            write_log(f"Duration: {duration:.1f} seconds\n")
+            if functions_equal(final_valid_code, final_code):
+                successes += 1
 
         avg_time = total_time / successes if successes > 0 else float('inf')
+        write_log(f"Success Rate for Prompt '{prompt}': {successes / num_reps}")
         write_log(f"Average Duration for Prompt '{prompt}': {avg_time:.1f} seconds\n\n")
