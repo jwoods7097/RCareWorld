@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import re
 from typing import Optional
-from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_PLAN
+from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_PLAN, SYSTEM_PROMPT_CODEPLAN
 from rcg.llm import OpenAILLM, LocalLLM, LoRALLM
 from rcg.val import prompt_to_code_general
 from distutils.util import strtobool
@@ -185,6 +185,7 @@ def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_atte
         # Call code model
         if code_message is None or eval_counter > 0:
             code_message = code_model.generate(user_input if not eval_message else eval_message)
+            write_log(f"CODER RESULT: {code_message}\n")
 
         if eval_model is None:
             # Evaluate code with static evaluator
@@ -197,6 +198,7 @@ def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_atte
             if found:
                 correct = strtobool(found.group(1))
 
+        write_log(f"{name} EVALUATOR RESULT: {eval_message}\n")
         eval_counter += 1
 
     if eval_model is not None:
@@ -213,9 +215,8 @@ if __name__ == "__main__":
         raise ValueError("OpenAI API key not set")
     LoRALLM.init_pipeline()
     OpenAILLM.init_pipeline()
-    plan_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_PLAN, temperature=1.0)
-    code_model = LoRALLM('rcg/coder_model_sft', system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
-    eval_model = LoRALLM('rcg/eval_model_dpo', system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
+    gen_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODEPLAN, temperature=1.0, reasoning="medium")
+    eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
 
     # Initialize logging
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -223,57 +224,43 @@ if __name__ == "__main__":
     log_dir.mkdir(exist_ok=True)
     log_file = log_dir / f"eval_{timestamp}.log"
     write_log(f"=== LLM Evaluation Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
-    write_log(f"Plan Model: {plan_model.MODEL}")
-    write_log(f"Code Model: {code_model.MODEL}")
-    write_log(f"Eval Model: {eval_model.MODEL}")
+    write_log(f"Generator Model: {gen_model.MODEL}")
+    write_log(f"Evaluator Model: {eval_model.MODEL}")
     write_log("")
 
     # Evaluate each prompt multiple times
     for prompt in tqdm(prompts):
         total_time = 0
         successes = 0
+        
         for i in range(num_reps):
             write_log(f"=== Iteration {i+1} of Prompt: {prompt} ===")
             start_time = datetime.now()
             
             # Call get_info first, removing previous call
-            add_info(plan_model, prompt)
-            add_info(code_model, prompt)
+            add_info(gen_model, prompt)
             add_info(eval_model, prompt)
             user_input = prompt.replace("*", "")
 
             try:
-                # Planning
-                planned_input = plan_model.generate(user_input)
-                write_log(f"PLANNER RESULT: {planned_input}\n")
-                instructions = [i.strip() for i in planned_input.splitlines() if i.strip()]
-
-                # Code each step individually
-                final_code = []
-                final_valid_code = []
-                for instruction in instructions:
-                    # Validate code from plan
-                    valid_code_str = prompt_to_code_general(instruction)
-                    valid_code = parse_manual_function_call(valid_code_str)
-                    final_valid_code += valid_code
-                    # Functional evaluation
-                    code_message = geneval(code_model, eval_model, instruction, include_input_in_eval=True, name="Function")
-                    # Static evaluation
-                    code_message = geneval(code_model, None, instruction, include_input_in_eval=False, code_message=code_message, name="Syntax")
-                    # Final generated code
-                    parsed_code = parse_manual_function_call(code_message)
-                    final_code += parsed_code
+                # Functional evaluation
+                code_message = geneval(gen_model, eval_model, user_input, include_input_in_eval=True, name="Function")
+                # Static evaluation
+                code_message = geneval(gen_model, None, user_input, include_input_in_eval=False, code_message=code_message, name="Syntax")
+                # Final generated code
+                parsed_code = parse_manual_function_call(code_message)
+                write_log(f"Parsed Function:\n{parsed_code}\n")
             except Exception as e:
+                write_log(f"Error during evaluation: {e}\n")
                 continue
             finally:
-                code_model.reset()
+                gen_model.reset()
                 eval_model.reset()
             
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
             total_time += duration
-            if functions_equal(final_valid_code, final_code):
-                successes += 1
+            successes += 1
 
         avg_time = total_time / successes if successes > 0 else float('inf')
         write_log(f"Success Rate for Prompt '{prompt}': {successes / num_reps}")
