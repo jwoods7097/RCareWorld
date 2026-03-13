@@ -29,8 +29,6 @@ Given the following action templates:
 "release object",
 "release object without lifting",
 "release object and lift <distance>cm",
-"move <direction> <distance>cm",
-"move <direction> <distance>cm in <time>s",
 "move [<ox>, <oy>, <oz>] relative",
 "move [<ox>, <oy>, <oz>] relative in <time>s",
 "move to [<lx>, <ly>, <lz>]",
@@ -45,7 +43,6 @@ And the following meanings of the arguments:
 <oz>: offset z-coordinate
 <time>: an duration in seconds
 <distance>: a length in centimeters
-<direction>: one of forward, backwards, up, down, left, right
 <lx>: location x-coordinate
 <ly>: location y-coordinate
 <lz>: location z-coordinate
@@ -73,10 +70,10 @@ Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
 Move the gripper in a square
 
 ### Output
-move up 20cm
-move right 20cm
-move down 20cm
-move left 20cm
+move [0, 0.2, 0] relative
+move [0.2, 0, 0] relative
+move [0, -0.2, 0] relative
+move [-0.2, 0, 0] relative
 
 ## Example 2
 
@@ -199,12 +196,12 @@ Move to position. **⚠️ REMEMBER: Y is UP/DOWN (vertical), NOT Z!**
 
 ## Examples:
 
-User: "show me all objects"
+User: "show me all objects in the scene"
 → Output: ```json
 {"function": "get_info", "args": {}}
 ```
 
-User: "where are the bananas"
+User: "tell me about Banana"
 → Output: ```json
 {"function": "get_info", "args": {"name": "Banana"}}
 ```
@@ -214,22 +211,22 @@ User: "move to banana 1"
 {"function": "move_to_object", "args": {"name": "Banana 1"}}
 ```
 
-User: "move up 20cm"
+User: "move [0, 0.2, 0] relative"
 → Output: ```json
 {"function": "move_to_position", "args": {"x": 0, "y": 0.2, "z": 0, "relative": true}}
 ```
 
-User: "move down 25cm"
+User: "move [0, -0.25, 0] relative"
 → Output: ```json
 {"function": "move_to_position", "args": {"x": 0, "y": -0.25, "z": 0, "relative": true}}
 ```
 
-User: "move right 10cm"
+User: "move [0.1, 0, 0] relative"
 → Output: ```json
 {"function": "move_to_position", "args": {"x": 0.1, "y": 0, "z": 0, "relative": true}}
 ```
 
-User: "move forward 15cm"
+User: "move [0, 0, 0.15] relative"
 → Output: ```json
 {"function": "move_to_position", "args": {"x": 0, "y": 0, "z": 0.15, "relative": true}}
 ```
@@ -269,7 +266,10 @@ Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
 ## Example 1
 
 ### Input
-User Request: Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm
+User Request: move [0.2, -0.2, 0] relative
+move [-0.2, -0.2, 0] relative
+move [-0.2, 0.2, 0] relative
+move [0.2, 0.2, 0] relative
 Code:
 ```json
 {"function": "move_to_position", "args": {"x": -0.2, "y": -0.2, "z": 0, "relative": true}}
@@ -280,13 +280,14 @@ Code:
 
 ### Output
 False
-Errors: This code moves down and to the left and then moves down and to the right, but the user requested that the gripper moves down and to the right before moving down and to the left.
+Errors: This code moves [-0.2, -0.2, 0] relative and then moves [0.2, -0.2, 0] relative, but the user requested that the gripper moves [0.2, -0.2, 0] relative before moving [-0.2, -0.2, 0] relative.
 Suggestions: Swap the order of the first 2 functions.
 
 ## Example 2
 
 ### Input
-User Request: Move to Banana 1 and then grasp it
+User Request: move to Banana 1
+grasp Banana 1
 Code:
 ```json
 {"function": "move_to_object", "args": {"name": "Banana 1"}}
@@ -300,7 +301,9 @@ Suggestions: Call the "grasp_object" function with "Banana 1" as the object para
 ## Example 3
 
 ### Input
-User Request: Grasp the object, move to the left 25cm, then release the object
+User Request: grasp Banana 1
+move [-0.25, 0, 0] relative
+release object
 Code:
 ```json
 {"function": "grasp_object", "args": {"name": "Banana 1"}}
@@ -314,7 +317,7 @@ True
 ## Example 4
 
 ### Input
-User Request: Move up 15cm
+User Request: move [0, 0.15, 0] relative
 Code:
 ```json
 {"function": "move_to_position", "args": {"x": 0, "y": 0.15, "z": 0, "relative": true}}
@@ -326,7 +329,7 @@ True
 ## Example 5
 
 ### Input
-User Request: Move to the right 40cm
+User Request: move [0.4, 0, 0] relative
 Code:
 ```json
 {"function": "move_to_position", "args": {"x": 0.2, "y": 0, "z": 0, "relative": true}}
@@ -334,13 +337,13 @@ Code:
 
 ### Output
 False
-Errors: The distance provided for x is incorrect, it should be 40cm or 0.4m.
+Errors: The distance provided for x is incorrect, it should be 0.4.
 Suggestions: Change the argument for x to 0.4
 
 ## Example 6
 
 ### Input
-User Request: Move to the left 40cm
+User Request: move [-0.4, 0, 0] relative
 Code:
 ```json
 {"function": "move_to_position", "args": {"x": 0.4, "y": 0, "z": 0, "relative": true}}

@@ -16,10 +16,10 @@ except ImportError:
     OpenAI = None
     print("[Warning] OpenAI package not installed. Install with: pip install openai")
 
-import torch
-from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
-from peft import PeftModel
-from peft.utils.hotswap import hotswap_adapter
+# import torch
+# from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
+# from peft import PeftModel
+# from peft.utils.hotswap import hotswap_adapter
 
 # Import prompts from prompt.py
 from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_SUMMARY, FUNCTION_SCHEMAS
@@ -46,7 +46,7 @@ class OpenAILLM:
     # OpenAI client instance (v1.0+ API)
     _client = None
   
-    def __init__(self, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048):
+    def __init__(self, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048, reasoning="none"):
         self.conversation_history = [{
             "role": "system",
             "content": system_prompt
@@ -55,6 +55,7 @@ class OpenAILLM:
         # Temperature and other generation params
         self.temperature = temperature
         self.max_tokens = max_tokens  # None = no limit
+        self.reasoning = reasoning
 
     @classmethod
     def set_api_key(cls, api_key: str):
@@ -97,7 +98,7 @@ class OpenAILLM:
             messages=self.conversation_history,
             temperature=self.temperature,
             max_completion_tokens=self.max_tokens,
-            reasoning_effort="medium"
+            reasoning_effort=self.reasoning
         )
 
         assistant_message = response.choices[0].message.content
