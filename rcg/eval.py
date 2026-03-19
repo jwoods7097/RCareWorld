@@ -8,13 +8,17 @@ from rcg.llm import OpenAILLM, LocalLLM, LoRALLM
 from rcg.val import prompt_to_code_general
 from distutils.util import strtobool
 from tqdm import tqdm
+import tiktoken
+import openai
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
 prompts = [
-    "Show me all objects in the scene",
-    "Move to banana 3",
-    "Move to position [1, 2, 1]",
-    "Grasp the object*",
-    "Release the object**",
+    # "Show me all objects in the scene",
+    # "Move to banana 3",
+    # "Move to position [1, 2, 1]",
+    # "Grasp the object*",
+    # "Release the object**",
     "Pick up the object, move to the right by 30cm, then release the object*",
     "Move to banana 3 and pick it up",
     "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
@@ -30,11 +34,28 @@ prompts = [
     "Clear all bananas off the table",
     "Move all the bananas next to each other",
     "Put all bananas in a line",
+    # "Pick up leftmost banana"
 ]
 
-num_reps = 5
+# prompts = [
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 2",
+#     "Move to and grasp Banana 3",
+#     "Move to and grasp the leftmost banana",
+#     "Move to and grasp the rightmost banana",
+# ]
+
+num_reps = 1
 log_file = "eval_log.txt"
 
+
+def ordered_subsets(lst, min_len=2, max_len=10):
+    n = len(lst)
+    max_len = min(max_len, n)
+    
+    for i in range(n):
+        for j in range(i + min_len, min(i + max_len, n) + 1):
+            yield lst[i:j]
 
 def write_log(message: str):
     """Write message to log file."""
@@ -185,6 +206,7 @@ def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_atte
         # Call code model
         if code_message is None or eval_counter > 0:
             code_message = code_model.generate(user_input if not eval_message else eval_message)
+            write_log(f"CODER RESULT: {code_message}\n")
 
         if eval_model is None:
             # Evaluate code with static evaluator
@@ -198,6 +220,7 @@ def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_atte
                 correct = strtobool(found.group(1))
 
         eval_counter += 1
+        write_log(f"{name} EVALUATOR RESULT: {eval_message}\n")
 
     if eval_model is not None:
         eval_model.reset()
@@ -206,77 +229,174 @@ def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_atte
 
     return code_message
 
+def topk_tokens(prompt, code, k=5):
+    enc = tiktoken.get_encoding("cl100k_base")
+
+    # -------------- tokenizer (use cl100k_base for OpenAI models) --------------
+    enc = tiktoken.get_encoding("cl100k_base")
+
+    # token ids
+    src_ids = enc.encode(prompt)
+    tgt_ids = enc.encode(json.dumps(code))
+
+    # convert each token id back to readable string for labels
+    # note: decoding single token gives string possibly with leading spaces — that's fine for labels
+    src_tokens = [enc.decode([tid]) for tid in src_ids]
+    tgt_tokens = [enc.decode([tid]) for tid in tgt_ids]
+
+    # -------------- get embeddings for each token string --------------
+    # choose embeddings model (text-embedding-3-small or similar)
+    EMB_MODEL = "text-embedding-3-small"
+
+    def get_embeddings_for_token_list(tokens):
+        # The API supports batch inputs; we pass the list of token strings
+        # we call the embeddings endpoint and unpack the vectors.
+        resp = openai.embeddings.create(model=EMB_MODEL, input=tokens)
+        # resp.data is a list aligned with input tokens
+        embeddings = np.array([item.embedding for item in resp.data], dtype=np.float32)
+        return embeddings
+
+    # For each token we ask for an embedding of that token's string
+    # (Note: tokens often include leading space; that's OK and preserves token semantics)
+    src_emb = get_embeddings_for_token_list(src_tokens)   # shape (src_len, dim)
+    tgt_emb = get_embeddings_for_token_list(tgt_tokens)   # shape (tgt_len, dim)
+
+    # src_tokens, src_emb = merge_tokens_to_words(src_tokens, src_emb)
+    # tgt_tokens, tgt_emb = merge_tokens_to_words(tgt_tokens, tgt_emb)
+
+    # -------------- compute similarity matrix --------------
+    # We'll compute cosine similarity between each target token and every source token
+    # result shape: (tgt_len, src_len)
+    sim = cosine_similarity(tgt_emb, src_emb)  # rows: tgt tokens, cols: src tokens
+
+    # Normalize per-target so rows sum to 1 (acts like attention distribution)
+    sim_rownorm = sim / (sim.sum(axis=1, keepdims=True) + 1e-12)
+
+    sim_max = sim_rownorm.max(axis=0)
+
+    topk_idx = np.argsort(sim_max)[::-1]
+    topk_tokens = [src_tokens[idx] for idx in topk_idx if src_tokens[idx].strip()][:k]
+    return topk_tokens
+
 if __name__ == "__main__":
 
-    # Initialize models
-    if not OpenAILLM.API_KEY:
-        raise ValueError("OpenAI API key not set")
-    # LoRALLM.init_pipeline()
-    OpenAILLM.init_pipeline()
-    plan_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_PLAN, temperature=1.0, reasoning="medium")
-    code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
-    eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
+    # Initialize database
+    try:
+        with open('rcg/data/traces.json', 'r', encoding='utf-8') as f:
+            traces = json.load(f)
+    except FileNotFoundError:
+        traces = []
+    try:
+        with open('rcg/data/ngrams.json', 'r', encoding='utf-8') as f:
+            ngrams = json.load(f)
+    except FileNotFoundError:
+        ngrams = {}
 
-    # Initialize logging
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_dir = Path(__file__).parent.parent / "log"
-    log_dir.mkdir(exist_ok=True)
-    log_file = log_dir / f"eval_{timestamp}.log"
-    write_log(f"=== LLM Evaluation Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
-    write_log(f"Plan Model: {plan_model.MODEL}")
-    write_log(f"Code Model: {code_model.MODEL}")
-    write_log(f"Eval Model: {eval_model.MODEL}")
-    write_log("")
+    try:
 
-    # Evaluate each prompt multiple times
-    for prompt in tqdm(prompts):
-        total_time = 0
-        successes = 0
-        for i in range(num_reps):
-            write_log(f"=== Iteration {i+1} of Prompt: {prompt} ===")
-            start_time = datetime.now()
-            
-            # Call get_info first, removing previous call
-            add_info(plan_model, prompt)
-            add_info(code_model, prompt)
-            add_info(eval_model, prompt)
-            user_input = prompt.replace("*", "")
+        # Initialize models
+        if not OpenAILLM.API_KEY:
+            raise ValueError("OpenAI API key not set")
+        # LoRALLM.init_pipeline()
+        OpenAILLM.init_pipeline()
+        plan_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_PLAN, temperature=1.0, reasoning="medium")
+        code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
+        eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
 
-            try:
-                # Planning
-                planned_input = plan_model.generate(user_input)
-                write_log(f"PLANNER RESULT: {planned_input}\n")
-                instructions = [i.strip() for i in planned_input.splitlines() if i.strip()]
+        # Initialize logging
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_dir = Path(__file__).parent.parent / "log"
+        log_dir.mkdir(exist_ok=True)
+        log_file = log_dir / f"eval_{timestamp}.log"
+        write_log(f"=== LLM Evaluation Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
+        write_log(f"Plan Model: {plan_model.MODEL}")
+        write_log(f"Code Model: {code_model.MODEL}")
+        write_log(f"Eval Model: {eval_model.MODEL}")
+        write_log("")
 
-                # Code each step individually
-                final_code = []
-                final_valid_code = []
-                for instruction in instructions:
-                    # Validate code from plan
-                    valid_code_str = prompt_to_code_general(instruction)
-                    valid_code = parse_manual_function_call(valid_code_str)
-                    final_valid_code += valid_code
-                    # Functional evaluation
-                    code_message = geneval(code_model, eval_model, instruction, include_input_in_eval=True, name="Function")
-                    # Static evaluation
-                    code_message = geneval(code_model, None, instruction, include_input_in_eval=False, code_message=code_message, name="Syntax")
-                    # Final generated code
-                    parsed_code = parse_manual_function_call(code_message)
-                    write_log(f"Parsed functions: {parsed_code}\n")
-                    final_code += parsed_code
-            except Exception as e:
-                write_log(f"Error during evaluation: {e}\n")
-                continue
-            finally:
-                code_model.reset()
-                eval_model.reset()
-            
-            end_time = datetime.now()
-            duration = (end_time - start_time).total_seconds()
-            total_time += duration
-            if functions_equal(final_valid_code, final_code):
+        # Evaluate each prompt multiple times
+        for prompt in tqdm(prompts):
+            total_time = 0
+            successes = 0
+            for i in range(num_reps):
+                write_log(f"=== Iteration {i+1} of Prompt: {prompt} ===")
+                start_time = datetime.now()
+                success = True
+                
+                # Call get_info first, removing previous call
+                add_info(plan_model, prompt)
+                add_info(code_model, prompt)
+                add_info(eval_model, prompt)
+                user_input = prompt.replace("*", "")
+
+                try:
+                    # Planning
+                    planned_input = plan_model.generate(user_input)
+                    write_log(f"PLANNER RESULT: {planned_input}\n")
+                    instructions = [i.strip() for i in planned_input.splitlines() if i.strip()]
+
+                    # Code each step individually
+                    final_code = []
+                    final_valid_code = []
+                    for instruction in instructions:
+                        # Validate code from plan
+                        # valid_code_str = prompt_to_code_general(instruction)
+                        # valid_code = parse_manual_function_call(valid_code_str)
+                        # final_valid_code += valid_code
+                        # Functional evaluation
+                        code_message = geneval(code_model, eval_model, instruction, include_input_in_eval=True, name="Function")
+                        # Static evaluation
+                        code_message = geneval(code_model, None, instruction, include_input_in_eval=False, code_message=code_message, name="Syntax")
+                        # Final generated code
+                        parsed_code = parse_manual_function_call(code_message)
+                        write_log(f"Parsed functions: {parsed_code}\n")
+                        final_code += parsed_code
+                except Exception as e:
+                    write_log(f"Error during evaluation: {e}\n")
+                    continue
+                finally:
+                    code_model.reset()
+                    eval_model.reset()
+                
+                end_time = datetime.now()
+                duration = (end_time - start_time).total_seconds()
+                total_time += duration
                 successes += 1
+                # if functions_equal(final_valid_code, final_code):
+                #     successes += 1
+                #     success = True
 
-        avg_time = total_time / successes if successes > 0 else float('inf')
-        write_log(f"Success Rate for Prompt '{prompt}': {successes / num_reps}")
-        write_log(f"Average Duration for Prompt '{prompt}': {avg_time:.1f} seconds\n\n")
+                traces.append({
+                    "timestamp": datetime.now().isoformat(),
+                    "prompt": prompt,
+                    "planned_input": planned_input if 'planned_input' in locals() else "",
+                    "final_code": final_code,
+                    # "final_valid_code": final_valid_code,
+                    "success": success,
+                    "duration_seconds": duration,
+                })
+
+                for ngram in ordered_subsets(final_code):
+                    ngram_key = json.dumps([n[0] for n in ngram], ensure_ascii=False)
+                    if ngram_key not in ngrams:
+                        ngrams[ngram_key] = []
+
+                    topk = topk_tokens(prompt, ngram)
+
+                    ngrams[ngram_key].append({
+                        "prompt": prompt,
+                        "code": ngram,
+                        "topk_tokens": topk
+                    })
+
+            avg_time = total_time / successes if successes > 0 else float('inf')
+            write_log(f"Success Rate for Prompt '{prompt}': {successes / num_reps}")
+            write_log(f"Average Duration for Prompt '{prompt}': {avg_time:.1f} seconds\n\n")
+
+    except KeyboardInterrupt:
+        pass
+    finally:
+        with open('rcg/data/traces.json', 'w', encoding='utf-8') as f:
+            json.dump(traces, f, ensure_ascii=False, indent=4)
+        with open('rcg/data/ngrams.json', 'w', encoding='utf-8') as f:
+            json.dump(ngrams, f, ensure_ascii=False, indent=4)

@@ -1,0 +1,372 @@
+[
+    {
+        "timestamp": "2026-03-13T10:50:20.107686",
+        "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+        "planned_input": "move to Banana 3\ngrasp Banana 3\nmove [0.3, 0, 0] relative\nrelease object",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 11.972063
+    },
+    {
+        "timestamp": "2026-03-13T10:50:31.835911",
+        "prompt": "Move to banana 3 and pick it up",
+        "planned_input": "move to Banana 3\ngrasp Banana 3",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 5.900693
+    },
+    {
+        "timestamp": "2026-03-13T10:50:39.939809",
+        "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+        "planned_input": "move [-0.3, 0, 0] relative\nmove [0, 0.1, 0] relative\nmove [0.2, 0, 0] relative",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": -0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0.1, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 7.19108
+    },
+    {
+        "timestamp": "2026-03-13T10:50:52.435295",
+        "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+        "planned_input": "move [0.2, -0.2, 0] relative\nmove [-0.2, -0.2, 0] relative\nmove [-0.2, 0.2, 0] relative\nmove [0.2, 0.2, 0] relative",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": -0.2, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": -0.2, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": 0.2, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.2, \"z\": 0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 9.511972
+    },
+    {
+        "timestamp": "2026-03-13T10:51:04.942038",
+        "prompt": "Is there a banana in this scene? If so, move to it. Otherwise, move to the left by 25cm",
+        "planned_input": "move to Banana 1",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 4.758958
+    },
+    {
+        "timestamp": "2026-03-13T10:51:18.349920",
+        "prompt": "Move the leftmost banana so that it is now the middle banana",
+        "planned_input": "move to Banana 3\ngrasp Banana 3\nmove [0.312, 0, 0] relative\nrelease object",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.312, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 13.406295
+    },
+    {
+        "timestamp": "2026-03-13T10:51:33.524499",
+        "prompt": "Move the rightmost banana forward by 10cm",
+        "planned_input": "move to Banana 2\ngrasp Banana 2\nmove [0, 0, 0.1] relative\nrelease object",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 9.108253
+    },
+    {
+        "timestamp": "2026-03-13T10:51:55.818292",
+        "prompt": "Move banana 1 to the left of banana 3",
+        "planned_input": "move to Banana 1\ngrasp Banana 1\nmove [-0.338, 0, 0] relative\nrelease object",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 1\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.338, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 15.391333
+    },
+    {
+        "timestamp": "2026-03-13T10:52:14.987605",
+        "prompt": "Move banana 2 10cm closer to me",
+        "planned_input": "move to Banana 2\ngrasp Banana 2\nmove [0, 0, -0.1] relative\nrelease object",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 13.084305
+    },
+    {
+        "timestamp": "2026-03-13T10:52:30.832714",
+        "prompt": "Pick up the closest banana to the camera",
+        "planned_input": "move to Banana 2\ngrasp Banana 2",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 2\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 10.03495
+    },
+    {
+        "timestamp": "2026-03-13T10:53:03.690477",
+        "prompt": "Move the gripper in a circle",
+        "planned_input": "move [0.1, 0, 0] relative\nmove [0.1, 0, 0.1] relative\nmove [0, 0, 0.1] relative\nmove [-0.1, 0, 0.1] relative\nmove [-0.1, 0, 0] relative\nmove [-0.1, 0, -0.1] relative\nmove [0, 0, -0.1] relative\nmove [0.1, 0, -0.1] relative",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 32.119574
+    },
+    {
+        "timestamp": "2026-03-13T10:53:46.225904",
+        "prompt": "Move to all 3 bananas in sequence",
+        "planned_input": "move to Banana 1\nmove to Banana 2\nmove to Banana 3",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\"}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 7.068339
+    },
+    {
+        "timestamp": "2026-03-13T10:54:36.267800",
+        "prompt": "Clear all bananas off the table",
+        "planned_input": "",
+        "final_code": [],
+        "success": true,
+        "duration_seconds": 47.810285
+    },
+    {
+        "timestamp": "2026-03-13T10:55:08.397813",
+        "prompt": "Move all the bananas next to each other",
+        "planned_input": "move to Banana 3\ngrasp Banana 3\nmove [0.228, 0, 0.162] relative\nrelease object\nmove to Banana 2\ngrasp Banana 2\nmove [0.012, 0, 0.287] relative\nrelease object",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 32.127984
+    },
+    {
+        "timestamp": "2026-03-13T10:56:04.191355",
+        "prompt": "Put all bananas in a line",
+        "planned_input": "move to Banana 1\ngrasp Banana 1\nmove [0, 0, -0.287] relative\nrelease object\nmove to Banana 3\ngrasp Banana 3\nmove [0, 0, -0.125] relative\nrelease object",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 1\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 27.793442
+    }
+]

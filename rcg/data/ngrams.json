@@ -1,0 +1,3400 @@
+{
+    "[\"move_to_object\", \"grasp_object\"]": [
+        {
+            "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " move",
+                " object",
+                " object",
+                ",",
+                ","
+            ]
+        },
+        {
+            "prompt": "Move to banana 3 and pick it up",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "3",
+                "Move",
+                " to",
+                " banana",
+                " and"
+            ]
+        },
+        {
+            "prompt": "Move the leftmost banana so that it is now the middle banana",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " banana",
+                " banana",
+                " it",
+                " is"
+            ]
+        },
+        {
+            "prompt": "Move the rightmost banana forward by 10cm",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " banana",
+                "10",
+                " by",
+                " the"
+            ]
+        },
+        {
+            "prompt": "Move banana 1 to the left of banana 3",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                "1",
+                " to",
+                " of",
+                "3"
+            ]
+        },
+        {
+            "prompt": "Move banana 2 10cm closer to me",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "2",
+                "Move",
+                " to",
+                " banana",
+                "10"
+            ]
+        },
+        {
+            "prompt": "Pick up the closest banana to the camera",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " to",
+                " up",
+                " banana",
+                "Pick",
+                " the"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " bananas",
+                " each",
+                " other"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " bananas",
+                " each",
+                " other"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " bananas",
+                "Put",
+                " all",
+                " a"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " bananas",
+                "Put",
+                " all",
+                " a"
+            ]
+        }
+    ],
+    "[\"move_to_object\", \"grasp_object\", \"move_to_position\"]": [
+        {
+            "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                " move",
+                ",",
+                ",",
+                " object",
+                " object"
+            ]
+        },
+        {
+            "prompt": "Move the leftmost banana so that it is now the middle banana",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.312, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " banana",
+                " banana",
+                " it",
+                " is"
+            ]
+        },
+        {
+            "prompt": "Move the rightmost banana forward by 10cm",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " right",
+                " banana",
+                "10",
+                " by"
+            ]
+        },
+        {
+            "prompt": "Move banana 1 to the left of banana 3",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.338, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                "1",
+                " to",
+                " of",
+                "3"
+            ]
+        },
+        {
+            "prompt": "Move banana 2 10cm closer to me",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "2",
+                "Move",
+                " to",
+                " closer",
+                " banana"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"move_to_object\", \"grasp_object\", \"move_to_position\", \"release_object\"]": [
+        {
+            "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " release",
+                " move",
+                ",",
+                ",",
+                " object"
+            ]
+        },
+        {
+            "prompt": "Move the leftmost banana so that it is now the middle banana",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.312, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " banana",
+                " banana",
+                " it",
+                " is"
+            ]
+        },
+        {
+            "prompt": "Move the rightmost banana forward by 10cm",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " right",
+                "10",
+                " banana",
+                " by"
+            ]
+        },
+        {
+            "prompt": "Move banana 1 to the left of banana 3",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.338, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                "1",
+                " to",
+                " of",
+                "3"
+            ]
+        },
+        {
+            "prompt": "Move banana 2 10cm closer to me",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "2",
+                "Move",
+                " to",
+                " closer",
+                " banana"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"grasp_object\", \"move_to_position\"]": [
+        {
+            "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                " move",
+                ",",
+                ",",
+                " object",
+                " object"
+            ]
+        },
+        {
+            "prompt": "Move the leftmost banana so that it is now the middle banana",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.312, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " banana",
+                " banana",
+                " it",
+                " is"
+            ]
+        },
+        {
+            "prompt": "Move the rightmost banana forward by 10cm",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " right",
+                " banana",
+                "10",
+                " by"
+            ]
+        },
+        {
+            "prompt": "Move banana 1 to the left of banana 3",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.338, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                "1",
+                " to",
+                " of",
+                "3"
+            ]
+        },
+        {
+            "prompt": "Move banana 2 10cm closer to me",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "2",
+                "Move",
+                " to",
+                " closer",
+                " banana"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"grasp_object\", \"move_to_position\", \"release_object\"]": [
+        {
+            "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " release",
+                " move",
+                ",",
+                ",",
+                " object"
+            ]
+        },
+        {
+            "prompt": "Move the leftmost banana so that it is now the middle banana",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.312, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " banana",
+                " banana",
+                " it",
+                " is"
+            ]
+        },
+        {
+            "prompt": "Move the rightmost banana forward by 10cm",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " right",
+                " banana",
+                "10",
+                " by"
+            ]
+        },
+        {
+            "prompt": "Move banana 1 to the left of banana 3",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.338, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                "1",
+                " to",
+                " of",
+                "3"
+            ]
+        },
+        {
+            "prompt": "Move banana 2 10cm closer to me",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "2",
+                "Move",
+                " to",
+                " closer",
+                " banana"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"release_object\"]": [
+        {
+            "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " release",
+                " move",
+                ",",
+                ",",
+                " object"
+            ]
+        },
+        {
+            "prompt": "Move the leftmost banana so that it is now the middle banana",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.312, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " it",
+                " is",
+                " that",
+                " left"
+            ]
+        },
+        {
+            "prompt": "Move the rightmost banana forward by 10cm",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " right",
+                "10",
+                " by",
+                " forward"
+            ]
+        },
+        {
+            "prompt": "Move banana 1 to the left of banana 3",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.338, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " of",
+                "1",
+                " left"
+            ]
+        },
+        {
+            "prompt": "Move banana 2 10cm closer to me",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                "2",
+                " closer",
+                "10"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " each",
+                " other"
+            ]
+        },
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " each",
+                " other"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                "Put",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                "Put",
+                " a",
+                " in"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"move_to_position\"]": [
+        {
+            "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0.1, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                ",",
+                ",",
+                " right",
+                " to"
+            ]
+        },
+        {
+            "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0.1, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.2, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                ",",
+                ",",
+                " right",
+                " to"
+            ]
+        },
+        {
+            "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.2, \"y\": -0.2, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.2, \"y\": -0.2, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                ",",
+                ",",
+                ",",
+                " right"
+            ]
+        },
+        {
+            "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.2, \"y\": -0.2, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.2, \"y\": 0.2, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                ",",
+                ",",
+                ",",
+                " right"
+            ]
+        },
+        {
+            "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.2, \"y\": 0.2, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.2, \"y\": 0.2, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                ",",
+                ",",
+                ",",
+                " right"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"move_to_position\", \"move_to_position\"]": [
+        {
+            "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0.1, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.2, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                ",",
+                ",",
+                " right",
+                " to"
+            ]
+        },
+        {
+            "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.2, \"y\": -0.2, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.2, \"y\": -0.2, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.2, \"y\": 0.2, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                ",",
+                ",",
+                ",",
+                " right"
+            ]
+        },
+        {
+            "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.2, \"y\": -0.2, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.2, \"y\": 0.2, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.2, \"y\": 0.2, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                ",",
+                ",",
+                ",",
+                " right"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\"]": [
+        {
+            "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.2, \"y\": -0.2, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.2, \"y\": -0.2, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.2, \"y\": 0.2, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.2, \"y\": 0.2, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                ",",
+                ",",
+                ",",
+                " right"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\"]": [
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\"]": [
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\"]": [
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        },
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\"]": [
+        {
+            "prompt": "Move the gripper in a circle",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": 0, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": -0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.1, \"y\": 0, \"z\": -0.1, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " circle",
+                " the",
+                " a",
+                " in"
+            ]
+        }
+    ],
+    "[\"move_to_object\", \"move_to_object\"]": [
+        {
+            "prompt": "Move to all 3 bananas in sequence",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                "3",
+                " to",
+                " bananas",
+                " sequence"
+            ]
+        },
+        {
+            "prompt": "Move to all 3 bananas in sequence",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "3",
+                "Move",
+                " to",
+                " bananas",
+                " sequence"
+            ]
+        }
+    ],
+    "[\"move_to_object\", \"move_to_object\", \"move_to_object\"]": [
+        {
+            "prompt": "Move to all 3 bananas in sequence",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "3",
+                "Move",
+                " to",
+                " bananas",
+                " sequence"
+            ]
+        }
+    ],
+    "[\"move_to_object\", \"grasp_object\", \"move_to_position\", \"release_object\", \"move_to_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"move_to_object\", \"grasp_object\", \"move_to_position\", \"release_object\", \"move_to_object\", \"grasp_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"move_to_object\", \"grasp_object\", \"move_to_position\", \"release_object\", \"move_to_object\", \"grasp_object\", \"move_to_position\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"move_to_object\", \"grasp_object\", \"move_to_position\", \"release_object\", \"move_to_object\", \"grasp_object\", \"move_to_position\", \"release_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"grasp_object\", \"move_to_position\", \"release_object\", \"move_to_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"grasp_object\", \"move_to_position\", \"release_object\", \"move_to_object\", \"grasp_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"grasp_object\", \"move_to_position\", \"release_object\", \"move_to_object\", \"grasp_object\", \"move_to_position\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"grasp_object\", \"move_to_position\", \"release_object\", \"move_to_object\", \"grasp_object\", \"move_to_position\", \"release_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 1\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"release_object\", \"move_to_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"release_object\", \"move_to_object\", \"grasp_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"release_object\", \"move_to_object\", \"grasp_object\", \"move_to_position\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"move_to_position\", \"release_object\", \"move_to_object\", \"grasp_object\", \"move_to_position\", \"release_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0.228, \"y\": 0, \"z\": 0.162, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"release_object\", \"move_to_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " bananas",
+                " each",
+                " other"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " bananas",
+                "Put",
+                " all",
+                " a"
+            ]
+        }
+    ],
+    "[\"release_object\", \"move_to_object\", \"grasp_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " bananas",
+                " each",
+                " other"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " bananas",
+                "Put",
+                " all",
+                " a"
+            ]
+        }
+    ],
+    "[\"release_object\", \"move_to_object\", \"grasp_object\", \"move_to_position\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ],
+    "[\"release_object\", \"move_to_object\", \"grasp_object\", \"move_to_position\", \"release_object\"]": [
+        {
+            "prompt": "Move all the bananas next to each other",
+            "code": [
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 2\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0.012, \"y\": 0, \"z\": 0.287, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                "Move",
+                " to",
+                " all",
+                " bananas",
+                " each"
+            ]
+        },
+        {
+            "prompt": "Put all bananas in a line",
+            "code": [
+                [
+                    "release_object",
+                    "{}"
+                ],
+                [
+                    "move_to_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "grasp_object",
+                    "{\"name\": \"Banana 3\"}"
+                ],
+                [
+                    "move_to_position",
+                    "{\"x\": 0, \"y\": 0, \"z\": -0.125, \"relative\": true}"
+                ],
+                [
+                    "release_object",
+                    "{}"
+                ]
+            ],
+            "topk_tokens": [
+                " line",
+                " all",
+                " bananas",
+                "Put",
+                " a"
+            ]
+        }
+    ]
+}
