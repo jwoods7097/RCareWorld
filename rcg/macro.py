@@ -1,101 +1,235 @@
 import json
+from rcg.prompt import SYSTEM_PROMPT_DESCRIBE, SYSTEM_PROMPT_NAME, FUNCTION_SCHEMAS
+from rcg.llm import OpenAILLM
+from collections import defaultdict
+from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
 
-def minimal_args_from_traces(traces):
+existing_macros = []
+
+@dataclass(frozen=True)
+class Occurrence:
+    call_index: int
+    func_name: str
+    arg_name: str
+
+
+def _normalize_traces(traces):
     """
-    traces: list of traces
-      each trace is a list of calls,
-      each call is [function_name, arg_json_string_or_dict]
-      Example call: ["move_to_object", '{"name": "Banana 3"}'] or ["move_to_object", {"name":"Banana 3"}]
+    Accepts either:
+      1) [ [call, call, ...], [call, call, ...] ]
+      2) [ {"code": [call, call, ...]}, {"code": [call, call, ...]} ]
+    """
+    if traces and isinstance(traces[0], dict) and "code" in traces[0]:
+        return [t["code"] for t in traces]
+    return traces
 
-    Returns: {
-      "hardcoded": [ (func_name, args_dict), ... ],
-      "variables": { (position, func_name): [arg_keys_that_vary], ... }
+
+def _fresh_name(base: str, used: set) -> str:
+    base = base or "arg"
+    name = base
+    i = 2
+    while name in used:
+        name = f"{base}_{i}"
+        i += 1
+    used.add(name)
+    return name
+
+
+def infer_minimal_template(traces):
+    """
+    Returns:
+      {
+        "parameters": ["name", ...],
+        "template": [
+          {
+            "name": "move_to_object",
+            "args": {
+              "name": {"kind": "var", "name": "name"}  # or {"kind": "const", "value": ...}
+            }
+          },
+          ...
+        ]
+      }
+    """
+    traces = _normalize_traces(traces)
+    if not traces:
+        return {"parameters": [], "template": []}
+
+    # Require same call structure across traces.
+    n_calls = len(traces[0])
+    for t in traces:
+        if len(t) != n_calls:
+            raise ValueError("All traces must have the same number of calls.")
+
+    for i in range(n_calls):
+        expected_name = traces[0][i]["name"]
+        expected_args = set(traces[0][i].get("args", {}).keys())
+        for t in traces[1:]:
+            if t[i]["name"] != expected_name:
+                raise ValueError(
+                    f"Call mismatch at position {i}: expected {expected_name!r}."
+                )
+            if set(t[i].get("args", {}).keys()) != expected_args:
+                raise ValueError(
+                    f"Argument-key mismatch at call {i} ({expected_name!r})."
+                )
+
+    # Build a signature for each argument occurrence:
+    # signature = tuple(value in trace_1, value in trace_2, ...)
+    occ_to_sig = {}
+    sig_to_occurrences = defaultdict(list)
+
+    for i in range(n_calls):
+        fn = traces[0][i]["name"]
+        for arg_name in traces[0][i].get("args", {}):
+            sig = tuple(t[i]["args"][arg_name] for t in traces)
+            occ = Occurrence(i, fn, arg_name)
+            occ_to_sig[occ] = sig
+            sig_to_occurrences[sig].append(occ)
+
+    # Variable groups = signatures with more than one unique value.
+    # Constant groups = signatures with exactly one unique value.
+    used_names = set()
+    sig_to_var = {}
+    parameters = []
+
+    for sig, occs in sig_to_occurrences.items():
+        if len(set(sig)) > 1:
+            base = occs[0].arg_name
+            var_name = _fresh_name(base, used_names)
+            sig_to_var[sig] = var_name
+            parameters.append(var_name)
+
+    template_calls = []
+    for i in range(n_calls):
+        fn = traces[0][i]["name"]
+        args = {}
+        for arg_name in traces[0][i].get("args", {}):
+            occ = Occurrence(i, fn, arg_name)
+            sig = occ_to_sig[occ]
+            if len(set(sig)) == 1:
+                args[arg_name] = {"kind": "const", "value": sig[0]}
+            else:
+                args[arg_name] = {"kind": "var", "name": sig_to_var[sig]}
+        template_calls.append({"name": fn, "args": args})
+
+    return {"parameters": parameters, "template": template_calls}
+
+def render_python(template, function_name="macro"):
+    """
+    Turn the inferred template into a readable Python function.
+    """
+    params = ", ".join(template["parameters"])
+    lines = [f"def {function_name}({params}):"]
+
+    if not template["template"]:
+        lines.append("    pass")
+        return "\n".join(lines)
+
+    for call in template["template"]:
+        parts = []
+        for arg_name, spec in call["args"].items():
+            if spec["kind"] == "const":
+                parts.append(f"{arg_name}={spec['value']!r}")
+            else:
+                parts.append(f"{arg_name}={spec['name']}")
+        lines.append(f"    {call['name']}({', '.join(parts)})")
+
+    return "\n".join(lines)
+
+def render_function_schema(template, function_name="execute", description=""):
+    """
+    Convert inferred template into an OpenAI-style function schema.
+
+    Output format:
+    {
+      "name": "...",
+      "description": "",
+      "parameters": {
+        "type": "object",
+        "properties": {...},
+        "required": [...]
+      }
     }
     """
-    # normalize input: parse strings into dicts
-    norm_traces = []
-    for t in traces:
-        calls = []
-        for call in t.get("code", []):
-            func = call[0]
-            raw = call[1]
-            if isinstance(raw, str):
-                args = json.loads(raw)
-            elif isinstance(raw, dict):
-                args = raw
-            else:
-                args = dict(raw)
-            calls.append((func, args))
-        norm_traces.append(calls)
+    properties = {}
+    required = []
 
-    # Determine max trace length
-    max_len = max(len(t) for t in norm_traces)
+    for param in template["parameters"]:
+        properties[param] = {
+            "type": "string",
+            "description": ""
+        }
+        required.append(param)
 
-    hardcoded = []
-    variables = {}  # key: (pos, func) -> list of arg keys that vary
-
-    for pos in range(max_len):
-        # collect calls at this position across traces (some traces may be shorter)
-        calls_at_pos = []
-        for calls in norm_traces:
-            if pos < len(calls):
-                calls_at_pos.append(calls[pos])
-            else:
-                calls_at_pos.append(None)  # missing
-
-        # if all missing, skip
-        if all(c is None for c in calls_at_pos):
-            continue
-
-        # If functions differ at this position, treat function name as variable (advanced case)
-        funcs = [c[0] if c is not None else None for c in calls_at_pos]
-        if len(set(funcs)) != 1:
-            # mark function name as variable
-            variables[(pos, "FUNCTION_NAME")] = list(set(funcs))
-            continue
-
-        func_name = funcs[0]
-        # collect all arg keys
-        all_keys = set()
-        for c in calls_at_pos:
-            if c is not None:
-                all_keys.update(c[1].keys())
-
-        hard_args = {}
-        varying_keys = []
-        for k in all_keys:
-            values = []
-            for c in calls_at_pos:
-                if c is None:
-                    values.append(None)
-                else:
-                    values.append(c[1].get(k))
-            # if all values equal (including equal None) -> hard-code
-            first = values[0]
-            if all(v == first for v in values):
-                hard_args[k] = first
-            else:
-                varying_keys.append(k)
-
-        hardcoded.append((pos, func_name, hard_args))
-        if varying_keys:
-            variables[(pos, func_name)] = varying_keys
-
-    return {"hardcoded": hardcoded, "variables": variables}
+    return {
+        "name": function_name,
+        "description": description,
+        "parameters": {
+            "type": "object",
+            "properties": properties,
+            "required": required
+        }
+    }
 
 def learn_macros(ngrams):
+    name_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_NAME, temperature=0.7)
+    describe_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_DESCRIBE, temperature=0.7)
+
+    names = []
+    macros = []
+    schemas = []
     for ngram, traces in ngrams.items():
-        if len(traces) < 5:
+        if len(traces) < 5 or ngram in existing_macros:  # Skip ngrams with fewer than 5 traces or already existing macros
             continue
 
-        res = minimal_args_from_traces(traces)
-        print(f"Macro for ngram {ngram}:")
-        print(res)
-        print("\n\n")
+        top_tokens = {}
+        for trace in traces:
+            for token in trace['topk_tokens']:
+                top_tokens[token] = top_tokens.get(token, 0) + 1
+        topk_tokens = [k for k, _ in sorted(top_tokens.items(), key=lambda item: item[1], reverse=True)][:5]  
+
+        template = infer_minimal_template(traces)
+
+        name_prompt = f"Functions:{ngram}\nTop Keywords:{topk_tokens}"
+        name = name_model.generate(name_prompt, memory=False)
+
+        code = render_python(template, function_name=name)
+        schema = render_function_schema(template, function_name=name)
+
+        describe_prompt = f"Code Trace:{ngram}\nSchema:\n{json.dumps(schema, indent=4)}"
+        schema = json.loads(describe_model.generate(describe_prompt, memory=False))
+
+        names.append(name)
+        macros.append(code)
+        schemas.append(schema)
+        existing_macros.append(ngram)
+
+        # print(f"Top-k tokens for ngram {ngram}: {topk_tokens}")   
+        # print(f"Macro for ngram {ngram}:")
+        # print(template)
+        # print(f"Suggested name: {name}")
+        # print(schema)
+        # print("\n")
+
+    # return names, macros, schemas
+    return schemas
 
 if __name__ == "__main__":
+
+    OpenAILLM.init_pipeline()
 
     with open("rcg/data/ngrams.json", "r") as f:
         ngrams = json.load(f)
 
-    learn_macros(ngrams)
+    names, macros, schemas = learn_macros(ngrams)
+
+    output = "\n".join(macros)
+    output += "\n\nMACRO_MAP = {"
+    for name, code in zip(names, macros):
+        output += f"\n    '{name}': {name},"
+    output += "\n}"
+
+    with open("rcg/learned_macros.py", "w") as f:
+        f.write(output)

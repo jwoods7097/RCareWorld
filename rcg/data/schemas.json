@@ -1,0 +1,136 @@
+[
+    {
+        "name": "get_info",
+        "description": "Get objects in the scene. Returns names, IDs, positions [x,y,z]. Call with no params for ALL objects, or with name for specific object (partial match, case-insensitive).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Object name to search (optional). If omitted, returns all objects. Examples: 'Banana', 'robot', 'Camera'. Partial matching supported."
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "move_to_object",
+        "description": "Move the robot end-effector to a specified object with optional offset. The robot will use inverse kinematics (IK) to reach the target position. Default behavior is to move 10cm above the object.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the target object to move to. Must exist in the scene. Examples: 'cube', 'box', 'Rigidbody_Box'"
+                },
+                "offset_x": {
+                    "type": "number",
+                    "description": "X-axis offset in meters from object center. Positive = right, Negative = left. Default: 0.0"
+                },
+                "offset_y": {
+                    "type": "number",
+                    "description": "Y-axis offset in meters from object center. Positive = up, Negative = down. Default: 0.1 (10cm above object)"
+                },
+                "offset_z": {
+                    "type": "number",
+                    "description": "Z-axis offset in meters from object center. Positive = forward, Negative = backward. Default: 0.0"
+                },
+                "duration": {
+                    "type": "number",
+                    "description": "Movement duration in seconds. Longer duration = slower movement. Default: 2.0"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        }
+    },
+    {
+        "name": "grasp_object",
+        "description": "Grasp object using magnetic attachment. Process: 1) Move to EXACTLY 10cm above object, 2) Magnetically attach object to gripper, 3) Wait 2 seconds to stabilize (prevent weird gravity effects), 4) Lift object. Object must have RigidBody enabled.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the object to grasp. Examples: 'Banana', 'Banana 1', 'cube'"
+                },
+                "lift_height": {
+                    "type": "number",
+                    "description": "Height to lift after grasping, in meters. Default: 0.5"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        }
+    },
+    {
+        "name": "release_object",
+        "description": "Release the currently grasped object. Process: 1) (Optional) Lift gripper before release, 2) Detach object from gripper (SetParent to scene root), 3) Object falls due to gravity. Requires object has RigidBody enabled.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "lift_before_release": {
+                    "type": "boolean",
+                    "description": "Whether to lift gripper before releasing. Recommended for clearer drop effect. Default: true"
+                },
+                "lift_height": {
+                    "type": "number",
+                    "description": "Height to lift before releasing, in meters. Only applies if lift_before_release is true. Default: 0.1"
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "move_to_position",
+        "description": "Move robot end-effector to a specific 3D position. CRITICAL: Y-axis is VERTICAL (up/down), Z-axis is forward/back. Can be absolute (world coordinates) or relative (from current position).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "X coordinate (left/right) in meters. Negative=left, Positive=right. In absolute mode: world X. In relative mode: offset from current X."
+                },
+                "y": {
+                    "type": "number",
+                    "description": "Y coordinate (UP/DOWN - VERTICAL!) in meters. Negative=down, Positive=up. In absolute mode: world Y. In relative mode: offset from current Y. For 'move up': use positive Y. For 'move down': use negative Y."
+                },
+                "z": {
+                    "type": "number",
+                    "description": "Z coordinate (forward/back) in meters. Negative=backward, Positive=forward. In absolute mode: world Z. In relative mode: offset from current Z."
+                },
+                "duration": {
+                    "type": "number",
+                    "description": "Movement duration in seconds. Default: 2.0"
+                },
+                "relative": {
+                    "type": "boolean",
+                    "description": "If true, (x,y,z) are offsets from current position. If false, they are absolute world coordinates. Default: false"
+                }
+            },
+            "required": [
+                "x",
+                "y",
+                "z"
+            ]
+        }
+    },
+    {
+        "name": "move_and_grasp_banana",
+        "description": "Moves the Kinova Gen3 arm to the specified banana and closes the gripper to grasp it using gravity-aware motion in the Unity scene.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Identifier or label of the target banana object in the Unity environment that the arm should move to and grasp."
+                }
+            },
+            "required": [
+                "name"
+            ]
+        }
+    }
+]

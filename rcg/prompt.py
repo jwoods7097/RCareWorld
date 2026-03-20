@@ -1,3 +1,5 @@
+import json
+
 """
 Prompt Definitions for LLM-Controlled Kinova Robot
 ==================================================
@@ -10,6 +12,126 @@ Contents:
     - FUNCTION_SCHEMAS: OpenAI function calling schemas
     - USER_PROMPT_TEMPLATES: Templates for common user queries
 """
+
+# ============================================================================
+# Function Schemas for OpenAI Function Calling
+# ============================================================================
+
+FUNCTION_SCHEMAS = [
+    {
+        "name": "get_info",
+        "description": "Get objects in the scene. Returns names, IDs, positions [x,y,z]. Call with no params for ALL objects, or with name for specific object (partial match, case-insensitive).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Object name to search (optional). If omitted, returns all objects. Examples: 'Banana', 'robot', 'Camera'. Partial matching supported."
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "move_to_object",
+        "description": "Move the robot end-effector to a specified object with optional offset. The robot will use inverse kinematics (IK) to reach the target position. Default behavior is to move 10cm above the object.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the target object to move to. Must exist in the scene. Examples: 'cube', 'box', 'Rigidbody_Box'"
+                },
+                "offset_x": {
+                    "type": "number",
+                    "description": "X-axis offset in meters from object center. Positive = right, Negative = left. Default: 0.0"
+                },
+                "offset_y": {
+                    "type": "number",
+                    "description": "Y-axis offset in meters from object center. Positive = up, Negative = down. Default: 0.1 (10cm above object)"
+                },
+                "offset_z": {
+                    "type": "number",
+                    "description": "Z-axis offset in meters from object center. Positive = forward, Negative = backward. Default: 0.0"
+                },
+                "duration": {
+                    "type": "number",
+                    "description": "Movement duration in seconds. Longer duration = slower movement. Default: 2.0"
+                }
+            },
+            "required": ["name"]
+        }
+    },
+    {
+        "name": "grasp_object",
+        "description": "Grasp object using magnetic attachment. Process: 1) Move to EXACTLY 10cm above object, 2) Magnetically attach object to gripper, 3) Wait 2 seconds to stabilize (prevent weird gravity effects), 4) Lift object. Object must have RigidBody enabled.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the object to grasp. Examples: 'Banana', 'Banana 1', 'cube'"
+                },
+                "lift_height": {
+                    "type": "number",
+                    "description": "Height to lift after grasping, in meters. Default: 0.5"
+                }
+            },
+            "required": ["name"]
+        }
+    },
+    {
+        "name": "release_object",
+        "description": "Release the currently grasped object. Process: 1) (Optional) Lift gripper before release, 2) Detach object from gripper (SetParent to scene root), 3) Object falls due to gravity. Requires object has RigidBody enabled.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "lift_before_release": {
+                    "type": "boolean",
+                    "description": "Whether to lift gripper before releasing. Recommended for clearer drop effect. Default: true"
+                },
+                "lift_height": {
+                    "type": "number",
+                    "description": "Height to lift before releasing, in meters. Only applies if lift_before_release is true. Default: 0.1"
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "move_to_position",
+        "description": "Move robot end-effector to a specific 3D position. CRITICAL: Y-axis is VERTICAL (up/down), Z-axis is forward/back. Can be absolute (world coordinates) or relative (from current position).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "X coordinate (left/right) in meters. Negative=left, Positive=right. In absolute mode: world X. In relative mode: offset from current X."
+                },
+                "y": {
+                    "type": "number",
+                    "description": "Y coordinate (UP/DOWN - VERTICAL!) in meters. Negative=down, Positive=up. In absolute mode: world Y. In relative mode: offset from current Y. For 'move up': use positive Y. For 'move down': use negative Y."
+                },
+                "z": {
+                    "type": "number",
+                    "description": "Z coordinate (forward/back) in meters. Negative=backward, Positive=forward. In absolute mode: world Z. In relative mode: offset from current Z."
+                },
+                "duration": {
+                    "type": "number",
+                    "description": "Movement duration in seconds. Default: 2.0"
+                },
+                "relative": {
+                    "type": "boolean",
+                    "description": "If true, (x,y,z) are offsets from current position. If false, they are absolute world coordinates. Default: false"
+                }
+            },
+            "required": ["x", "y", "z"]
+        }
+    }
+]
+
+TOOL_SCHEMAS = [{"type": "function", "function": f} for f in FUNCTION_SCHEMAS]
+
 
 # ============================================================================
 # System Prompts
@@ -133,7 +255,8 @@ move [-0.1, 0, 0] relative
 release object
 """
 
-SYSTEM_PROMPT_CODE = """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
+def get_system_prompt_code():
+    return """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
 Think step by step about the functions you need to call and the arguments they require to fully complete the user's request.
 Ensure that you are calling all functions necessary in the right order to achieve the desired outcome.
 The current state of the simulation, including the names, positions, and rotations of all objects, is provided in JSON form in your most recent assistant message.
@@ -155,45 +278,9 @@ When you need to call a function, output ONLY this JSON format (nothing else):
 ```
 
 ## Available Functions:
-
-### get_info(name=None)
-Get scene objects and positions.
-```json
-{"function": "get_info", "args": {}}                    // Get all objects
-{"function": "get_info", "args": {"name": "Banana"}}    // Find specific object
-```
-
-### move_to_object(name, offset_x=0, offset_y=0.1, offset_z=0, duration=2.0)
-Move to object with offset.
-```json
-{"function": "move_to_object", "args": {"name": "Banana", "offset_y": 0.2}}
-```
-
-### grasp_object(name, lift_height=0.5)
-Grasp object using magnetic attachment. Process: 1) Move to 10cm above object, 2) Attach magnetically, 3) Wait 2s to stabilize, 4) Lift.
-```json
-{"function": "grasp_object", "args": {"name": "Banana"}}
-{"function": "grasp_object", "args": {"name": "Banana", "lift_height": 0.3}}
-```
-
-### release_object(lift_before_release=True, lift_height=0.1)
-Release grasped object. It will fall due to gravity.
-```json
-{"function": "release_object", "args": {}}
-{"function": "release_object", "args": {"lift_before_release": false}}
-```
-
-### move_to_position(x, y, z, duration=2.0, relative=False)
-Move to position. **⚠️ REMEMBER: Y is UP/DOWN (vertical), NOT Z!**
-```json
-{"function": "move_to_position", "args": {"x": 0.5, "y": 1.2, "z": 0.3}}              // Absolute position
-{"function": "move_to_position", "args": {"x": 0, "y": 0.2, "z": 0, "relative": true}} // Move UP 20cm (Y-axis!)
-{"function": "move_to_position", "args": {"x": 0, "y": -0.2, "z": 0, "relative": true}} // Move DOWN 20cm (Y-axis!)
-{"function": "move_to_position", "args": {"x": 0.1, "y": 0, "z": 0, "relative": true}} // Move RIGHT 10cm (X-axis)
-{"function": "move_to_position", "args": {"x": -0.1, "y": 0, "z": 0, "relative": true}} // Move LEFT 10cm (X-axis)
-{"function": "move_to_position", "args": {"x": 0, "y": 0, "z": 0.15, "relative": true}} // Move FORWARD 15cm (Z-axis)
-```
-
+""" \
++ json.dumps(FUNCTION_SCHEMAS, indent=4) + \
+"""
 ## Examples:
 
 User: "show me all objects in the scene"
@@ -244,7 +331,10 @@ User: "move [0, 0, 0.15] relative"
 4. **NEVER use Z-axis for up/down movement! Always use Y-axis!**
 """
 
-SYSTEM_PROMPT_EVAL = """You are an agent evaluating the functional correctness of robot code in a simulation with gravity. Be concise and direct.
+SYSTEM_PROMPT_CODE = get_system_prompt_code()
+
+def get_system_prompt_eval():
+    return """You are an agent evaluating the functional correctness of robot code in a simulation with gravity. Be concise and direct.
 Ensure that all functions necessary to achieve the user's request are present and being called in the correct order.
 Also ensure that the correct arguments to fulfill the user's request are being passed into functions.
 Make sure that the direction for movement-based functions is correct as well.
@@ -261,6 +351,10 @@ Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
 - Move FORWARD → increase Z (z > 0)
 - Move BACKWARD → decrease Z (z < 0)
 
+## Available Functions:
+""" \
++ json.dumps(FUNCTION_SCHEMAS, indent=4) + \
+"""
 # Example Inputs and Outputs
 
 ## Example 1
@@ -355,130 +449,33 @@ Errors: The argument for x is positive so this code moves the gripper to the rig
 Suggestions: Change the argument for x to -0.4
 """
 
+SYSTEM_PROMPT_EVAL = get_system_prompt_eval()
+
 SYSTEM_PROMPT_SUMMARY = """You are a friendly assistant that controls a Kinova Gen3 robotic arm in Unity.
 Given the following user request and function results, create a natural response.
 Be brief - state facts, no explanations unless asked.
 """
 
+SYSTEM_PROMPT_TOPK = """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
+Given the following user request and a subset of consecutive functions that fulfill part of that request,
+determine the top 5 most relevant words in the user's request that correspond ONLY to the provided functions.
+ONLY USE WORDS PRESENT IN THE USER'S REQUEST. Do not add any words that are not in the user's request, even if they seem relevant.
+Return the top 5 words in a comma-separated list with no explanation.
+"""
 
-# ============================================================================
-# Function Schemas for OpenAI Function Calling
-# ============================================================================
+SYSTEM_PROMPT_NAME = """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
+Given the following list of robot functions and the relevant keywords used to call them,
+generate a snake_case name for a macro function that would encapsulate the list of functions.
+The name should be concise, descriptive, and capture the essence of the overall user request that these functions fulfill. 
+Return only the name with no explanation.
+"""
 
-FUNCTION_SCHEMAS = [
-    {
-        "name": "get_info",
-        "description": "Get objects in the scene. Returns names, IDs, positions [x,y,z]. Call with no params for ALL objects, or with name for specific object (partial match, case-insensitive).",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "Object name to search (optional). If omitted, returns all objects. Examples: 'Banana', 'robot', 'Camera'. Partial matching supported."
-                }
-            },
-            "required": []
-        }
-    },
-    {
-        "name": "move_to_object",
-        "description": "Move the robot end-effector to a specified object with optional offset. The robot will use inverse kinematics (IK) to reach the target position. Default behavior is to move 10cm above the object.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "Name of the target object to move to. Must exist in the scene. Examples: 'cube', 'box', 'Rigidbody_Box'"
-                },
-                "offset_x": {
-                    "type": "number",
-                    "description": "X-axis offset in meters from object center. Positive = right, Negative = left. Default: 0.0"
-                },
-                "offset_y": {
-                    "type": "number",
-                    "description": "Y-axis offset in meters from object center. Positive = up, Negative = down. Default: 0.1 (10cm above object)"
-                },
-                "offset_z": {
-                    "type": "number",
-                    "description": "Z-axis offset in meters from object center. Positive = forward, Negative = backward. Default: 0.0"
-                },
-                "duration": {
-                    "type": "number",
-                    "description": "Movement duration in seconds. Longer duration = slower movement. Default: 2.0"
-                }
-            },
-            "required": ["name"]
-        }
-    },
-    {
-        "name": "grasp_object",
-        "description": "Grasp object using magnetic attachment. Process: 1) Move to EXACTLY 10cm above object, 2) Magnetically attach object to gripper, 3) Wait 2 seconds to stabilize (prevent weird gravity effects), 4) Lift object. Object must have RigidBody enabled.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "Name of the object to grasp. Examples: 'Banana', 'Banana 1', 'cube'"
-                },
-                "lift_height": {
-                    "type": "number",
-                    "description": "Height to lift after grasping, in meters. Default: 0.5"
-                }
-            },
-            "required": ["name"]
-        }
-    },
-    {
-        "name": "release_object",
-        "description": "Release the currently grasped object. Process: 1) (Optional) Lift gripper before release, 2) Detach object from gripper (SetParent to scene root), 3) Object falls due to gravity. Requires object has RigidBody enabled.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "lift_before_release": {
-                    "type": "boolean",
-                    "description": "Whether to lift gripper before releasing. Recommended for clearer drop effect. Default: true"
-                },
-                "lift_height": {
-                    "type": "number",
-                    "description": "Height to lift before releasing, in meters. Only applies if lift_before_release is true. Default: 0.1"
-                }
-            },
-            "required": []
-        }
-    },
-    {
-        "name": "move_to_position",
-        "description": "Move robot end-effector to a specific 3D position. CRITICAL: Y-axis is VERTICAL (up/down), Z-axis is forward/back. Can be absolute (world coordinates) or relative (from current position).",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "x": {
-                    "type": "number",
-                    "description": "X coordinate (left/right) in meters. Negative=left, Positive=right. In absolute mode: world X. In relative mode: offset from current X."
-                },
-                "y": {
-                    "type": "number",
-                    "description": "Y coordinate (UP/DOWN - VERTICAL!) in meters. Negative=down, Positive=up. In absolute mode: world Y. In relative mode: offset from current Y. For 'move up': use positive Y. For 'move down': use negative Y."
-                },
-                "z": {
-                    "type": "number",
-                    "description": "Z coordinate (forward/back) in meters. Negative=backward, Positive=forward. In absolute mode: world Z. In relative mode: offset from current Z."
-                },
-                "duration": {
-                    "type": "number",
-                    "description": "Movement duration in seconds. Default: 2.0"
-                },
-                "relative": {
-                    "type": "boolean",
-                    "description": "If true, (x,y,z) are offsets from current position. If false, they are absolute world coordinates. Default: false"
-                }
-            },
-            "required": ["x", "y", "z"]
-        }
-    }
-]
-
-TOOL_SCHEMAS = [{"type": "function", "function": f} for f in FUNCTION_SCHEMAS]
+SYSTEM_PROMPT_DESCRIBE = """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
+Given the following list of robot code traces and the provided macro function schema that encapsulates them,,
+fill in all the description fields in the function schema.
+Do not modify any other parts of the schema, just fill in the descriptions. 
+Return only the filled in schema with no explanation.
+"""
 
 
 # ============================================================================

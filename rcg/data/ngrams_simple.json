@@ -3,101 +3,121 @@
         {
             "prompt": "Move to and grasp Banana 1",
             "code": [
-                [
-                    "move_to_object",
-                    "{\"name\": \"Banana 1\"}"
-                ],
-                [
-                    "grasp_object",
-                    "{\"name\": \"Banana 1\"}"
-                ]
+                {
+                    "name": "move_to_object",
+                    "args": {
+                        "name": "Banana 1"
+                    }
+                },
+                {
+                    "name": "grasp_object",
+                    "args": {
+                        "name": "Banana 1"
+                    }
+                }
             ],
             "topk_tokens": [
+                "move",
+                "grasp",
+                "banana",
                 "1",
-                "Move",
-                " to",
-                " grasp",
-                " Banana"
+                "object"
             ]
         },
         {
             "prompt": "Move to and grasp Banana 2",
             "code": [
-                [
-                    "move_to_object",
-                    "{\"name\": \"Banana 2\"}"
-                ],
-                [
-                    "grasp_object",
-                    "{\"name\": \"Banana 2\"}"
-                ]
+                {
+                    "name": "move_to_object",
+                    "args": {
+                        "name": "Banana 2"
+                    }
+                },
+                {
+                    "name": "grasp_object",
+                    "args": {
+                        "name": "Banana 2"
+                    }
+                }
             ],
             "topk_tokens": [
+                "move",
+                "grasp",
+                "banana",
                 "2",
-                "Move",
-                " to",
-                " grasp",
-                " Banana"
+                "object"
             ]
         },
         {
-            "prompt": "Pick up the leftmost banana",
+            "prompt": "Move to and grasp Banana 3",
             "code": [
-                [
-                    "move_to_object",
-                    "{\"name\": \"Banana 3\"}"
-                ],
-                [
-                    "grasp_object",
-                    "{\"name\": \"Banana 3\"}"
-                ]
+                {
+                    "name": "move_to_object",
+                    "args": {
+                        "name": "Banana 3"
+                    }
+                },
+                {
+                    "name": "grasp_object",
+                    "args": {
+                        "name": "Banana 3"
+                    }
+                }
             ],
             "topk_tokens": [
+                "move",
+                "grasp",
+                "banana",
                 "3",
-                "Move",
-                " to",
-                " grasp",
-                " Banana"
+                "object"
             ]
         },
         {
             "prompt": "Move to and grasp the leftmost banana",
             "code": [
-                [
-                    "move_to_object",
-                    "{\"name\": \"Banana 3\"}"
-                ],
-                [
-                    "grasp_object",
-                    "{\"name\": \"Banana 3\"}"
-                ]
+                {
+                    "name": "move_to_object",
+                    "args": {
+                        "name": "Banana 3"
+                    }
+                },
+                {
+                    "name": "grasp_object",
+                    "args": {
+                        "name": "Banana 3"
+                    }
+                }
             ],
             "topk_tokens": [
-                "Move",
-                " to",
-                " grasp",
-                " banana",
-                " and"
+                "move",
+                "grasp",
+                "leftmost",
+                "banana",
+                "object"
             ]
         },
         {
             "prompt": "Move to and grasp the rightmost banana",
             "code": [
-                [
-                    "move_to_object",
-                    "{\"name\": \"Banana 2\"}"
-                ],
-                [
-                    "grasp_object",
-                    "{\"name\": \"Banana 2\"}"
-                ]
+                {
+                    "name": "move_to_object",
+                    "args": {
+                        "name": "Banana 2"
+                    }
+                },
+                {
+                    "name": "grasp_object",
+                    "args": {
+                        "name": "Banana 2"
+                    }
+                }
             ],
             "topk_tokens": [
-                "Move",
-                " to",
-                " banana",
-                " grasp",
-                " and"
+                "move",
+                "grasp",
+                "rightmost",
+                "banana",
+                "banana"
             ]
         }
     ]

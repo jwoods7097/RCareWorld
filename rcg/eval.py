@@ -3,9 +3,10 @@ import json
 from pathlib import Path
 import re
 from typing import Optional
-from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_PLAN
+from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_PLAN, SYSTEM_PROMPT_TOPK, get_system_prompt_code, get_system_prompt_eval
 from rcg.llm import OpenAILLM, LocalLLM, LoRALLM
 from rcg.val import prompt_to_code_general
+from rcg.macro import learn_macros
 from distutils.util import strtobool
 from tqdm import tqdm
 import tiktoken
@@ -37,13 +38,14 @@ prompts = [
     # "Pick up leftmost banana"
 ]
 
-# prompts = [
-#     "Move to and grasp Banana 1",
-#     "Move to and grasp Banana 2",
-#     "Move to and grasp Banana 3",
-#     "Move to and grasp the leftmost banana",
-#     "Move to and grasp the rightmost banana",
-# ]
+prompts = [
+    "Move to and grasp Banana 1",
+    "Move to and grasp Banana 2",
+    "Move to and grasp Banana 3",
+    "Move to and grasp the leftmost banana",
+    "Move to and grasp the rightmost banana",
+    "Move to and grasp the middle banana",
+]
 
 num_reps = 1
 log_file = "eval_log.txt"
@@ -302,6 +304,7 @@ if __name__ == "__main__":
         plan_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_PLAN, temperature=1.0, reasoning="medium")
         code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
         eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
+        topk_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_TOPK, temperature=0.1)
 
         # Initialize logging
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -355,8 +358,8 @@ if __name__ == "__main__":
                     write_log(f"Error during evaluation: {e}\n")
                     continue
                 finally:
-                    code_model.reset()
-                    eval_model.reset()
+                    code_model.reset(get_system_prompt_code())
+                    eval_model.reset(get_system_prompt_eval())
                 
                 end_time = datetime.now()
                 duration = (end_time - start_time).total_seconds()
@@ -368,8 +371,8 @@ if __name__ == "__main__":
 
                 traces.append({
                     "timestamp": datetime.now().isoformat(),
-                    "prompt": prompt,
-                    "planned_input": planned_input if 'planned_input' in locals() else "",
+                    "prompt": user_input,
+                    "planned_input": planned_input,
                     "final_code": final_code,
                     # "final_valid_code": final_valid_code,
                     "success": success,
@@ -381,13 +384,19 @@ if __name__ == "__main__":
                     if ngram_key not in ngrams:
                         ngrams[ngram_key] = []
 
-                    topk = topk_tokens(prompt, ngram)
+                    # topk = topk_tokens(prompt, ngram)
+                    topk_prompt = f"User Request: {prompt}\nCode: {json.dumps(ngram, ensure_ascii=False)}"
+                    topk_response = topk_model.generate(topk_prompt, memory=False)
+                    write_log(f"Top-k response for ngram {ngram_key}: {topk_response}\n")
+                    topk = [t.strip().lower() for t in topk_response.split(",") if t.strip()]
 
                     ngrams[ngram_key].append({
                         "prompt": prompt,
-                        "code": ngram,
+                        "code": [{"name": n[0], "args": json.loads(n[1])} for n in ngram],
                         "topk_tokens": topk
                     })
+
+                FUNCTION_SCHEMAS += learn_macros(ngrams)
 
             avg_time = total_time / successes if successes > 0 else float('inf')
             write_log(f"Success Rate for Prompt '{prompt}': {successes / num_reps}")
@@ -400,3 +409,5 @@ if __name__ == "__main__":
             json.dump(traces, f, ensure_ascii=False, indent=4)
         with open('rcg/data/ngrams.json', 'w', encoding='utf-8') as f:
             json.dump(ngrams, f, ensure_ascii=False, indent=4)
+        with open('rcg/data/schemas.json', 'w', encoding='utf-8') as f:
+            json.dump(FUNCTION_SCHEMAS, f, ensure_ascii=False, indent=4)

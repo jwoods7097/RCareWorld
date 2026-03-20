@@ -112,8 +112,14 @@ class OpenAILLM:
 
         return assistant_message
     
-    def reset(self):
-        self.conversation_history = [self.conversation_history[0]]
+    def reset(self, system_prompt=None):
+        if system_prompt is not None:
+            self.conversation_history = [{
+                "role": "system",
+                "content": system_prompt
+            }]
+        else:
+            self.conversation_history = [self.conversation_history[0]]
 
     def add_info(self):
         try:
