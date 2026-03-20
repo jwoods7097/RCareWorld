@@ -1,8 +1,7 @@
 [
     {
-        "timestamp": "2026-03-20T09:45:31.908502",
+        "timestamp": "2026-03-20T11:17:23.955277",
         "prompt": "Move to and grasp Banana 1",
-        "planned_input": "move to Banana 1\ngrasp Banana 1",
         "final_code": [
             [
                 "move_to_object",
@@ -14,12 +13,11 @@
             ]
         ],
         "success": true,
-        "duration_seconds": 5.972557
+        "duration_seconds": 17.502026
     },
     {
-        "timestamp": "2026-03-20T09:45:39.134951",
+        "timestamp": "2026-03-20T11:17:36.868584",
         "prompt": "Move to and grasp Banana 2",
-        "planned_input": "move to Banana 2\ngrasp Banana 2",
         "final_code": [
             [
                 "move_to_object",
@@ -31,12 +29,11 @@
             ]
         ],
         "success": true,
-        "duration_seconds": 5.376137
+        "duration_seconds": 11.845139
     },
     {
-        "timestamp": "2026-03-20T09:45:46.048767",
+        "timestamp": "2026-03-20T11:17:49.605006",
         "prompt": "Move to and grasp Banana 3",
-        "planned_input": "move to Banana 3\ngrasp Banana 3",
         "final_code": [
             [
                 "move_to_object",
@@ -48,12 +45,11 @@
             ]
         ],
         "success": true,
-        "duration_seconds": 5.927401
+        "duration_seconds": 11.967827
     },
     {
-        "timestamp": "2026-03-20T09:45:51.261375",
+        "timestamp": "2026-03-20T11:17:58.571688",
         "prompt": "Move to and grasp the leftmost banana",
-        "planned_input": "move to Banana 3\ngrasp Banana 3",
         "final_code": [
             [
                 "move_to_object",
@@ -65,12 +61,11 @@
             ]
         ],
         "success": true,
-        "duration_seconds": 4.39157
+        "duration_seconds": 8.305558
     },
     {
-        "timestamp": "2026-03-20T09:45:57.607375",
+        "timestamp": "2026-03-20T11:18:35.696596",
         "prompt": "Move to and grasp the rightmost banana",
-        "planned_input": "move to Banana 2\ngrasp Banana 2",
         "final_code": [
             [
                 "move_to_object",
@@ -78,129 +73,22 @@
             ],
             [
                 "grasp_object",
-                "{\"name\": \"Banana 2\"}"
+                "{\"name\": \"Banana 2\", \"lift_height\": 0.5}"
             ]
         ],
         "success": true,
-        "duration_seconds": 5.657403
+        "duration_seconds": 36.338716
     },
     {
-        "timestamp": "2026-03-20T09:46:06.572265",
+        "timestamp": "2026-03-20T11:18:46.334644",
         "prompt": "Move to and grasp the middle banana",
-        "planned_input": "move to Banana 1\ngrasp Banana 1",
         "final_code": [
             [
-                "move_to_object",
-                "{\"name\": \"Banana 1\"}"
-            ],
-            [
-                "grasp_object",
-                "{\"name\": \"Banana 1\"}"
-            ]
-        ],
-        "success": true,
-        "duration_seconds": 5.843046
-    },
-    {
-        "timestamp": "2026-03-20T10:05:15.351406",
-        "prompt": "Move to and grasp Banana 1",
-        "planned_input": "move to Banana 1\ngrasp Banana 1",
-        "final_code": [
-            [
-                "move_to_object",
-                "{\"name\": \"Banana 1\"}"
-            ],
-            [
-                "grasp_object",
-                "{\"name\": \"Banana 1\"}"
-            ]
-        ],
-        "success": true,
-        "duration_seconds": 7.442037
-    },
-    {
-        "timestamp": "2026-03-20T10:05:25.978436",
-        "prompt": "Move to and grasp Banana 2",
-        "planned_input": "move to Banana 2\ngrasp Banana 2",
-        "final_code": [
-            [
-                "move_to_object",
-                "{\"name\": \"Banana 2\"}"
-            ],
-            [
-                "grasp_object",
+                "move_and_grasp_banana",
                 "{\"name\": \"Banana 2\"}"
             ]
         ],
         "success": true,
-        "duration_seconds": 6.103443
-    },
-    {
-        "timestamp": "2026-03-20T10:05:30.560401",
-        "prompt": "Move to and grasp Banana 3",
-        "planned_input": "move to Banana 3\ngrasp Banana 3",
-        "final_code": [
-            [
-                "move_to_object",
-                "{\"name\": \"Banana 3\"}"
-            ],
-            [
-                "grasp_object",
-                "{\"name\": \"Banana 3\"}"
-            ]
-        ],
-        "success": true,
-        "duration_seconds": 3.90393
-    },
-    {
-        "timestamp": "2026-03-20T10:05:43.051955",
-        "prompt": "Move to and grasp the leftmost banana",
-        "planned_input": "move to Banana 3\ngrasp Banana 3",
-        "final_code": [
-            [
-                "move_to_object",
-                "{\"name\": \"Banana 3\"}"
-            ],
-            [
-                "grasp_object",
-                "{\"name\": \"Banana 3\"}"
-            ]
-        ],
-        "success": true,
-        "duration_seconds": 11.807414
-    },
-    {
-        "timestamp": "2026-03-20T10:05:49.453332",
-        "prompt": "Move to and grasp the rightmost banana",
-        "planned_input": "move to Banana 2\ngrasp Banana 2",
-        "final_code": [
-            [
-                "move_to_object",
-                "{\"name\": \"Banana 2\"}"
-            ],
-            [
-                "grasp_object",
-                "{\"name\": \"Banana 2\"}"
-            ]
-        ],
-        "success": true,
-        "duration_seconds": 5.660547
-    },
-    {
-        "timestamp": "2026-03-20T10:05:55.475527",
-        "prompt": "Move to and grasp the middle banana",
-        "planned_input": "move to Banana 1\ngrasp Banana 1",
-        "final_code": [
-            [
-                "move_to_object",
-                "{\"name\": \"Banana 1\"}"
-            ],
-            [
-                "grasp_object",
-                "{\"name\": \"Banana 1\"}"
-            ]
-        ],
-        "success": true,
-        "duration_seconds": 5.284399
+        "duration_seconds": 6.968476
     }
 ]

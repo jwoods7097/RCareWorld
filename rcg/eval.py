@@ -301,8 +301,7 @@ if __name__ == "__main__":
             raise ValueError("OpenAI API key not set")
         # LoRALLM.init_pipeline()
         OpenAILLM.init_pipeline()
-        plan_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_PLAN, temperature=1.0, reasoning="medium")
-        code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
+        code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=1.0, reasoning="medium")
         eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
         topk_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_TOPK, temperature=0.1)
 
@@ -312,7 +311,6 @@ if __name__ == "__main__":
         log_dir.mkdir(exist_ok=True)
         log_file = log_dir / f"eval_{timestamp}.log"
         write_log(f"=== LLM Evaluation Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
-        write_log(f"Plan Model: {plan_model.MODEL}")
         write_log(f"Code Model: {code_model.MODEL}")
         write_log(f"Eval Model: {eval_model.MODEL}")
         write_log("")
@@ -327,39 +325,24 @@ if __name__ == "__main__":
                 success = True
                 
                 # Call get_info first, removing previous call
-                add_info(plan_model, prompt)
                 add_info(code_model, prompt)
                 add_info(eval_model, prompt)
                 user_input = prompt.replace("*", "")
 
                 try:
-                    # Planning
-                    planned_input = plan_model.generate(user_input)
-                    write_log(f"PLANNER RESULT: {planned_input}\n")
-                    instructions = [i.strip() for i in planned_input.splitlines() if i.strip()]
-
-                    # Code each step individually
-                    final_code = []
-                    final_valid_code = []
-                    for instruction in instructions:
-                        # Validate code from plan
-                        # valid_code_str = prompt_to_code_general(instruction)
-                        # valid_code = parse_manual_function_call(valid_code_str)
-                        # final_valid_code += valid_code
-                        # Functional evaluation
-                        code_message = geneval(code_model, eval_model, instruction, include_input_in_eval=True, name="Function")
-                        # Static evaluation
-                        code_message = geneval(code_model, None, instruction, include_input_in_eval=False, code_message=code_message, name="Syntax")
-                        # Final generated code
-                        parsed_code = parse_manual_function_call(code_message)
-                        write_log(f"Parsed functions: {parsed_code}\n")
-                        final_code += parsed_code
+                    # Functional evaluation
+                    code_message = geneval(code_model, eval_model, user_input, include_input_in_eval=True, name="Function")
+                    # Static evaluation
+                    code_message = geneval(code_model, None, user_input, include_input_in_eval=False, code_message=code_message, name="Syntax")
+                    # Final generated code
+                    parsed_code = parse_manual_function_call(code_message)
+                    write_log(f"Parsed functions: {parsed_code}\n")
                 except Exception as e:
                     write_log(f"Error during evaluation: {e}\n")
                     continue
                 finally:
-                    code_model.reset(get_system_prompt_code())
-                    eval_model.reset(get_system_prompt_eval())
+                    code_model.reset()
+                    eval_model.reset()
                 
                 end_time = datetime.now()
                 duration = (end_time - start_time).total_seconds()
@@ -372,14 +355,12 @@ if __name__ == "__main__":
                 traces.append({
                     "timestamp": datetime.now().isoformat(),
                     "prompt": user_input,
-                    "planned_input": planned_input,
-                    "final_code": final_code,
-                    # "final_valid_code": final_valid_code,
+                    "final_code": parsed_code,
                     "success": success,
                     "duration_seconds": duration,
                 })
 
-                for ngram in ordered_subsets(final_code):
+                for ngram in ordered_subsets(parsed_code):
                     ngram_key = json.dumps([n[0] for n in ngram], ensure_ascii=False)
                     if ngram_key not in ngrams:
                         ngrams[ngram_key] = []
@@ -396,7 +377,13 @@ if __name__ == "__main__":
                         "topk_tokens": topk
                     })
 
-                FUNCTION_SCHEMAS += learn_macros(ngrams)
+                new_macros = learn_macros(ngrams)
+                FUNCTION_SCHEMAS += new_macros
+                for macro in new_macros:
+                    write_log(f"LEARNED NEW MACRO: {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
+
+                code_model.reset(get_system_prompt_code())
+                eval_model.reset(get_system_prompt_eval())
 
             avg_time = total_time / successes if successes > 0 else float('inf')
             write_log(f"Success Rate for Prompt '{prompt}': {successes / num_reps}")

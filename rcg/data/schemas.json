@@ -119,13 +119,18 @@
     },
     {
         "name": "move_and_grasp_banana",
-        "description": "Moves the Kinova Gen3 arm to the specified banana and closes the gripper to grasp it using gravity-aware motion in the Unity scene.",
+        "description": "Move the Kinova Gen3 arm to the specified banana object in the Unity scene, close the gripper to grasp it, and prepare to lift it vertically by a fixed height.",
         "parameters": {
             "type": "object",
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "Identifier or label of the target banana object in the Unity environment that the arm should move to and grasp."
+                    "description": "Identifier or label of the banana object in the Unity environment to move to and grasp."
+                },
+                "lift_height": {
+                    "type": "number",
+                    "const": 0.5,
+                    "description": "Vertical distance in meters to lift the banana after grasping; fixed at 0.5 m."
                 }
             },
             "required": [
