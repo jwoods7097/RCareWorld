@@ -14,12 +14,13 @@ import openai
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
+# Evaluation Prompts
 prompts = [
-    # "Show me all objects in the scene",
-    # "Move to banana 3",
-    # "Move to position [1, 2, 1]",
-    # "Grasp the object*",
-    # "Release the object**",
+    "Show me all objects in the scene",
+    "Move to banana 3",
+    "Move to position [1, 2, 1]",
+    "Grasp the object*",
+    "Release the object**",
     "Pick up the object, move to the right by 30cm, then release the object*",
     "Move to banana 3 and pick it up",
     "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
@@ -38,16 +39,27 @@ prompts = [
     # "Pick up leftmost banana"
 ]
 
-prompts = [
-    "Move to and grasp Banana 1",
-    "Move to and grasp Banana 2",
-    "Move to and grasp Banana 3",
-    "Move to and grasp the leftmost banana",
-    "Move to and grasp the rightmost banana",
-    "Move to and grasp the middle banana",
-]
+# Macro Learning Test Prompts
+# prompts = [
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 2",
+#     "Move to and grasp Banana 3",
+#     "Move to and grasp the leftmost banana",
+#     "Move to and grasp the rightmost banana",
+#     "Move to and grasp the middle banana",
+# ]
 
-num_reps = 1
+# Macro Modification Test Prompts
+# prompts = [
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 2",
+# ]
+
+num_reps = 5
 log_file = "eval_log.txt"
 
 
@@ -363,7 +375,7 @@ if __name__ == "__main__":
                 for ngram in ordered_subsets(parsed_code):
                     ngram_key = json.dumps([n[0] for n in ngram], ensure_ascii=False)
                     if ngram_key not in ngrams:
-                        ngrams[ngram_key] = []
+                        ngrams[ngram_key] = {"traces": []}
 
                     # topk = topk_tokens(prompt, ngram)
                     topk_prompt = f"User Request: {prompt}\nCode: {json.dumps(ngram, ensure_ascii=False)}"
@@ -371,16 +383,22 @@ if __name__ == "__main__":
                     write_log(f"Top-k response for ngram {ngram_key}: {topk_response}\n")
                     topk = [t.strip().lower() for t in topk_response.split(",") if t.strip()]
 
-                    ngrams[ngram_key].append({
+                    ngrams[ngram_key]["traces"].append({
                         "prompt": prompt,
                         "code": [{"name": n[0], "args": json.loads(n[1])} for n in ngram],
                         "topk_tokens": topk
                     })
 
-                new_macros = learn_macros(ngrams)
-                FUNCTION_SCHEMAS += new_macros
-                for macro in new_macros:
-                    write_log(f"LEARNED NEW MACRO: {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
+                old_names, learned_ngrams, new_macros = learn_macros(ngrams)
+                for old_name, ngram, macro in zip(old_names, learned_ngrams, new_macros):
+                    for f in range(len(FUNCTION_SCHEMAS)):
+                        if FUNCTION_SCHEMAS[f]["name"] == old_name:
+                            FUNCTION_SCHEMAS[f] = macro
+                            write_log(f"MODIFIED MACRO for {ngram}: {old_name} is now {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
+                            break
+                    else:
+                        FUNCTION_SCHEMAS.append(macro)
+                        write_log(f"LEARNED NEW MACRO for {ngram}: {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
 
                 code_model.reset(get_system_prompt_code())
                 eval_model.reset(get_system_prompt_eval())

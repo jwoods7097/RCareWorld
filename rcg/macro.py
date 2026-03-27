@@ -5,7 +5,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
-existing_macros = []
 MISSING = object()
 
 
@@ -299,20 +298,31 @@ def learn_macros(ngrams):
     names = []
     macros = []
     schemas = []
-    for ngram, traces in ngrams.items():
-        if len(traces) < 5 or ngram in existing_macros:  # Skip ngrams with fewer than 5 traces or already existing macros
+    learned_ngrams = []
+    old_names = []
+    for ngram, info in ngrams.items():
+        if len(info["traces"]) < 5:
             continue
 
+        if "macro" in info:
+            old_name = info["macro"]
+        else: 
+            old_name = ""
+
         top_tokens = {}
-        for trace in traces:
+        for trace in info["traces"]:
             for token in trace['topk_tokens']:
                 top_tokens[token] = top_tokens.get(token, 0) + 1
         topk_tokens = [k for k, _ in sorted(top_tokens.items(), key=lambda item: item[1], reverse=True)][:5]  
 
-        template = infer_minimal_template(traces)
+        template = infer_minimal_template(info["traces"])
 
+        name = FUNCTION_SCHEMAS[0]["name"]
         name_prompt = f"Functions:{ngram}\nTop Keywords:{topk_tokens}"
-        name = name_model.generate(name_prompt, memory=False)
+        while any(name == func["name"] for func in FUNCTION_SCHEMAS if func["name"] != old_name):
+            name = name_model.generate(name_prompt)
+            name_prompt = f"Error: {name} is already taken, please suggest another.\nFunctions:{ngram}\nTop Keywords:{topk_tokens}"
+        ngrams[ngram]["macro"] = name
 
         # code = render_python(template, function_name=name)
         schema = render_function_schema(template, function_name=name)
@@ -321,9 +331,10 @@ def learn_macros(ngrams):
         schema = json.loads(describe_model.generate(describe_prompt, memory=False))
 
         names.append(name)
+        old_names.append(old_name)
         # macros.append(code)
         schemas.append(schema)
-        existing_macros.append(ngram)
+        learned_ngrams.append(ngram)
 
         # print(f"Top-k tokens for ngram {ngram}: {topk_tokens}")   
         # print(f"Macro for ngram {ngram}:")
@@ -333,7 +344,7 @@ def learn_macros(ngrams):
         # print("\n")
 
     # return names, macros, schemas
-    return schemas
+    return old_names, learned_ngrams, schemas
 
 if __name__ == "__main__":
 
