@@ -6,7 +6,8 @@ from typing import Optional
 from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_NGRAM, SYSTEM_PROMPT_PLAN, SYSTEM_PROMPT_TOPK, get_system_prompt_code, get_system_prompt_eval
 from rcg.llm import OpenAILLM, LocalLLM, LoRALLM
 from rcg.val import prompt_to_code_general
-from rcg.macro import learn_macros
+# from rcg.macro import learn_macros
+from rcg.macro_stitch import sequence_to_expr, learn_macros, build_function_schema
 from distutils.util import strtobool
 from tqdm import tqdm
 import tiktoken
@@ -40,14 +41,14 @@ prompts = [
 ]
 
 # Macro Learning Test Prompts
-# prompts = [
-#     "Move to and grasp Banana 1",
-#     "Move to and grasp Banana 2",
-#     "Move to and grasp Banana 3",
-#     "Move to and grasp the leftmost banana",
-#     "Move to and grasp the rightmost banana",
-#     "Move to and grasp the middle banana",
-# ]
+prompts = [
+    "Move to and grasp Banana 1",
+    "Move to and grasp Banana 2",
+    "Move to and grasp Banana 3",
+    "Move to and grasp the leftmost banana",
+    "Move to and grasp the rightmost banana",
+    "Move to and grasp the middle banana",
+]
 
 # Macro Modification Test Prompts
 # prompts = [
@@ -59,7 +60,7 @@ prompts = [
 #     "Move to and grasp Banana 2",
 # ]
 
-num_reps = 5
+num_reps = 1
 log_file = "eval_log.txt"
 
 
@@ -315,7 +316,6 @@ if __name__ == "__main__":
         OpenAILLM.init_pipeline()
         code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=1.0, reasoning="medium")
         eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
-        topk_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_TOPK, temperature=0.1)
         ngram_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_NGRAM, temperature=0.1)
 
         # Initialize logging
@@ -373,47 +373,59 @@ if __name__ == "__main__":
                     "duration_seconds": duration,
                 })
 
-                ngram_prompt = f"User Request: {prompt}\nCode: {json.dumps(parsed_code, ensure_ascii=False)}"
-                ngram_response = ngram_model.generate(ngram_prompt, memory=False)
-                write_log(f"Ngram response for generated code:\n{ngram_response}\n")
-                selected_ngrams = [
-                    [parsed_code[int(i.strip()) - 1] for i in line.strip().split(",") if i.strip()]
-                    for line in ngram_response.split("\n") if line.strip()
-                ]
+                lambda_expr = sequence_to_expr(parsed_code)
+                write_log(f"Lambda expression: {lambda_expr}\n")
 
-                for ngram in selected_ngrams:
-                    if len(ngram) < 2:
-                        continue
+                abstractions, macros = learn_macros(traces)
+                write_log(f"Learned abstractions: {abstractions}\n")
+
+                if abstractions:
+                    write_log(f"MACROS:")
+                    for schema in macros:
+                        write_log(json.dumps(schema, indent=4) + "\n")         
+
+                # ngram_prompt = f"User Request: {prompt}\nCode: {json.dumps(parsed_code, ensure_ascii=False)}"
+                # ngram_response = ngram_model.generate(ngram_prompt, memory=False)
+                # write_log(f"Ngram response for generated code:\n{ngram_response}\n")
+                # selected_ngrams = [
+                #     [parsed_code[int(i.strip()) - 1] for i in line.strip().split(",") if i.strip()]
+                #     for line in ngram_response.split("\n") if line.strip()
+                # ]
+
+                # for ngram in selected_ngrams:
+                #     if len(ngram) < 2:
+                #         continue
                     
-                    ngram_key = json.dumps([n[0] for n in ngram], ensure_ascii=False)
-                    if ngram_key not in ngrams:
-                        ngrams[ngram_key] = {"traces": []}
+                #     ngram_key = json.dumps([n[0] for n in ngram], ensure_ascii=False)
+                #     if ngram_key not in ngrams:
+                #         ngrams[ngram_key] = {"traces": []}
 
-                    # topk = topk_tokens(prompt, ngram)
-                    topk_prompt = f"User Request: {prompt}\nCode: {json.dumps(ngram, ensure_ascii=False)}"
-                    topk_response = topk_model.generate(topk_prompt, memory=False)
-                    write_log(f"Top-k response for ngram {ngram_key}: {topk_response}\n")
-                    topk = [t.strip().lower() for t in topk_response.split(",") if t.strip()]
+                #     # topk = topk_tokens(prompt, ngram)
+                #     topk_prompt = f"User Request: {prompt}\nCode: {json.dumps(ngram, ensure_ascii=False)}"
+                #     topk_response = topk_model.generate(topk_prompt, memory=False)
+                #     write_log(f"Top-k response for ngram {ngram_key}: {topk_response}\n")
+                #     topk = [t.strip().lower() for t in topk_response.split(",") if t.strip()]
 
-                    ngrams[ngram_key]["traces"].append({
-                        "prompt": prompt,
-                        "code": [{"name": n[0], "args": json.loads(n[1])} for n in ngram],
-                        "topk_tokens": topk
-                    })
+                #     ngrams[ngram_key]["traces"].append({
+                #         "prompt": prompt,
+                #         "code": [{"name": n[0], "args": json.loads(n[1])} for n in ngram],
+                #         "topk_tokens": topk
+                #     })
 
-                old_names, learned_ngrams, new_macros = learn_macros(ngrams)
-                for old_name, ngram, macro in zip(old_names, learned_ngrams, new_macros):                    
-                    for f in range(len(FUNCTION_SCHEMAS)):
-                        if FUNCTION_SCHEMAS[f]["name"] == old_name:
-                            FUNCTION_SCHEMAS[f] = macro
-                            write_log(f"MODIFIED MACRO for {ngram}: {old_name} is now {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
-                            break
-                    else:
-                        FUNCTION_SCHEMAS.append(macro)
-                        write_log(f"LEARNED NEW MACRO for {ngram}: {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
+                # old_names, learned_ngrams, new_macros = learn_macros(ngrams)
+                # for old_name, ngram, macro in zip(old_names, learned_ngrams, new_macros):                    
+                #     for f in range(len(FUNCTION_SCHEMAS)):
+                #         if FUNCTION_SCHEMAS[f]["name"] == old_name:
+                #             FUNCTION_SCHEMAS[f] = macro
+                #             write_log(f"MODIFIED MACRO for {ngram}: {old_name} is now {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
+                #             break
+                #     else:
+                #         FUNCTION_SCHEMAS.append(macro)
+                #         write_log(f"LEARNED NEW MACRO for {ngram}: {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
 
-                code_model.reset(get_system_prompt_code())
-                eval_model.reset(get_system_prompt_eval())
+                write_log(get_system_prompt_code(macros) + "\n")
+                code_model.reset(get_system_prompt_code(macros))
+                eval_model.reset(get_system_prompt_eval(macros))
 
             avg_time = total_time / successes if successes > 0 else float('inf')
             write_log(f"Success Rate for Prompt '{prompt}': {successes / num_reps}")

@@ -44,19 +44,23 @@ FUNCTION_SCHEMAS = [
                 },
                 "offset_x": {
                     "type": "number",
-                    "description": "X-axis offset in meters from object center. Positive = right, Negative = left. Default: 0.0"
+                    "description": "X-axis offset in meters from object center. Positive = right, Negative = left. Default: 0.0",
+                    "default": 0.0
                 },
                 "offset_y": {
                     "type": "number",
-                    "description": "Y-axis offset in meters from object center. Positive = up, Negative = down. Default: 0.1 (10cm above object)"
+                    "description": "Y-axis offset in meters from object center. Positive = up, Negative = down. Default: 0.1 (10cm above object)",
+                    "default": 0.1
                 },
                 "offset_z": {
                     "type": "number",
-                    "description": "Z-axis offset in meters from object center. Positive = forward, Negative = backward. Default: 0.0"
+                    "description": "Z-axis offset in meters from object center. Positive = forward, Negative = backward. Default: 0.0",
+                    "default": 0.0
                 },
                 "duration": {
                     "type": "number",
-                    "description": "Movement duration in seconds. Longer duration = slower movement. Default: 2.0"
+                    "description": "Movement duration in seconds. Longer duration = slower movement. Default: 2.0",
+                    "default": 2.0
                 }
             },
             "required": ["name"]
@@ -74,7 +78,8 @@ FUNCTION_SCHEMAS = [
                 },
                 "lift_height": {
                     "type": "number",
-                    "description": "Height to lift after grasping, in meters. Default: 0.5"
+                    "description": "Height to lift after grasping, in meters. Default: 0.5",
+                    "default": 0.5
                 }
             },
             "required": ["name"]
@@ -88,11 +93,13 @@ FUNCTION_SCHEMAS = [
             "properties": {
                 "lift_before_release": {
                     "type": "boolean",
-                    "description": "Whether to lift gripper before releasing. Recommended for clearer drop effect. Default: true"
+                    "description": "Whether to lift gripper before releasing. Recommended for clearer drop effect. Default: true",
+                    "default": True
                 },
                 "lift_height": {
                     "type": "number",
-                    "description": "Height to lift before releasing, in meters. Only applies if lift_before_release is true. Default: 0.1"
+                    "description": "Height to lift before releasing, in meters. Only applies if lift_before_release is true. Default: 0.1",
+                    "default": 0.1
                 }
             },
             "required": []
@@ -118,11 +125,13 @@ FUNCTION_SCHEMAS = [
                 },
                 "duration": {
                     "type": "number",
-                    "description": "Movement duration in seconds. Default: 2.0"
+                    "description": "Movement duration in seconds. Default: 2.0",
+                    "default": 2.0
                 },
                 "relative": {
                     "type": "boolean",
-                    "description": "If true, (x,y,z) are offsets from current position. If false, they are absolute world coordinates. Default: false"
+                    "description": "If true, (x,y,z) are offsets from current position. If false, they are absolute world coordinates. Default: false",
+                    "default": False
                 }
             },
             "required": ["x", "y", "z"]
@@ -255,7 +264,7 @@ move [-0.1, 0, 0] relative
 release object
 """
 
-def get_system_prompt_code():
+def get_system_prompt_code(macros = []):
     return """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
 Think step by step about the functions you need to call and the arguments they require to fully complete the user's request.
 Ensure that you are calling all functions necessary in the right order to achieve the desired outcome.
@@ -279,7 +288,7 @@ When you need to call a function, output ONLY this JSON format (nothing else):
 
 ## Available Functions:
 """ \
-+ json.dumps(FUNCTION_SCHEMAS, indent=4) + \
++ json.dumps(FUNCTION_SCHEMAS + macros, indent=4) + \
 """
 ## Examples:
 
@@ -333,7 +342,7 @@ User: "move forward 15cm"
 
 SYSTEM_PROMPT_CODE = get_system_prompt_code()
 
-def get_system_prompt_eval():
+def get_system_prompt_eval(macros = []):
     return """You are an agent evaluating the functional correctness of robot code in a simulation with gravity. Be concise and direct.
 Ensure that all functions necessary to achieve the user's request are present and being called in the correct order.
 Also ensure that the correct arguments to fulfill the user's request are being passed into functions.
@@ -353,7 +362,7 @@ Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
 
 ## Available Functions:
 """ \
-+ json.dumps(FUNCTION_SCHEMAS, indent=4) + \
++ json.dumps(FUNCTION_SCHEMAS + macros, indent=4) + \
 """
 # Example Inputs and Outputs
 
@@ -476,10 +485,27 @@ Return only the name with no explanation.
 """
 
 SYSTEM_PROMPT_DESCRIBE = """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
-Given the following list of robot code traces and the provided macro function schema that encapsulates them,,
+Given the following list of robot code traces and the provided macro function schema that encapsulates them,
 fill in all the description fields in the function schema.
 Do not modify any other parts of the schema, just fill in the descriptions. 
 Return only the filled in schema with no explanation.
+"""
+
+SYSTEM_PROMPT_DOCUMENT = """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
+Given the following abstracted function, a list of prompts and their corresponding program, and the provided macro function schema for the abstracted function,
+create a human-readable name for the function and fill in all the description fields in the function schema.
+The # in the abstracted function represents parameters and correspond to entries in the schema.
+Do not modify any other parts of the schema, just fill in the name and descriptions. 
+Return only the filled in schema with no explanation.
+
+⚠️ CRITICAL: Coordinate System
+Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
+- Move UP → increase Y (y > 0)
+- Move DOWN → decrease Y (y < 0)
+- Move LEFT → decrease X (x < 0)
+- Move RIGHT → increase X (x > 0)
+- Move FORWARD → increase Z (z > 0)
+- Move BACKWARD → decrease Z (z < 0)
 """
 
 

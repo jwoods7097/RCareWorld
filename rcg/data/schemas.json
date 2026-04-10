@@ -25,19 +25,23 @@
                 },
                 "offset_x": {
                     "type": "number",
-                    "description": "X-axis offset in meters from object center. Positive = right, Negative = left. Default: 0.0"
+                    "description": "X-axis offset in meters from object center. Positive = right, Negative = left. Default: 0.0",
+                    "default": 0.0
                 },
                 "offset_y": {
                     "type": "number",
-                    "description": "Y-axis offset in meters from object center. Positive = up, Negative = down. Default: 0.1 (10cm above object)"
+                    "description": "Y-axis offset in meters from object center. Positive = up, Negative = down. Default: 0.1 (10cm above object)",
+                    "default": 0.1
                 },
                 "offset_z": {
                     "type": "number",
-                    "description": "Z-axis offset in meters from object center. Positive = forward, Negative = backward. Default: 0.0"
+                    "description": "Z-axis offset in meters from object center. Positive = forward, Negative = backward. Default: 0.0",
+                    "default": 0.0
                 },
                 "duration": {
                     "type": "number",
-                    "description": "Movement duration in seconds. Longer duration = slower movement. Default: 2.0"
+                    "description": "Movement duration in seconds. Longer duration = slower movement. Default: 2.0",
+                    "default": 2.0
                 }
             },
             "required": [
@@ -57,7 +61,8 @@
                 },
                 "lift_height": {
                     "type": "number",
-                    "description": "Height to lift after grasping, in meters. Default: 0.5"
+                    "description": "Height to lift after grasping, in meters. Default: 0.5",
+                    "default": 0.5
                 }
             },
             "required": [
@@ -73,11 +78,13 @@
             "properties": {
                 "lift_before_release": {
                     "type": "boolean",
-                    "description": "Whether to lift gripper before releasing. Recommended for clearer drop effect. Default: true"
+                    "description": "Whether to lift gripper before releasing. Recommended for clearer drop effect. Default: true",
+                    "default": true
                 },
                 "lift_height": {
                     "type": "number",
-                    "description": "Height to lift before releasing, in meters. Only applies if lift_before_release is true. Default: 0.1"
+                    "description": "Height to lift before releasing, in meters. Only applies if lift_before_release is true. Default: 0.1",
+                    "default": 0.1
                 }
             },
             "required": []
@@ -103,11 +110,13 @@
                 },
                 "duration": {
                     "type": "number",
-                    "description": "Movement duration in seconds. Default: 2.0"
+                    "description": "Movement duration in seconds. Default: 2.0",
+                    "default": 2.0
                 },
                 "relative": {
                     "type": "boolean",
-                    "description": "If true, (x,y,z) are offsets from current position. If false, they are absolute world coordinates. Default: false"
+                    "description": "If true, (x,y,z) are offsets from current position. If false, they are absolute world coordinates. Default: false",
+                    "default": false
                 }
             },
             "required": [
@@ -115,213 +124,6 @@
                 "y",
                 "z"
             ]
-        }
-    },
-    {
-        "name": "move_and_release_object",
-        "description": "Grasp an object, move it to a target position, optionally lift it, then release it at the specified location.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "Identifier or label of the object to grasp and move."
-                },
-                "lift_height": {
-                    "type": "number",
-                    "const": 0.5,
-                    "description": "Primary vertical lift distance (in meters) applied before moving the grasped object."
-                },
-                "z": {
-                    "type": "string",
-                    "description": "Target z-coordinate of the end-effector for releasing the object (world or relative frame, depending on 'relative')."
-                },
-                "y": {
-                    "type": "string",
-                    "description": "Target y-coordinate of the end-effector for releasing the object (world or relative frame, depending on 'relative')."
-                },
-                "duration": {
-                    "type": "number",
-                    "const": 2.0,
-                    "description": "Time in seconds allocated for the motion to the target position."
-                },
-                "x": {
-                    "type": "string",
-                    "description": "Target x-coordinate of the end-effector for releasing the object (world or relative frame, depending on 'relative')."
-                },
-                "relative": {
-                    "type": "string",
-                    "description": "Specifies whether the target (x, y, z) is interpreted as 'relative' to the current pose or 'absolute' in world coordinates."
-                },
-                "lift_before_release": {
-                    "type": "string",
-                    "description": "Flag (e.g., 'true' or 'false') indicating whether to lift the object vertically before moving to the release position."
-                },
-                "lift_height_2": {
-                    "type": "number",
-                    "const": 0.1,
-                    "description": "Secondary vertical adjustment (in meters), typically a smaller lift or offset applied near the release phase."
-                }
-            },
-            "required": [
-                "name",
-                "z",
-                "y",
-                "x",
-                "relative"
-            ]
-        }
-    },
-    {
-        "name": "move_and_grasp_object",
-        "description": "Move the arm to a named object, grasp it, then lift it vertically to a specified height with a small positional offset.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "Identifier of the target object in the scene to move to and grasp."
-                },
-                "offset_x": {
-                    "type": "number",
-                    "const": 0.0,
-                    "description": "Fixed lateral offset along the robot’s X-axis from the object’s position before grasping."
-                },
-                "duration": {
-                    "type": "number",
-                    "const": 2.0,
-                    "description": "Fixed time in seconds allocated for the approach and grasp motion."
-                },
-                "offset_y": {
-                    "type": "number",
-                    "const": 0.1,
-                    "description": "Fixed lateral offset along the robot’s Y-axis from the object’s position before grasping."
-                },
-                "lift_height": {
-                    "type": "number",
-                    "const": 0.5,
-                    "description": "Fixed vertical distance in meters to lift the object after a successful grasp."
-                }
-            },
-            "required": [
-                "name"
-            ]
-        }
-    },
-    {
-        "name": "move_gripper_to_position",
-        "description": "Moves the Kinova Gen3 gripper sequentially through four 3D Cartesian positions in the Unity scene using position control.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "y": {
-                    "type": "string",
-                    "description": "Y-coordinate of the first target position for the gripper, in world or task space (e.g., Unity world Y)."
-                },
-                "duration": {
-                    "type": "number",
-                    "const": 2.0,
-                    "description": "Time in seconds allocated for each move_to_position segment; fixed at 2.0 seconds per motion."
-                },
-                "z": {
-                    "type": "string",
-                    "description": "Z-coordinate of the first target position for the gripper, in world or task space."
-                },
-                "y_2": {
-                    "type": "string",
-                    "description": "Y-coordinate of the second target position for the gripper, in world or task space."
-                },
-                "x": {
-                    "type": "string",
-                    "description": "X-coordinate of the first target position for the gripper, in world or task space."
-                },
-                "y_3": {
-                    "type": "string",
-                    "description": "Y-coordinate of the third target position for the gripper, in world or task space."
-                },
-                "x_2": {
-                    "type": "string",
-                    "description": "X-coordinate of the second target position for the gripper, in world or task space."
-                },
-                "z_2": {
-                    "type": "string",
-                    "description": "Z-coordinate of the second target position for the gripper, in world or task space."
-                },
-                "y_4": {
-                    "type": "string",
-                    "description": "Y-coordinate of the fourth target position for the gripper, in world or task space."
-                },
-                "x_3": {
-                    "type": "string",
-                    "description": "X-coordinate of the third target position for the gripper, in world or task space."
-                }
-            },
-            "required": [
-                "y",
-                "z",
-                "y_2",
-                "x",
-                "y_3",
-                "x_2",
-                "z_2",
-                "y_4",
-                "x_3"
-            ]
-        }
-    },
-    {
-        "name": "move_all_bananas_and_clear",
-        "description": "Pick up all bananas matching the given name, move them to the specified target position, and release them to clear the area.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "Object name or tag used to identify all banana objects to be moved."
-                },
-                "z": {
-                    "type": "string",
-                    "description": "Target z-coordinate for placing the bananas; interpreted as absolute or relative based on the 'relative' flag."
-                },
-                "y": {
-                    "type": "string",
-                    "description": "Target y-coordinate for placing the bananas; interpreted as absolute or relative based on the 'relative' flag."
-                },
-                "duration": {
-                    "type": "number",
-                    "const": 2.0,
-                    "description": "Fixed time in seconds allocated for each move action when transporting bananas."
-                },
-                "x": {
-                    "type": "string",
-                    "description": "Target x-coordinate for placing the bananas; interpreted as absolute or relative based on the 'relative' flag."
-                },
-                "relative": {
-                    "type": "string",
-                    "description": "Specifies whether x, y, z are relative to the current end-effector pose (e.g., 'true' or 'false')."
-                },
-                "lift_before_release": {
-                    "type": "boolean",
-                    "const": false,
-                    "description": "Whether to lift the bananas upward before releasing them; fixed to false so the arm releases them at the final target height."
-                }
-            },
-            "required": [
-                "name",
-                "z",
-                "y",
-                "x",
-                "relative"
-            ]
-        }
-    },
-    {
-        "name": "move_to_all_bananas_sequence",
-        "description": "Moves the robotic arm sequentially to each detected banana, executing three consecutive move_to_object actions to reach all banana targets in the scene.",
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "required": []
         }
     }
 ]
