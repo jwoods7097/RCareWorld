@@ -1,0 +1,1654 @@
+[
+    {
+        "timestamp": "2026-04-03T01:47:22.670154",
+        "prompt": "Show me all objects in the scene",
+        "final_code": [
+            [
+                "get_info",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 3.011814
+    },
+    {
+        "timestamp": "2026-04-03T01:47:24.685505",
+        "prompt": "Show me all objects in the scene",
+        "final_code": [
+            [
+                "get_info",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.013592
+    },
+    {
+        "timestamp": "2026-04-03T01:47:27.003668",
+        "prompt": "Show me all objects in the scene",
+        "final_code": [
+            [
+                "get_info",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.3149
+    },
+    {
+        "timestamp": "2026-04-03T01:47:35.364451",
+        "prompt": "Show me all objects in the scene",
+        "final_code": [
+            [
+                "get_info",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 8.358765
+    },
+    {
+        "timestamp": "2026-04-03T01:47:37.616240",
+        "prompt": "Show me all objects in the scene",
+        "final_code": [
+            [
+                "get_info",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.24783
+    },
+    {
+        "timestamp": "2026-04-03T01:47:39.670518",
+        "prompt": "Move to banana 3",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.050947
+    },
+    {
+        "timestamp": "2026-04-03T01:47:42.223132",
+        "prompt": "Move to banana 3",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.549554
+    },
+    {
+        "timestamp": "2026-04-03T01:47:44.463762",
+        "prompt": "Move to banana 3",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.238617
+    },
+    {
+        "timestamp": "2026-04-03T01:47:46.422460",
+        "prompt": "Move to banana 3",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 1.953364
+    },
+    {
+        "timestamp": "2026-04-03T01:47:48.577607",
+        "prompt": "Move to banana 3",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.152731
+    },
+    {
+        "timestamp": "2026-04-03T01:47:51.440997",
+        "prompt": "Move to position [1, 2, 1]",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 1, \"y\": 2, \"z\": 1, \"duration\": 2.0, \"relative\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.848237
+    },
+    {
+        "timestamp": "2026-04-03T01:47:53.896175",
+        "prompt": "Move to position [1, 2, 1]",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 1, \"y\": 2, \"z\": 1}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.453188
+    },
+    {
+        "timestamp": "2026-04-03T01:47:56.183664",
+        "prompt": "Move to position [1, 2, 1]",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 1, \"y\": 2, \"z\": 1, \"relative\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.286399
+    },
+    {
+        "timestamp": "2026-04-03T01:47:58.275771",
+        "prompt": "Move to position [1, 2, 1]",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 1, \"y\": 2, \"z\": 1, \"relative\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.091024
+    },
+    {
+        "timestamp": "2026-04-03T01:48:00.551399",
+        "prompt": "Move to position [1, 2, 1]",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 1, \"y\": 2, \"z\": 1, \"relative\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 2.273606
+    },
+    {
+        "timestamp": "2026-04-03T01:48:17.958269",
+        "prompt": "Grasp the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 17.394367
+    },
+    {
+        "timestamp": "2026-04-03T01:48:43.665616",
+        "prompt": "Grasp the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 25.705241
+    },
+    {
+        "timestamp": "2026-04-03T01:49:02.818178",
+        "prompt": "Grasp the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 19.150086
+    },
+    {
+        "timestamp": "2026-04-03T01:49:20.427810",
+        "prompt": "Grasp the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 17.608633
+    },
+    {
+        "timestamp": "2026-04-03T01:49:41.406559",
+        "prompt": "Grasp the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 20.977728
+    },
+    {
+        "timestamp": "2026-04-03T01:49:53.297479",
+        "prompt": "Release the object",
+        "final_code": [
+            [
+                "release_object",
+                "{\"lift_before_release\": true, \"lift_height\": 0.1}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 11.887897
+    },
+    {
+        "timestamp": "2026-04-03T01:50:09.576654",
+        "prompt": "Release the object",
+        "final_code": [
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 16.276097
+    },
+    {
+        "timestamp": "2026-04-03T01:50:21.257762",
+        "prompt": "Release the object",
+        "final_code": [
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 11.680128
+    },
+    {
+        "timestamp": "2026-04-03T01:50:44.395523",
+        "prompt": "Release the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 1\"}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 23.136763
+    },
+    {
+        "timestamp": "2026-04-03T01:51:21.235541",
+        "prompt": "Release the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 1\", \"lift_height\": 0.5}"
+            ],
+            [
+                "release_object",
+                "{\"lift_before_release\": true, \"lift_height\": 0.1}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 35.610795
+    },
+    {
+        "timestamp": "2026-04-03T01:51:34.064783",
+        "prompt": "Pick up the object, move to the right by 30cm, then release the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 11.665384
+    },
+    {
+        "timestamp": "2026-04-03T01:51:49.415979",
+        "prompt": "Pick up the object, move to the right by 30cm, then release the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 14.147645
+    },
+    {
+        "timestamp": "2026-04-03T01:52:08.876619",
+        "prompt": "Pick up the object, move to the right by 30cm, then release the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 17.402901
+    },
+    {
+        "timestamp": "2026-04-03T01:52:23.796045",
+        "prompt": "Pick up the object, move to the right by 30cm, then release the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.3, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 13.991281
+    },
+    {
+        "timestamp": "2026-04-03T01:52:36.555560",
+        "prompt": "Pick up the object, move to the right by 30cm, then release the object",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.3, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 11.771995
+    },
+    {
+        "timestamp": "2026-04-03T01:53:01.848608",
+        "prompt": "Move to banana 3 and pick it up",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 21.668252
+    },
+    {
+        "timestamp": "2026-04-03T01:53:13.596120",
+        "prompt": "Move to banana 3 and pick it up",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 8.330698
+    },
+    {
+        "timestamp": "2026-04-03T01:53:27.120253",
+        "prompt": "Move to banana 3 and pick it up",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": 0.5}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 10.139517
+    },
+    {
+        "timestamp": "2026-04-03T01:53:51.527980",
+        "prompt": "Move to banana 3 and pick it up",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 20.773962
+    },
+    {
+        "timestamp": "2026-04-03T01:54:13.219092",
+        "prompt": "Move to banana 3 and pick it up",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 17.942657
+    },
+    {
+        "timestamp": "2026-04-03T01:54:31.118389",
+        "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": -0.3, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.0, \"y\": 0.1, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 10.426878
+    },
+    {
+        "timestamp": "2026-04-03T01:55:07.985184",
+        "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": -0.3, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.0, \"y\": 0.1, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 29.04942
+    },
+    {
+        "timestamp": "2026-04-03T01:55:36.038827",
+        "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": -0.3, \"y\": 0.1, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 21.294322
+    },
+    {
+        "timestamp": "2026-04-03T01:55:52.644857",
+        "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": -0.3, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.0, \"y\": 0.1, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 10.865465
+    },
+    {
+        "timestamp": "2026-04-03T01:56:29.087416",
+        "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": -0.3, \"y\": 0.1, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 30.386923
+    },
+    {
+        "timestamp": "2026-04-03T01:57:07.996161",
+        "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 32.298396
+    },
+    {
+        "timestamp": "2026-04-03T01:57:23.559429",
+        "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 6.548081
+    },
+    {
+        "timestamp": "2026-04-03T01:58:03.426172",
+        "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 33.101226
+    },
+    {
+        "timestamp": "2026-04-03T01:58:34.306651",
+        "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 25.008839
+    },
+    {
+        "timestamp": "2026-04-03T01:59:12.868816",
+        "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 32.289864
+    },
+    {
+        "timestamp": "2026-04-03T01:59:50.101903",
+        "prompt": "Is there a banana in this scene? If so, move to it. Otherwise, move to the left by 25cm",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 28.665464
+    },
+    {
+        "timestamp": "2026-04-03T02:00:08.140241",
+        "prompt": "Is there a banana in this scene? If so, move to it. Otherwise, move to the left by 25cm",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 9.523043
+    },
+    {
+        "timestamp": "2026-04-03T02:04:28.137141",
+        "prompt": "Is there a banana in this scene? If so, move to it. Otherwise, move to the left by 25cm",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 4.317048
+    },
+    {
+        "timestamp": "2026-04-03T02:07:19.749211",
+        "prompt": "Move the leftmost banana so that it is now the middle banana",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.29, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{\"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 74.920416
+    },
+    {
+        "timestamp": "2026-04-03T02:08:36.463335",
+        "prompt": "Move the leftmost banana so that it is now the middle banana",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -1.31, \"y\": 1.27, \"z\": -0.39, \"duration\": 2.0, \"relative\": false}"
+            ],
+            [
+                "release_object",
+                "{\"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 65.023327
+    },
+    {
+        "timestamp": "2026-04-03T02:09:21.717956",
+        "prompt": "Move the leftmost banana so that it is now the middle banana",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 2\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -1.334993, \"y\": 1.6, \"z\": -0.5209968, \"relative\": false, \"duration\": 2.0}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -1.334993, \"y\": 1.2715, \"z\": -0.5209968, \"relative\": false, \"duration\": 2.0}"
+            ],
+            [
+                "release_object",
+                "{\"lift_before_release\": false}"
+            ],
+            [
+                "get_info",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 32.6726
+    },
+    {
+        "timestamp": "2026-04-03T02:10:21.321134",
+        "prompt": "Move the leftmost banana so that it is now the middle banana",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.288, \"y\": 0, \"z\": 0, \"relative\": true, \"duration\": 2.0}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 47.82476
+    },
+    {
+        "timestamp": "2026-04-03T02:11:12.609178",
+        "prompt": "Move the rightmost banana forward by 10cm",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.0, \"y\": 0.0, \"z\": 0.1, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 38.478142
+    },
+    {
+        "timestamp": "2026-04-03T02:12:10.369104",
+        "prompt": "Move the rightmost banana forward by 10cm",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 2\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.0, \"y\": 0.0, \"z\": 0.1, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 46.118488
+    },
+    {
+        "timestamp": "2026-04-03T02:12:40.680107",
+        "prompt": "Move the rightmost banana forward by 10cm",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"x\": \"0\", \"y\": \"0\", \"z\": \"0.1\", \"relative\": \"relative\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 17.824399
+    },
+    {
+        "timestamp": "2026-04-03T02:13:36.792402",
+        "prompt": "Move the rightmost banana forward by 10cm",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.2869986\", \"y\": \"1.2715176\", \"z\": \"-0.4209968\", \"relative\": \"world\", \"lift_height\": 0.5, \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 45.133058
+    },
+    {
+        "timestamp": "2026-04-03T02:14:13.766667",
+        "prompt": "Move the rightmost banana forward by 10cm",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.2869986\", \"y\": \"1.2715176\", \"z\": \"-0.4209968\", \"relative\": \"absolute\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 25.399749
+    },
+    {
+        "timestamp": "2026-04-03T02:14:38.807910",
+        "prompt": "Move banana 1 to the left of banana 3",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"x\": \"-1.723\", \"y\": \"1.2715\", \"z\": \"-0.39599308371543884\", \"relative\": \"world\", \"duration\": 2.0, \"lift_height\": 0.5, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 11.317301
+    },
+    {
+        "timestamp": "2026-04-03T02:15:30.505593",
+        "prompt": "Move banana 1 to the left of banana 3",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"x\": \"-1.7230\", \"y\": \"1.2715\", \"z\": \"-0.3960\", \"relative\": \"world\", \"lift_height\": 0.5, \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 41.402555
+    },
+    {
+        "timestamp": "2026-04-03T02:16:14.597467",
+        "prompt": "Move banana 1 to the left of banana 3",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"x\": \"-1.823000144958496\", \"y\": \"1.2715169191360474\", \"z\": \"-0.39599308371543884\", \"relative\": \"world\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 30.995924
+    },
+    {
+        "timestamp": "2026-04-03T02:17:11.750640",
+        "prompt": "Move banana 1 to the left of banana 3",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 1\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.3, \"y\": 0.0, \"z\": 0.0, \"duration\": 2.0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{\"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 46.800608
+    },
+    {
+        "timestamp": "2026-04-03T02:17:57.926163",
+        "prompt": "Move banana 1 to the left of banana 3",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 1\", \"lift_height\": 0.3}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -1.723, \"y\": 1.2715, \"z\": -0.39599, \"duration\": 2.0, \"relative\": false}"
+            ],
+            [
+                "release_object",
+                "{\"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 35.024774
+    },
+    {
+        "timestamp": "2026-04-03T02:18:31.103682",
+        "prompt": "Move banana 2 10cm closer to me",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.276\", \"y\": \"1.311\", \"z\": \"-0.597\", \"relative\": \"world\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 21.268515
+    },
+    {
+        "timestamp": "2026-04-03T02:19:18.937518",
+        "prompt": "Move banana 2 10cm closer to me",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.2869986295700073\", \"y\": \"1.2715176343917847\", \"z\": \"-0.6209968090057373\", \"relative\": \"absolute\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 37.166807
+    },
+    {
+        "timestamp": "2026-04-03T02:19:51.390343",
+        "prompt": "Move banana 2 10cm closer to me",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.2869986295700073\", \"y\": \"1.2715176343917847\", \"z\": \"-0.6209968090057373\", \"relative\": \"world\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 21.201438
+    },
+    {
+        "timestamp": "2026-04-03T02:20:31.520101",
+        "prompt": "Move banana 2 10cm closer to me",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.2869986295700073\", \"y\": \"1.2715176343917847\", \"z\": \"-0.6209968090057373\", \"relative\": \"absolute\", \"duration\": 2.0, \"lift_before_release\": false, \"lift_height\": \"0.2\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 28.254386
+    },
+    {
+        "timestamp": "2026-04-03T02:22:36.369238",
+        "prompt": "Move banana 2 10cm closer to me",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"lift_height\": \"0.5\", \"x\": \"-1.2870\", \"y\": \"1.2715\", \"z\": \"-0.6210\", \"relative\": \"false\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 112.236084
+    },
+    {
+        "timestamp": "2026-04-03T02:23:21.348229",
+        "prompt": "Pick up the closest banana to the camera",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 2\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 30.425564
+    },
+    {
+        "timestamp": "2026-04-03T02:24:12.308402",
+        "prompt": "Pick up the closest banana to the camera",
+        "final_code": [
+            [
+                "pick_up_object",
+                "{\"name\": \"Banana 1\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 36.450237
+    },
+    {
+        "timestamp": "2026-04-03T02:25:09.165303",
+        "prompt": "Pick up the closest banana to the camera",
+        "final_code": [
+            [
+                "get_info",
+                "{\"name\": \"Banana\"}"
+            ],
+            [
+                "pick_up_object",
+                "{\"name\": \"Banana 2\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 43.32759
+    },
+    {
+        "timestamp": "2026-04-03T02:26:08.939286",
+        "prompt": "Pick up the closest banana to the camera",
+        "final_code": [
+            [
+                "pick_up_object",
+                "{\"name\": \"Banana 2\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 45.029873
+    },
+    {
+        "timestamp": "2026-04-03T02:27:24.103614",
+        "prompt": "Pick up the closest banana to the camera",
+        "final_code": [
+            [
+                "pick_up_object",
+                "{\"name\": \"Banana 2\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 61.222468
+    },
+    {
+        "timestamp": "2026-04-03T02:31:03.052675",
+        "prompt": "Move the gripper in a circle",
+        "final_code": [
+            [
+                "move_to_position",
+                "{\"x\": 0.2, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.141, \"y\": 0.141, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.0, \"y\": 0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.141, \"y\": 0.141, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.2, \"y\": 0.0, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -0.141, \"y\": -0.141, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.0, \"y\": -0.2, \"z\": 0.0, \"relative\": true}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.141, \"y\": -0.141, \"z\": 0.0, \"relative\": true}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 46.184685
+    },
+    {
+        "timestamp": "2026-04-03T02:31:25.271121",
+        "prompt": "Move the gripper in a circle",
+        "final_code": [
+            [
+                "move_gripper_around",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 3.585248
+    },
+    {
+        "timestamp": "2026-04-03T02:31:42.572045",
+        "prompt": "Move the gripper in a circle",
+        "final_code": [
+            [
+                "move_gripper_around",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 3.428501
+    },
+    {
+        "timestamp": "2026-04-03T02:31:58.649947",
+        "prompt": "Move the gripper in a circle",
+        "final_code": [
+            [
+                "move_gripper_around",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 3.364287
+    },
+    {
+        "timestamp": "2026-04-03T02:32:47.754870",
+        "prompt": "Move to all 3 bananas in sequence",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\", \"duration\": 2.0}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\", \"duration\": 2.0}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\", \"duration\": 2.0}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 35.843368
+    },
+    {
+        "timestamp": "2026-04-03T02:33:28.051299",
+        "prompt": "Move to all 3 bananas in sequence",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\"}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 27.142632
+    },
+    {
+        "timestamp": "2026-04-03T02:33:57.629246",
+        "prompt": "Move to all 3 bananas in sequence",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\"}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 13.329353
+    },
+    {
+        "timestamp": "2026-04-03T02:34:38.702837",
+        "prompt": "Move to all 3 bananas in sequence",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\", \"duration\": 2.0}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\", \"duration\": 2.0}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\", \"duration\": 2.0}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 22.415175
+    },
+    {
+        "timestamp": "2026-04-03T02:35:14.103711",
+        "prompt": "Move to all 3 bananas in sequence",
+        "final_code": [
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 1\"}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "move_to_object",
+                "{\"name\": \"Banana 3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 20.988487
+    },
+    {
+        "timestamp": "2026-04-03T02:36:16.520775",
+        "prompt": "Clear all bananas off the table",
+        "final_code": [
+            [
+                "pick_up_object",
+                "{\"name\": \"Banana 1\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0, \"z\": 0.5, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ],
+            [
+                "pick_up_object",
+                "{\"name\": \"Banana 2\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0, \"z\": 0.5, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ],
+            [
+                "pick_up_object",
+                "{\"name\": \"Banana 3\"}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0, \"z\": 0.5, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 44.590959
+    },
+    {
+        "timestamp": "2026-04-03T02:37:44.661341",
+        "prompt": "Clear all bananas off the table",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 1\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0.2, \"z\": 0.5, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{\"lift_before_release\": false}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 2\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0.2, \"z\": 0.5, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{\"lift_before_release\": false}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0, \"y\": 0.2, \"z\": 0.5, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{\"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 71.161275
+    },
+    {
+        "timestamp": "2026-04-03T02:39:04.842934",
+        "prompt": "Clear all bananas off the table",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 1\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.5, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 2\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.5, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": 0.5, \"y\": 0, \"z\": 0, \"relative\": true}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 58.765306
+    },
+    {
+        "timestamp": "2026-04-03T02:40:10.177265",
+        "prompt": "Clear all bananas off the table",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"lift_height\": \"0.5\", \"y\": \"0\", \"relative\": \"relative\", \"z\": \"0.6\", \"x\": \"0\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"lift_height\": \"0.5\", \"y\": \"0\", \"relative\": \"relative\", \"z\": \"0.6\", \"x\": \"0\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": \"0.5\", \"y\": \"0\", \"relative\": \"relative\", \"z\": \"0.6\", \"x\": \"0\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 47.595514
+    },
+    {
+        "timestamp": "2026-04-03T02:41:47.881413",
+        "prompt": "Clear all bananas off the table",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"x\": \"-1.0\", \"y\": \"1.0\", \"z\": \"0.5\", \"relative\": \"world\"}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.0\", \"y\": \"1.0\", \"z\": \"0.5\", \"relative\": \"world\"}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 3\", \"x\": \"-1.0\", \"y\": \"1.0\", \"z\": \"0.5\", \"relative\": \"world\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 81.23108
+    },
+    {
+        "timestamp": "2026-04-03T02:42:54.737263",
+        "prompt": "Move all the bananas next to each other",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\n  \"name\": \"Banana 2\",\n  \"x\": \"-1.284993\",\n  \"y\": \"1.2715163\",\n  \"z\": \"-0.23399997\",\n  \"relative\": \"world\"\n}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\n  \"name\": \"Banana 3\",\n  \"x\": \"-1.234993\",\n  \"y\": \"1.2715163\",\n  \"z\": \"-0.23399997\",\n  \"relative\": \"world\"\n}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 45.981103
+    },
+    {
+        "timestamp": "2026-04-03T02:43:55.567522",
+        "prompt": "Move all the bananas next to each other",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"x\": \"-1.334993\", \"y\": \"1.2715163\", \"z\": \"-0.23399997\", \"relative\": \"false\", \"lift_height\": \"0.3\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.334993\", \"y\": \"1.2715163\", \"z\": \"-0.26399997\", \"relative\": \"false\", \"lift_height\": \"0.3\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 3\", \"x\": \"-1.334993\", \"y\": \"1.2715163\", \"z\": \"-0.29399997\", \"relative\": \"false\", \"lift_height\": \"0.3\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 42.174505
+    },
+    {
+        "timestamp": "2026-04-03T02:45:28.965000",
+        "prompt": "Move all the bananas next to each other",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.234993\", \"y\": \"1.2715163\", \"z\": \"-0.23399997\", \"relative\": \"false\", \"lift_height\": \"0.3\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 3\", \"x\": \"-1.134993\", \"y\": \"1.2715163\", \"z\": \"-0.23399997\", \"relative\": \"false\", \"lift_height\": \"0.3\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 73.936643
+    },
+    {
+        "timestamp": "2026-04-03T02:46:15.140225",
+        "prompt": "Move all the bananas next to each other",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"lift_height\": \"0.3\", \"x\": \"-1.36\", \"y\": \"1.2715\", \"z\": \"-0.234\", \"relative\": \"absolute\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"lift_height\": \"0.3\", \"x\": \"-1.41\", \"y\": \"1.2715\", \"z\": \"-0.234\", \"relative\": \"absolute\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": \"0.3\", \"x\": \"-1.46\", \"y\": \"1.2715\", \"z\": \"-0.234\", \"relative\": \"absolute\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 31.68768
+    },
+    {
+        "timestamp": "2026-04-03T02:47:53.448362",
+        "prompt": "Move all the bananas next to each other",
+        "final_code": [
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 1\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -1.334993, \"y\": 1.271516, \"z\": -0.2339999, \"duration\": 2.0, \"relative\": false}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 2\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -1.324993, \"y\": 1.271516, \"z\": -0.2339999, \"duration\": 2.0, \"relative\": false}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ],
+            [
+                "grasp_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": 0.5}"
+            ],
+            [
+                "move_to_position",
+                "{\"x\": -1.314993, \"y\": 1.271516, \"z\": -0.2339999, \"duration\": 2.0, \"relative\": false}"
+            ],
+            [
+                "release_object",
+                "{}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 83.656441
+    },
+    {
+        "timestamp": "2026-04-03T02:48:47.228423",
+        "prompt": "Put all bananas in a line",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"lift_height\": \"0.3\", \"x\": \"-1.4\", \"y\": \"1.2715\", \"z\": \"-0.3\", \"relative\": \"world\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"lift_height\": \"0.3\", \"x\": \"-1.4\", \"y\": \"1.2715\", \"z\": \"-0.4\", \"relative\": \"world\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 3\", \"lift_height\": \"0.3\", \"x\": \"-1.4\", \"y\": \"1.2715\", \"z\": \"-0.5\", \"relative\": \"world\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 38.305979
+    },
+    {
+        "timestamp": "2026-04-03T02:51:18.564907",
+        "prompt": "Put all bananas in a line",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"x\": \"-1.40\", \"y\": \"1.27\", \"z\": \"-0.20\", \"lift_height\": \"0.3\", \"relative\": \"absolute\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.40\", \"y\": \"1.27\", \"z\": \"-0.30\", \"lift_height\": \"0.3\", \"relative\": \"absolute\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 3\", \"x\": \"-1.40\", \"y\": \"1.27\", \"z\": \"-0.40\", \"lift_height\": \"0.3\", \"relative\": \"absolute\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 39.435909
+    },
+    {
+        "timestamp": "2026-04-03T02:51:58.914854",
+        "prompt": "Put all bananas in a line",
+        "final_code": [
+            [
+                "clear_all_objects_off_table",
+                "{\"y\": \"1.2715\", \"relative\": \"world\", \"z\": \"-0.40\", \"x\": \"-1.70\", \"lift_height\": \"0.5\", \"duration\": 2.0, \"lift_before_release\": false, \"z_2\": \"-0.40\", \"x_2\": \"-1.50\", \"z_3\": \"-0.40\", \"x_3\": \"-1.30\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 17.404954
+    },
+    {
+        "timestamp": "2026-04-03T02:53:02.125190",
+        "prompt": "Put all bananas in a line",
+        "final_code": [
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 1\", \"x\": \"-1.3349930047988892\", \"y\": \"1.2715163230895996\", \"z\": \"-0.39599308371543884\", \"relative\": \"world\", \"lift_height\": \"0.5\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 2\", \"x\": \"-1.2869986295700073\", \"y\": \"1.2715176343917847\", \"z\": \"-0.39599308371543884\", \"relative\": \"world\", \"lift_height\": \"0.5\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ],
+            [
+                "pick_and_place_object",
+                "{\"name\": \"Banana 3\", \"x\": \"-1.623000144958496\", \"y\": \"1.2715169191360474\", \"z\": \"-0.39599308371543884\", \"relative\": \"world\", \"lift_height\": \"0.5\", \"duration\": 2.0, \"lift_before_release\": false}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 40.895242
+    },
+    {
+        "timestamp": "2026-04-03T02:53:35.682469",
+        "prompt": "Put all bananas in a line",
+        "final_code": [
+            [
+                "pick_and_place_all_objects_in_line",
+                "{\"y\": \"1.2715\", \"relative\": \"false\", \"z\": \"-0.4\", \"x\": \"-1.7\", \"lift_height\": \"0.5\", \"y_2\": \"1.2715\", \"z_2\": \"-0.4\", \"x_2\": \"-1.5\", \"y_3\": \"1.2715\", \"z_3\": \"-0.4\", \"x_3\": \"-1.3\"}"
+            ]
+        ],
+        "success": true,
+        "duration_seconds": 11.229054
+    }
+]

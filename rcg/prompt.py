@@ -457,6 +457,17 @@ ONLY USE WORDS PRESENT IN THE USER'S REQUEST. Do not add any words that are not 
 Return the top 5 words in a comma-separated list with no explanation.
 """
 
+SYSTEM_PROMPT_NGRAM = """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
+Given the following user request and a series of functions that fulfill the request,
+determine which subsequences of functions would be most useful to combine into a macro function.
+Return each proposed macro on its own line, with the line numbers given as a comma-separated list, and no explanation.
+LINE NUMBERS IN EACH LINE MUST BE CONSECUTIVE.
+
+An example output might look like the following:
+1, 2
+3, 4, 5
+"""
+
 SYSTEM_PROMPT_NAME = """You control a Kinova Gen3 robotic arm in a Unity simulation with gravity. Be concise and direct.
 Given the following list of robot functions and the relevant keywords used to call them,
 generate a snake_case name for a macro function that would encapsulate the list of functions.

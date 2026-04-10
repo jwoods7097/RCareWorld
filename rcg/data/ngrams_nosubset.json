@@ -1,0 +1,2086 @@
+{
+    "[\"grasp_object\", \"release_object\"]": {
+        "traces": [
+            {
+                "prompt": "Release the object**",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 1"
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "release",
+                    "object"
+                ]
+            },
+            {
+                "prompt": "Release the object**",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {
+                            "lift_before_release": true,
+                            "lift_height": 0.1
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "release",
+                    "object",
+                    "release_object",
+                    "lift",
+                    "release"
+                ]
+            }
+        ]
+    },
+    "[\"grasp_object\", \"move_to_position\", \"release_object\"]": {
+        "traces": [
+            {
+                "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.3,
+                            "y": 0,
+                            "z": 0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "pick",
+                    "object",
+                    "move",
+                    "right",
+                    "release"
+                ]
+            },
+            {
+                "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.3,
+                            "y": 0,
+                            "z": 0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "pick",
+                    "object",
+                    "move",
+                    "right",
+                    "release"
+                ]
+            },
+            {
+                "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.3,
+                            "y": 0,
+                            "z": 0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "pick",
+                    "object",
+                    "move",
+                    "right",
+                    "release"
+                ]
+            },
+            {
+                "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.3,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "pick",
+                    "move",
+                    "right",
+                    "30cm",
+                    "release"
+                ]
+            },
+            {
+                "prompt": "Pick up the object, move to the right by 30cm, then release the object*",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.3,
+                            "y": 0,
+                            "z": 0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "pick",
+                    "object",
+                    "move",
+                    "right",
+                    "release"
+                ]
+            },
+            {
+                "prompt": "Move the leftmost banana so that it is now the middle banana",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.29,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "banana",
+                    "grasp",
+                    "move",
+                    "release"
+                ]
+            },
+            {
+                "prompt": "Move the leftmost banana so that it is now the middle banana",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -1.31,
+                            "y": 1.27,
+                            "z": -0.39,
+                            "duration": 2.0,
+                            "relative": false
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "leftmost",
+                    "banana",
+                    "middle",
+                    "banana"
+                ]
+            },
+            {
+                "prompt": "Move the leftmost banana so that it is now the middle banana",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.288,
+                            "y": 0,
+                            "z": 0,
+                            "relative": true,
+                            "duration": 2.0
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "leftmost",
+                    "banana",
+                    "middle",
+                    "banana"
+                ]
+            },
+            {
+                "prompt": "Move the rightmost banana forward by 10cm",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.1,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "banana",
+                    "forward",
+                    "10cm",
+                    "move"
+                ]
+            },
+            {
+                "prompt": "Move the rightmost banana forward by 10cm",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.1,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "banana",
+                    "forward",
+                    "10cm",
+                    "move"
+                ]
+            },
+            {
+                "prompt": "Move banana 1 to the left of banana 3",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.3,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "duration": 2.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "banana",
+                    "1",
+                    "left",
+                    "3"
+                ]
+            },
+            {
+                "prompt": "Move banana 1 to the left of banana 3",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "lift_height": 0.3
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -1.723,
+                            "y": 1.2715,
+                            "z": -0.39599,
+                            "duration": 2.0,
+                            "relative": false
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "banana",
+                    "1",
+                    "left",
+                    "3"
+                ]
+            }
+        ],
+        "macro": "pick_and_place_object"
+    },
+    "[\"move_to_object\", \"grasp_object\"]": {
+        "traces": [
+            {
+                "prompt": "Move to banana 3 and pick it up",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "banana",
+                    "3",
+                    "pick",
+                    "up"
+                ]
+            },
+            {
+                "prompt": "Move to banana 3 and pick it up",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "banana",
+                    "3",
+                    "pick",
+                    "up"
+                ]
+            },
+            {
+                "prompt": "Move to banana 3 and pick it up",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": 0.5
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "banana",
+                    "3",
+                    "pick",
+                    "up"
+                ]
+            },
+            {
+                "prompt": "Move to banana 3 and pick it up",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "banana",
+                    "3",
+                    "pick",
+                    "up"
+                ]
+            },
+            {
+                "prompt": "Move to banana 3 and pick it up",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "banana",
+                    "3",
+                    "pick",
+                    "up"
+                ]
+            },
+            {
+                "prompt": "Pick up the closest banana to the camera",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 2"
+                        }
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 2"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "pick",
+                    "up",
+                    "closest",
+                    "banana",
+                    "camera"
+                ]
+            }
+        ],
+        "macro": "pick_up_object"
+    },
+    "[\"move_to_position\", \"move_to_position\", \"move_to_position\"]": {
+        "traces": [
+            {
+                "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.3,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.0,
+                            "y": 0.1,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "left",
+                    "up",
+                    "right",
+                    "20cm"
+                ]
+            },
+            {
+                "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.3,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.0,
+                            "y": 0.1,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "left",
+                    "30cm",
+                    "up",
+                    "20cm"
+                ]
+            },
+            {
+                "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.3,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.0,
+                            "y": 0.1,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "left",
+                    "30cm",
+                    "up",
+                    "20cm"
+                ]
+            }
+        ]
+    },
+    "[\"move_to_position\", \"move_to_position\"]": {
+        "traces": [
+            {
+                "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.3,
+                            "y": 0.1,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "left",
+                    "30cm",
+                    "up",
+                    "right"
+                ]
+            },
+            {
+                "prompt": "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.3,
+                            "y": 0.1,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "left",
+                    "30cm",
+                    "up",
+                    "20cm"
+                ]
+            }
+        ]
+    },
+    "[\"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\"]": {
+        "traces": [
+            {
+                "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "gripper",
+                    "down",
+                    "right",
+                    "left"
+                ]
+            },
+            {
+                "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "gripper",
+                    "down",
+                    "right",
+                    "left"
+                ]
+            },
+            {
+                "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "gripper",
+                    "down",
+                    "right",
+                    "left"
+                ]
+            },
+            {
+                "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "gripper",
+                    "down",
+                    "right",
+                    "left"
+                ]
+            },
+            {
+                "prompt": "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "gripper",
+                    "down",
+                    "right",
+                    "left"
+                ]
+            }
+        ],
+        "macro": "move_gripper_around"
+    },
+    "[\"grasp_object\", \"move_to_position\", \"move_to_position\", \"release_object\", \"get_info\"]": {
+        "traces": [
+            {
+                "prompt": "Move the leftmost banana so that it is now the middle banana",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -1.334993,
+                            "y": 1.6,
+                            "z": -0.5209968,
+                            "relative": false,
+                            "duration": 2.0
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -1.334993,
+                            "y": 1.2715,
+                            "z": -0.5209968,
+                            "relative": false,
+                            "duration": 2.0
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "get_info",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "leftmost",
+                    "banana",
+                    "middle",
+                    "banana"
+                ]
+            }
+        ]
+    },
+    "[\"get_info\", \"pick_up_object\"]": {
+        "traces": [
+            {
+                "prompt": "Pick up the closest banana to the camera",
+                "code": [
+                    {
+                        "name": "get_info",
+                        "args": {
+                            "name": "Banana"
+                        }
+                    },
+                    {
+                        "name": "pick_up_object",
+                        "args": {
+                            "name": "Banana 2"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "pick",
+                    "up",
+                    "closest",
+                    "banana",
+                    "camera"
+                ]
+            }
+        ]
+    },
+    "[\"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\", \"move_to_position\"]": {
+        "traces": [
+            {
+                "prompt": "Move the gripper in a circle",
+                "code": [
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.2,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.141,
+                            "y": 0.141,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.0,
+                            "y": 0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.141,
+                            "y": 0.141,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.2,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -0.141,
+                            "y": -0.141,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.0,
+                            "y": -0.2,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.141,
+                            "y": -0.141,
+                            "z": 0.0,
+                            "relative": true
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "the",
+                    "gripper",
+                    "in",
+                    "circle"
+                ]
+            }
+        ]
+    },
+    "[\"move_to_object\", \"move_to_object\", \"move_to_object\"]": {
+        "traces": [
+            {
+                "prompt": "Move to all 3 bananas in sequence",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "duration": 2.0
+                        }
+                    },
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "duration": 2.0
+                        }
+                    },
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "duration": 2.0
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "all",
+                    "3",
+                    "bananas",
+                    "sequence"
+                ]
+            },
+            {
+                "prompt": "Move to all 3 bananas in sequence",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 1"
+                        }
+                    },
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 2"
+                        }
+                    },
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "all",
+                    "3",
+                    "bananas",
+                    "sequence"
+                ]
+            },
+            {
+                "prompt": "Move to all 3 bananas in sequence",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 1"
+                        }
+                    },
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 2"
+                        }
+                    },
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "all",
+                    "3",
+                    "bananas",
+                    "sequence"
+                ]
+            },
+            {
+                "prompt": "Move to all 3 bananas in sequence",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "duration": 2.0
+                        }
+                    },
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "duration": 2.0
+                        }
+                    },
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "duration": 2.0
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "all",
+                    "3",
+                    "bananas",
+                    "sequence"
+                ]
+            },
+            {
+                "prompt": "Move to all 3 bananas in sequence",
+                "code": [
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 1"
+                        }
+                    },
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 2"
+                        }
+                    },
+                    {
+                        "name": "move_to_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "all",
+                    "3",
+                    "bananas",
+                    "sequence"
+                ]
+            }
+        ],
+        "macro": "move_to_all_objects_sequence"
+    },
+    "[\"pick_up_object\", \"move_to_position\", \"release_object\", \"pick_up_object\", \"move_to_position\", \"release_object\", \"pick_up_object\", \"move_to_position\", \"release_object\"]": {
+        "traces": [
+            {
+                "prompt": "Clear all bananas off the table",
+                "code": [
+                    {
+                        "name": "pick_up_object",
+                        "args": {
+                            "name": "Banana 1"
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0.5,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    },
+                    {
+                        "name": "pick_up_object",
+                        "args": {
+                            "name": "Banana 2"
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0.5,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    },
+                    {
+                        "name": "pick_up_object",
+                        "args": {
+                            "name": "Banana 3"
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0.5,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "clear",
+                    "bananas",
+                    "off",
+                    "table",
+                    "all"
+                ]
+            }
+        ]
+    },
+    "[\"grasp_object\", \"move_to_position\", \"release_object\", \"grasp_object\", \"move_to_position\", \"release_object\", \"grasp_object\", \"move_to_position\", \"release_object\"]": {
+        "traces": [
+            {
+                "prompt": "Clear all bananas off the table",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0,
+                            "y": 0.2,
+                            "z": 0.5,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0,
+                            "y": 0.2,
+                            "z": 0.5,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0,
+                            "y": 0.2,
+                            "z": 0.5,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "clear",
+                    "bananas",
+                    "off",
+                    "table",
+                    "all"
+                ]
+            },
+            {
+                "prompt": "Clear all bananas off the table",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.5,
+                            "y": 0,
+                            "z": 0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.5,
+                            "y": 0,
+                            "z": 0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": 0.5,
+                            "y": 0,
+                            "z": 0,
+                            "relative": true
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "clear",
+                    "bananas",
+                    "off",
+                    "table",
+                    "all"
+                ]
+            },
+            {
+                "prompt": "Move all the bananas next to each other",
+                "code": [
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -1.334993,
+                            "y": 1.271516,
+                            "z": -0.2339999,
+                            "duration": 2.0,
+                            "relative": false
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -1.324993,
+                            "y": 1.271516,
+                            "z": -0.2339999,
+                            "duration": 2.0,
+                            "relative": false
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    },
+                    {
+                        "name": "grasp_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": 0.5
+                        }
+                    },
+                    {
+                        "name": "move_to_position",
+                        "args": {
+                            "x": -1.314993,
+                            "y": 1.271516,
+                            "z": -0.2339999,
+                            "duration": 2.0,
+                            "relative": false
+                        }
+                    },
+                    {
+                        "name": "release_object",
+                        "args": {}
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "bananas",
+                    "next",
+                    "each",
+                    "other"
+                ]
+            }
+        ]
+    },
+    "[\"pick_and_place_object\", \"pick_and_place_object\", \"pick_and_place_object\"]": {
+        "traces": [
+            {
+                "prompt": "Clear all bananas off the table",
+                "code": [
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "lift_height": "0.5",
+                            "y": "0",
+                            "relative": "relative",
+                            "z": "0.6",
+                            "x": "0",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "lift_height": "0.5",
+                            "y": "0",
+                            "relative": "relative",
+                            "z": "0.6",
+                            "x": "0",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": "0.5",
+                            "y": "0",
+                            "relative": "relative",
+                            "z": "0.6",
+                            "x": "0",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "clear",
+                    "all",
+                    "bananas",
+                    "off",
+                    "table"
+                ]
+            },
+            {
+                "prompt": "Clear all bananas off the table",
+                "code": [
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "x": "-1.0",
+                            "y": "1.0",
+                            "z": "0.5",
+                            "relative": "world"
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "x": "-1.0",
+                            "y": "1.0",
+                            "z": "0.5",
+                            "relative": "world"
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "x": "-1.0",
+                            "y": "1.0",
+                            "z": "0.5",
+                            "relative": "world"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "clear",
+                    "all",
+                    "bananas",
+                    "off",
+                    "table"
+                ]
+            },
+            {
+                "prompt": "Move all the bananas next to each other",
+                "code": [
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "x": "-1.334993",
+                            "y": "1.2715163",
+                            "z": "-0.23399997",
+                            "relative": "false",
+                            "lift_height": "0.3",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "x": "-1.334993",
+                            "y": "1.2715163",
+                            "z": "-0.26399997",
+                            "relative": "false",
+                            "lift_height": "0.3",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "x": "-1.334993",
+                            "y": "1.2715163",
+                            "z": "-0.29399997",
+                            "relative": "false",
+                            "lift_height": "0.3",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "all",
+                    "the",
+                    "bananas",
+                    "next"
+                ]
+            },
+            {
+                "prompt": "Move all the bananas next to each other",
+                "code": [
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "lift_height": "0.3",
+                            "x": "-1.36",
+                            "y": "1.2715",
+                            "z": "-0.234",
+                            "relative": "absolute",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "lift_height": "0.3",
+                            "x": "-1.41",
+                            "y": "1.2715",
+                            "z": "-0.234",
+                            "relative": "absolute",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": "0.3",
+                            "x": "-1.46",
+                            "y": "1.2715",
+                            "z": "-0.234",
+                            "relative": "absolute",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "all",
+                    "bananas",
+                    "next",
+                    "each"
+                ]
+            },
+            {
+                "prompt": "Put all bananas in a line",
+                "code": [
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "lift_height": "0.3",
+                            "x": "-1.4",
+                            "y": "1.2715",
+                            "z": "-0.3",
+                            "relative": "world",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "lift_height": "0.3",
+                            "x": "-1.4",
+                            "y": "1.2715",
+                            "z": "-0.4",
+                            "relative": "world",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "lift_height": "0.3",
+                            "x": "-1.4",
+                            "y": "1.2715",
+                            "z": "-0.5",
+                            "relative": "world",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "put",
+                    "all",
+                    "bananas",
+                    "in",
+                    "line"
+                ]
+            },
+            {
+                "prompt": "Put all bananas in a line",
+                "code": [
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "x": "-1.40",
+                            "y": "1.27",
+                            "z": "-0.20",
+                            "lift_height": "0.3",
+                            "relative": "absolute",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "x": "-1.40",
+                            "y": "1.27",
+                            "z": "-0.30",
+                            "lift_height": "0.3",
+                            "relative": "absolute",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "x": "-1.40",
+                            "y": "1.27",
+                            "z": "-0.40",
+                            "lift_height": "0.3",
+                            "relative": "absolute",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "put",
+                    "all",
+                    "bananas",
+                    "in",
+                    "line"
+                ]
+            },
+            {
+                "prompt": "Put all bananas in a line",
+                "code": [
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 1",
+                            "x": "-1.3349930047988892",
+                            "y": "1.2715163230895996",
+                            "z": "-0.39599308371543884",
+                            "relative": "world",
+                            "lift_height": "0.5",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "x": "-1.2869986295700073",
+                            "y": "1.2715176343917847",
+                            "z": "-0.39599308371543884",
+                            "relative": "world",
+                            "lift_height": "0.5",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "x": "-1.623000144958496",
+                            "y": "1.2715169191360474",
+                            "z": "-0.39599308371543884",
+                            "relative": "world",
+                            "lift_height": "0.5",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "put",
+                    "all",
+                    "bananas",
+                    "in",
+                    "line"
+                ]
+            }
+        ],
+        "macro": "line_up_all_objects"
+    },
+    "[\"pick_and_place_object\", \"pick_and_place_object\"]": {
+        "traces": [
+            {
+                "prompt": "Move all the bananas next to each other",
+                "code": [
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "x": "-1.284993",
+                            "y": "1.2715163",
+                            "z": "-0.23399997",
+                            "relative": "world"
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "x": "-1.234993",
+                            "y": "1.2715163",
+                            "z": "-0.23399997",
+                            "relative": "world"
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "all",
+                    "bananas",
+                    "next",
+                    "each"
+                ]
+            },
+            {
+                "prompt": "Move all the bananas next to each other",
+                "code": [
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 2",
+                            "x": "-1.234993",
+                            "y": "1.2715163",
+                            "z": "-0.23399997",
+                            "relative": "false",
+                            "lift_height": "0.3",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    },
+                    {
+                        "name": "pick_and_place_object",
+                        "args": {
+                            "name": "Banana 3",
+                            "x": "-1.134993",
+                            "y": "1.2715163",
+                            "z": "-0.23399997",
+                            "relative": "false",
+                            "lift_height": "0.3",
+                            "duration": 2.0,
+                            "lift_before_release": false
+                        }
+                    }
+                ],
+                "topk_tokens": [
+                    "move",
+                    "all",
+                    "bananas",
+                    "next",
+                    "to"
+                ]
+            }
+        ]
+    }
+}
