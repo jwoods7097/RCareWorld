@@ -41,14 +41,14 @@ prompts = [
 ]
 
 # Macro Learning Test Prompts
-prompts = [
-    "Move to and grasp Banana 1",
-    "Move to and grasp Banana 2",
-    "Move to and grasp Banana 3",
-    "Move to and grasp the leftmost banana",
-    "Move to and grasp the rightmost banana",
-    "Move to and grasp the middle banana",
-]
+# prompts = [
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 2",
+#     "Move to and grasp Banana 3",
+#     "Move to and grasp the leftmost banana",
+#     "Move to and grasp the rightmost banana",
+#     "Move to and grasp the middle banana",
+# ]
 
 # Macro Modification Test Prompts
 # prompts = [
@@ -56,11 +56,11 @@ prompts = [
 #     "Move to and grasp Banana 1",
 #     "Move to and grasp Banana 1",
 #     "Move to and grasp Banana 1",
-#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 2",
 #     "Move to and grasp Banana 2",
 # ]
 
-num_reps = 1
+num_reps = 5
 log_file = "eval_log.txt"
 
 
@@ -130,7 +130,7 @@ def parse_manual_function_call(text: str) -> Optional[tuple]:
 
     return found_functions
 
-def static_evaluation(code: str) -> tuple[bool, str]:
+def static_evaluation(code: str, macros: list = []) -> tuple[bool, str]:
     """Static evaluation of generated code."""
     
     # Parse function calls from code
@@ -151,14 +151,21 @@ def static_evaluation(code: str) -> tuple[bool, str]:
             reasoning += f"Arguments for function '{function_name}' are not valid JSON.\n"
             function_args = {}
         
-        for schema in FUNCTION_SCHEMAS:
+        for schema in FUNCTION_SCHEMAS + macros:
             # Check if function exists
             if schema["name"] == function_name:
+                # Check required arguments
+                for req_arg in schema["parameters"]["required"]:
+                    if req_arg not in function_args:
+                        result = False
+                        reasoning += f"Missing required argument '{req_arg}' for function '{function_name}'.\n"
+                
                 # Check provided arguments
                 for arg_name, arg_value in function_args.items():
                     if arg_name not in schema["parameters"]["properties"]:
                         result = False
                         reasoning += f"Unexpected argument '{arg_name}' for function '{function_name}'.\n"
+                    
                     else:
                         # Check argument type
                         expected_type = schema["parameters"]["properties"][arg_name]["type"]
@@ -210,7 +217,7 @@ def functions_equal(functions1, functions2):
     
     return True
 
-def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_attempts=5, code_message=None, name=""):
+def geneval(code_model, eval_model, user_input, include_input_in_eval, macros = [], eval_attempts=5, code_message=None, name=""):
     """Generate and evaluate the code with the specified evaluation model."""
     correct = False
     eval_counter = 0
@@ -225,7 +232,7 @@ def geneval(code_model, eval_model, user_input, include_input_in_eval, eval_atte
 
         if eval_model is None:
             # Evaluate code with static evaluator
-            correct, eval_message = static_evaluation(code_message)
+            correct, eval_message = static_evaluation(code_message, macros)
         else:
             # Evaluate code with LLM
             eval_prompt = f"User Request: {user_input}\nCode: {code_message}" if include_input_in_eval else f"Code: {code_message}"
@@ -306,6 +313,7 @@ if __name__ == "__main__":
             ngrams = json.load(f)
     except FileNotFoundError:
         ngrams = {}
+    macros = []
 
     try:
 
@@ -344,9 +352,9 @@ if __name__ == "__main__":
 
                 try:
                     # Functional evaluation
-                    code_message = geneval(code_model, eval_model, user_input, include_input_in_eval=True, name="Function")
+                    code_message = geneval(code_model, eval_model, user_input, include_input_in_eval=True, macros=macros, name="Function")
                     # Static evaluation
-                    code_message = geneval(code_model, None, user_input, include_input_in_eval=False, code_message=code_message, name="Syntax")
+                    code_message = geneval(code_model, None, user_input, include_input_in_eval=False, code_message=code_message, macros=macros, name="Syntax")
                     # Final generated code
                     parsed_code = parse_manual_function_call(code_message)
                     write_log(f"Parsed functions: {parsed_code}\n")
@@ -379,7 +387,7 @@ if __name__ == "__main__":
                 abstractions, macros = learn_macros(traces)
                 write_log(f"Learned abstractions: {abstractions}\n")
 
-                if abstractions:
+                if macros:
                     write_log(f"MACROS:")
                     for schema in macros:
                         write_log(json.dumps(schema, indent=4) + "\n")         
@@ -423,7 +431,6 @@ if __name__ == "__main__":
                 #         FUNCTION_SCHEMAS.append(macro)
                 #         write_log(f"LEARNED NEW MACRO for {ngram}: {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
 
-                write_log(get_system_prompt_code(macros) + "\n")
                 code_model.reset(get_system_prompt_code(macros))
                 eval_model.reset(get_system_prompt_eval(macros))
 
@@ -434,9 +441,9 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
     finally:
-        with open('rcg/data/traces.json', 'w', encoding='utf-8') as f:
-            json.dump(traces, f, ensure_ascii=False, indent=4)
+        # with open('rcg/data/traces.json', 'w', encoding='utf-8') as f:
+        #     json.dump(traces, f, ensure_ascii=False, indent=4)
         with open('rcg/data/ngrams.json', 'w', encoding='utf-8') as f:
             json.dump(ngrams, f, ensure_ascii=False, indent=4)
         with open('rcg/data/schemas.json', 'w', encoding='utf-8') as f:
-            json.dump(FUNCTION_SCHEMAS, f, ensure_ascii=False, indent=4)
+            json.dump(FUNCTION_SCHEMAS + macros, f, ensure_ascii=False, indent=4)

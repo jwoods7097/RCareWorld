@@ -26,7 +26,8 @@ FUNCTION_SCHEMAS = [
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "Object name to search (optional). If omitted, returns all objects. Examples: 'Banana', 'robot', 'Camera'. Partial matching supported."
+                    "description": "Object name to search (optional). If omitted, returns all objects. Examples: 'Banana', 'robot', 'Camera'. Partial matching supported.",
+                    "default": None
                 }
             },
             "required": []
