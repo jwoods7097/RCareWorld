@@ -60,7 +60,7 @@ prompts = [
 #     "Move to and grasp Banana 2",
 # ]
 
-num_reps = 5
+num_reps = 1
 log_file = "eval_log.txt"
 
 

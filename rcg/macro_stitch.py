@@ -1,5 +1,5 @@
 from copy import deepcopy
-from stitch_core import compress, rewrite
+from stitch_core import Abstraction, compress, rewrite
 import json
 import re
 from typing import Any, Iterable, List, Tuple, Dict, Optional
@@ -352,6 +352,156 @@ def contains_then(expr: Any) -> bool:
     return False
 
 
+def sexpr_to_string(expr: Any) -> str:
+    if isinstance(expr, list):
+        return "(" + " ".join(sexpr_to_string(x) for x in expr) + ")"
+    if expr is True:
+        return "true"
+    if expr is False:
+        return "false"
+    if expr is None:
+        return "nil"
+    return str(expr)
+
+
+def substitute(expr: Any, env: Dict[str, Any]) -> Any:
+    """
+    Replace formal params like #0 with the AST bound in env["#0"].
+    """
+    if isinstance(expr, str):
+        if expr in env:
+            return deepcopy(env[expr])
+        return expr
+
+    if not isinstance(expr, list):
+        return expr
+
+    return [substitute(x, env) for x in expr]
+
+
+def get_formals(abs_obj) -> List[str]:
+    """
+    For stitch abstractions, the formal parameters are exactly #0..#(arity-1).
+    """
+    return [f"#{i}" for i in range(abs_obj.arity)]
+
+
+def deduce_arity_from_expr(expr: Any) -> int:
+    """
+    Infer arity from the rewritten body by finding the largest #k.
+    """
+    max_idx = -1
+
+    def walk(node: Any):
+        nonlocal max_idx
+        if isinstance(node, str):
+            m = re.fullmatch(r"#(\d+)", node)
+            if m:
+                max_idx = max(max_idx, int(m.group(1)))
+            return
+        if isinstance(node, list):
+            for child in node:
+                walk(child)
+
+    walk(expr)
+    return max_idx + 1 if max_idx >= 0 else 0
+
+
+def build_abstraction_index(abstractions) -> Dict[str, Any]:
+    return {a.name: a for a in abstractions}
+
+
+def expand_expr(
+    expr: Any,
+    abs_by_name: Dict[str, Any],
+    template_cache: Dict[str, Any],
+    env: Dict[str, Any] | None = None,
+    stack: List[str] | None = None,
+) -> Any:
+    """
+    Recursively inline all abstraction references.
+    """
+    if env is None:
+        env = {}
+    if stack is None:
+        stack = []
+
+    if isinstance(expr, str):
+        return deepcopy(env[expr]) if expr in env else expr
+
+    if not isinstance(expr, list) or not expr:
+        return expr
+
+    head = expr[0]
+
+    # Inline abstraction calls.
+    if isinstance(head, str) and head in abs_by_name:
+        callee = abs_by_name[head]
+
+        if head in stack:
+            cycle = " -> ".join(stack + [head])
+            raise ValueError(f"Recursive abstraction reference detected: {cycle}")
+
+        formals = get_formals(callee)
+        actuals = [expand_expr(arg, abs_by_name, template_cache, env, stack) for arg in expr[1:]]
+
+        if len(actuals) != len(formals):
+            raise ValueError(
+                f"Arity mismatch calling {head}: expected {len(formals)}, got {len(actuals)}"
+            )
+
+        # Cache the callee body with nested abstraction references already expanded.
+        if head not in template_cache:
+            template_cache[head] = expand_expr(
+                parse_sexpr(callee.body),
+                abs_by_name,
+                template_cache,
+                env={},
+                stack=stack + [head],
+            )
+
+        callee_template = template_cache[head]
+        local_env = dict(zip(formals, actuals))
+        return substitute(callee_template, local_env)
+
+    # General recursion.
+    expanded_head = expand_expr(head, abs_by_name, template_cache, env, stack)
+    expanded_children = [expand_expr(child, abs_by_name, template_cache, env, stack) for child in expr[1:]]
+
+    # Optional normalization for then.
+    if expanded_head == "then":
+        flat = []
+        for child in expanded_children:
+            if isinstance(child, list) and child and child[0] == "then":
+                flat.extend(child[1:])
+            else:
+                flat.append(child)
+        if len(flat) == 1:
+            return flat[0]
+        return ["then"] + flat
+
+    return [expanded_head] + expanded_children
+
+
+def rewrite_abstractions(abstractions) -> List[Abstraction]:
+    """
+    Inline all abstraction references and return a new list of stitch_core.Abstraction objects.
+    """
+    abs_by_name = build_abstraction_index(abstractions)
+    template_cache: Dict[str, Any] = {}
+    rewritten: List[Abstraction] = []
+
+    for abs_obj in abstractions:
+        body_ast = parse_sexpr(abs_obj.body)
+        expanded_body = expand_expr(body_ast, abs_by_name, template_cache)
+        body_str = sexpr_to_string(expanded_body)
+        arity = deduce_arity_from_expr(expanded_body)
+
+        rewritten.append(Abstraction(name=abs_obj.name, body=body_str, arity=arity))
+
+    return rewritten
+
+
 def learn_macros(traces, max_macros=10) -> Tuple[List[str], List[Dict[str, Any]]]:
     global lambda_traces, macro_schemas
 
@@ -368,12 +518,15 @@ def learn_macros(traces, max_macros=10) -> Tuple[List[str], List[Dict[str, Any]]
             programs,
             iterations=max_macros*2,
             max_arity=5,
-            tasks=[trace["prompt"] for trace in traces],
-            allow_single_task=False
+            # tasks=[trace["prompt"] for trace in traces],
+            # allow_single_task=True
         )
+        print(f"\nCompress Result: {res.abstractions}")
+        raw_abstractions = rewrite_abstractions(res.abstractions)
+        print(f"Rewritten Abstractions: {raw_abstractions}")
 
         # Filter out invalid abstractions that don't meet our criteria
-        valid_macros = [abs for abs in res.abstractions if is_valid_abstraction(abs.body)]
+        valid_macros = [abs for abs in raw_abstractions if is_valid_abstraction(abs.body) and not abstraction_learned(abs, abstractions)]
         if not valid_macros:
             break
 
@@ -397,4 +550,4 @@ def learn_macros(traces, max_macros=10) -> Tuple[List[str], List[Dict[str, Any]]
         schema = json.loads(document_model.generate(document_prompt, memory=False))
         macro_schemas.append(schema)
 
-    return abstractions, macro_schemas
+    return raw_abstractions, macro_schemas
