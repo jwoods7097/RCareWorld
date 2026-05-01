@@ -1,5 +1,7 @@
+# :contentReference[oaicite:0]{index=0} (rewritten)
+
 from copy import deepcopy
-from stitch_core import Abstraction, compress, rewrite
+from stitch_core import Abstraction, StitchException, compress, rewrite
 import json
 import re
 from typing import Any, Iterable, List, Tuple, Dict, Optional
@@ -12,6 +14,10 @@ document_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_DOCUMENT, temperature=0.7
 lambda_traces = []
 macro_schemas = []
 
+
+# -------------------------
+# S-EXPR PARSING
+# -------------------------
 
 def tokenize_sexpr(s: str) -> List[str]:
     return re.findall(r'\(|\)|"[^"\\]*(?:\\.[^"\\]*)*"|[^\s()]+', s)
@@ -40,12 +46,21 @@ def parse_sexpr(s: str) -> Any:
     if stack:
         raise ValueError("Unbalanced opening parenthesis")
 
-    if len(current) == 1:
-        return current[0]
-    return current
+    return current[0] if len(current) == 1 else current
 
+
+def sexpr_to_string(expr: Any) -> str:
+    if isinstance(expr, list):
+        return "(" + " ".join(sexpr_to_string(x) for x in expr) + ")"
+    return str(expr)
+
+
+# -------------------------
+# SCHEMA HELPERS
+# -------------------------
 
 def get_schema(function_name: str) -> Optional[Dict[str, Any]]:
+    global macro_schemas
     for schema in FUNCTION_SCHEMAS + macro_schemas:
         if schema.get("name") == function_name:
             return schema
@@ -56,37 +71,27 @@ def get_ordered_arg_names(function_name: str) -> List[str]:
     schema = get_schema(function_name)
     if not schema:
         return []
-    props = schema.get("parameters", {}).get("properties", {})
-    return list(props.keys())
-
-
-def get_required_args(function_name: str) -> List[str]:
-    schema = get_schema(function_name)
-    if not schema:
-        return []
-    return list(schema.get("parameters", {}).get("required", []))
+    return list(schema["parameters"]["properties"].keys())
 
 
 def lookup_arg_type(function_name: str, arg_name: str) -> str:
     schema = get_schema(function_name)
     if schema:
-        props = schema.get("parameters", {}).get("properties", {})
+        props = schema["parameters"]["properties"]
         if arg_name in props:
             return props[arg_name].get("type", "string")
     return "string"
 
 
+# -------------------------
+# RENDERING
+# -------------------------
+
 def sanitize_symbol(value: str) -> str:
-    value = value.strip()
-    value = re.sub(r"\s+", "_", value)
-    return value
+    return re.sub(r"\s+", "_", value.strip())
 
 
 def render_value(value: Any) -> str:
-    """
-    Render a Python/JSON value as a pure S-expression value.
-    No (arg ...) wrappers.
-    """
     if value is None:
         return "nil"
     if isinstance(value, bool):
@@ -95,447 +100,505 @@ def render_value(value: Any) -> str:
         return str(value)
     if isinstance(value, str):
         return sanitize_symbol(value)
-    if isinstance(value, list):
-        return "(list " + " ".join(render_value(v) for v in value) + ")"
-    if isinstance(value, dict):
-        parts = []
-        for k, v in value.items():
-            parts.append(f"({sanitize_symbol(k)} {render_value(v)})")
-        return "(dict " + " ".join(parts) + ")" if parts else "(dict)"
     return sanitize_symbol(str(value))
 
 
 def fill_args(actions: Iterable[Tuple[str, str]]) -> List[Tuple[str, str]]:
-    """
-    For each (function_name, json_string), fill in missing args using defaults
-    and emit args in the order specified by the schema.
-    """
-    filled_actions = []
-
+    filled = []
     for func_name, json_args in actions:
         args = json.loads(json_args)
-        if not isinstance(args, dict):
-            raise ValueError(f"Expected JSON object for function arguments, got: {args!r}")
-
         schema = get_schema(func_name)
-        if schema is None:
-            raise ValueError(f"Unknown function schema: {func_name}")
 
-        properties = schema["parameters"]["properties"]
+        props = schema["parameters"]["properties"]
         required = set(schema["parameters"].get("required", []))
 
         filled_args = {}
-        for arg_name, arg_schema in properties.items():
-            if arg_name in args:
-                filled_args[arg_name] = args[arg_name]
-            elif "default" in arg_schema:
-                filled_args[arg_name] = arg_schema["default"]
-            elif arg_name in required:
-                raise ValueError(f"Missing required argument '{arg_name}' for function '{func_name}'")
+        for k, v in props.items():
+            if k in args:
+                filled_args[k] = args[k]
+            elif "default" in v:
+                filled_args[k] = v["default"]
+            elif k in required:
+                raise ValueError(f"Missing required argument '{k}'")
 
-        filled_actions.append((func_name, json.dumps(filled_args)))
+        filled.append((func_name, json.dumps(filled_args)))
 
-    return filled_actions
+    return filled
 
 
 def action_to_expr(action: Tuple[str, str]) -> str:
-    """
-    Convert one (function_name, json_string) pair into:
-        (func arg1 arg2 arg3 ...)
-    using the argument order from FUNCTION_SCHEMAS.
-    """
     func_name, json_args = action
     args = json.loads(json_args)
 
-    if not isinstance(args, dict):
-        raise ValueError(f"Expected JSON object for function arguments, got: {args!r}")
+    ordered = get_ordered_arg_names(func_name)
+    values = [render_value(args[k]) for k in ordered]
 
-    schema = get_schema(func_name)
-    if schema is None:
-        raise ValueError(f"Unknown function schema: {func_name}")
-
-    ordered_arg_names = list(schema["parameters"]["properties"].keys())
-    rendered_args = [render_value(args[arg_name]) for arg_name in ordered_arg_names]
-
-    if rendered_args:
-        return f"({sanitize_symbol(func_name)} " + " ".join(rendered_args) + ")"
-    return f"({sanitize_symbol(func_name)})"
+    return f"({func_name} {' '.join(values)})"
 
 
-def nest_then(expressions: List[str]) -> str:
-    """
-    Build a right-nested then chain:
-        [a, b, c] -> (then a (then b c))
-    """
-    if not expressions:
-        return "()"
-    if len(expressions) == 1:
-        return expressions[0]
+def nest_then(exprs: List[str]) -> str:
+    if len(exprs) == 1:
+        return exprs[0]
 
-    expr = expressions[-1]
-    for prev in reversed(expressions[:-1]):
-        expr = f"(then {prev} {expr})"
+    expr = exprs[-1]
+    for e in reversed(exprs[:-1]):
+        expr = f"(then {e} {expr})"
     return expr
 
 
-def sequence_to_expr(actions: Iterable[Tuple[str, str]]) -> str:
-    filled_actions = fill_args(actions)
-    exprs = [action_to_expr(action) for action in filled_actions]
+def sequence_to_expr(actions):
+    global lambda_traces
+    exprs = [action_to_expr(a) for a in fill_args(actions)]
     expr = nest_then(exprs)
-
     lambda_traces.append(expr)
     return expr
 
 
+# -------------------------
+# VARIABLE + SCHEMA LEARNING
+# -------------------------
+
 def collect_var_usage(expr: Any) -> Dict[str, List[Tuple[str, str]]]:
-    """
-    Collect:
-        #0 -> [(function_name, arg_name), ...]
-    assuming direct positional args:
-        (foo a #0 c)
-    """
     usage = defaultdict(list)
 
-    def walk(node: Any):
+    def walk(node):
         if not isinstance(node, list) or not node:
             return
 
         head = node[0]
         if isinstance(head, str) and head != "then":
-            func_name = head
-            arg_names = get_ordered_arg_names(func_name)
+            arg_names = get_ordered_arg_names(head)
 
             for i, child in enumerate(node[1:]):
                 if isinstance(child, str) and child.startswith("#"):
-                    arg_name = arg_names[i] if i < len(arg_names) else f"arg_{i}"
-                    usage[child].append((func_name, arg_name))
+                    name = arg_names[i] if i < len(arg_names) else f"arg_{i}"
+                    usage[child].append((head, name))
 
-        for child in node:
-            walk(child)
+        for c in node:
+            walk(c)
 
     walk(expr)
     return dict(usage)
 
 
-def build_function_schema(s_expr: str) -> Dict[str, Any]:
-    """
-    Build a new function schema from an abstraction S-expression that uses
-    direct positional args instead of (arg name value).
-    """
+def build_function_schema(s_expr: str):
     parsed = parse_sexpr(s_expr)
-    var_usage = collect_var_usage(parsed)
+    usage = collect_var_usage(parsed)
 
-    properties = {}
+    props = {}
     required = []
-    used_param_names = set()
+    used = set()
 
-    def var_sort_key(x: str):
-        return int(x[1:]) if x.startswith("#") and x[1:].isdigit() else x
+    for var in sorted(usage.keys(), key=lambda x: int(x[1:])):
+        func, arg = usage[var][0]
+        name = arg
 
-    for var_name in sorted(var_usage.keys(), key=var_sort_key):
-        usages = var_usage[var_name]
-        if not usages:
-            continue
-
-        func_name, arg_name = usages[0]
-        arg_type = lookup_arg_type(func_name, arg_name)
-
-        param_name = arg_name
-        if param_name in used_param_names:
-            base = param_name
+        if name in used:
             i = 2
-            while f"{base}_{i}" in used_param_names:
+            while f"{name}_{i}" in used:
                 i += 1
-            param_name = f"{base}_{i}"
+            name = f"{name}_{i}"
 
-        used_param_names.add(param_name)
+        used.add(name)
 
-        properties[param_name] = {
-            "type": arg_type,
+        props[name] = {
+            "type": lookup_arg_type(func, arg),
             "description": ""
         }
-        required.append(param_name)
+        required.append(name)
 
     return {
         "name": "",
         "description": "",
         "parameters": {
             "type": "object",
-            "properties": properties,
+            "properties": props,
             "required": required
         }
     }
 
 
-def count_primitive_calls(expr: Any) -> int:
-    known_funcs = {schema["name"] for schema in FUNCTION_SCHEMAS + macro_schemas}
+# -------------------------
+# EXPANSION (KEY PART)
+# -------------------------
 
-    def walk(node: Any) -> int:
-        if not isinstance(node, list) or not node:
+def get_formals(abs_obj):
+    return [f"#{i}" for i in range(abs_obj.arity)]
+
+
+def expand_expr(expr, abs_by_name, cache, env=None, stack=None, counter=None):
+    if env is None:
+        env = {}
+    if stack is None:
+        stack = []
+    if counter is None:
+        counter = [0]
+
+    def fresh():
+        v = f"#{counter[0]}"
+        counter[0] += 1
+        return v
+
+    def make_then(items):
+        if len(items) == 1:
+            return items[0]
+        x = items[-1]
+        for i in reversed(items[:-1]):
+            x = ["then", i, x]
+        return x
+
+    if isinstance(expr, str):
+        return deepcopy(env[expr]) if expr in env else expr
+
+    if not isinstance(expr, list):
+        return expr
+
+    head = expr[0]
+
+    # abstraction call
+    if isinstance(head, str) and head in abs_by_name:
+
+        # STOP infinite recursion
+        if head in stack:
+            return expr
+
+        if len(stack) > 50:
+            return expr
+
+        callee = abs_by_name[head]
+
+        formals = get_formals(callee)
+        actuals = [expand_expr(a, abs_by_name, cache, env, stack, counter) for a in expr[1:]]
+
+        # curry handling
+        if len(actuals) < len(formals):
+            actuals += [fresh() for _ in range(len(formals) - len(actuals))]
+        else:
+            actuals = actuals[:len(formals)]
+
+        if head not in cache:
+            cache[head] = expand_expr(
+                parse_sexpr(callee.body),
+                abs_by_name,
+                cache,
+                {},
+                stack + [head],
+                counter
+            )
+
+        return substitute(cache[head], dict(zip(formals, actuals)))
+
+    # recurse
+    head = expand_expr(head, abs_by_name, cache, env, stack, counter)
+    children = [expand_expr(c, abs_by_name, cache, env, stack, counter) for c in expr[1:]]
+
+    if head == "then":
+        items = []
+
+        def collect(n):
+            if isinstance(n, list) and n and n[0] == "then":
+                for c in n[1:]:
+                    collect(c)
+            else:
+                items.append(n)
+
+        for c in children:
+            collect(c)
+
+        return make_then(items)
+
+    return [head] + children
+
+
+def substitute(expr, env):
+    if isinstance(expr, str):
+        return deepcopy(env[expr]) if expr in env else expr
+    if isinstance(expr, list):
+        return [substitute(x, env) for x in expr]
+    return expr
+
+
+def deduce_arity(expr):
+    max_i = -1
+
+    def walk(n):
+        nonlocal max_i
+        if isinstance(n, str):
+            m = re.fullmatch(r"#(\d+)", n)
+            if m:
+                max_i = max(max_i, int(m.group(1)))
+        elif isinstance(n, list):
+            for c in n:
+                walk(c)
+
+    walk(expr)
+    return max_i + 1 if max_i >= 0 else 0
+
+
+def rewrite_abstractions(abstractions):
+    idx = {a.name: a for a in abstractions}
+    cache = {}
+    out = []
+
+    for i, a in enumerate(abstractions):
+        body = expand_expr(parse_sexpr(a.body), idx, cache)
+        out.append(Abstraction(f"fn_{i}", sexpr_to_string(body), deduce_arity(body)))
+
+    return out
+
+
+# -------------------------
+# VALIDATION
+# -------------------------
+
+def count_primitive_calls(expr):
+    global macro_schemas
+    known = {s["name"] for s in FUNCTION_SCHEMAS + macro_schemas}
+
+    def walk(n):
+        if not isinstance(n, list) or not n:
             return 0
-        head = node[0]
-        total = 0
-        if isinstance(head, str) and head in known_funcs and head != "then":
-            total += 1
-        for child in node[1:]:
-            total += walk(child)
-        return total
+
+        head = n[0]
+
+        # FIX: ensure head is a string before lookup
+        count = 1 if isinstance(head, str) and head in known else 0
+
+        return count + sum(walk(x) for x in n[1:])
 
     return walk(expr)
 
 
-def validate_hash_positions(expr: Any, in_value_position: bool = False) -> bool:
+def is_valid_structure(expr):
     """
-    Allow #vars only as direct argument values of primitive calls.
-    Since args are now positional, any child of a primitive call may be a #var.
+    Enforce:
+    - 'then' is the only structural operator
+    - function heads must be valid symbols (not #vars, not lists)
     """
-    known_funcs = {schema["name"] for schema in FUNCTION_SCHEMAS + macro_schemas}
 
     if isinstance(expr, str):
-        if expr.startswith("#"):
-            return in_value_position
         return True
 
     if not isinstance(expr, list) or not expr:
-        return True
+        return False
 
     head = expr[0]
 
+    # --- THEN ---
     if head == "then":
-        if len(expr) < 3:
+        # must be binary (after your normalization)
+        if len(expr) != 3:
             return False
-        return all(validate_hash_positions(child, False) for child in expr[1:])
+        return all(is_valid_structure(child) for child in expr[1:])
 
-    if isinstance(head, str) and head in known_funcs:
-        for child in expr[1:]:
-            if isinstance(child, str):
-                if child.startswith("#"):
-                    continue
-            elif isinstance(child, list):
-                # Allow literal list/dict-like structures, but do not allow nested
-                # primitive calls or then inside argument values.
-                if child and isinstance(child[0], str) and (child[0] == "then" or child[0] in known_funcs):
+    # --- FUNCTION CALL ---
+    # head must be a valid symbol
+    if not isinstance(head, str):
+        return False
+
+    # reject variable as function
+    if head.startswith("#"):
+        return False
+
+    # reject unknown functions (optional but recommended)
+    known = {s["name"] for s in FUNCTION_SCHEMAS + macro_schemas}
+    if head not in known:
+        return False
+
+    # arguments must be valid recursively
+    for arg in expr[1:]:
+        if isinstance(arg, list):
+            # disallow nested function calls as arguments
+            # (this is key to your bug)
+            if arg and isinstance(arg[0], str):
+                if arg[0] == "then" or arg[0] in known:
                     return False
-                if not validate_hash_positions(child, True):
-                    return False
-            else:
-                continue
-        return True
+            if not is_valid_structure(arg):
+                return False
 
-    # Any other top-level list form is invalid as a plan expression
-    return False
+    return True
 
 
-def is_valid_abstraction(s_expr: str) -> bool:
+def is_valid_abstraction(s_expr):
     try:
         parsed = parse_sexpr(s_expr)
-    except Exception:
+    except:
         return False
 
     if count_primitive_calls(parsed) < 2:
         return False
 
-    if not contains_then(parsed):
-        return False
-
-    if not validate_hash_positions(parsed):
-        return False
-
-    return True
+    return is_valid_structure(parsed)
 
 
-def contains_then(expr: Any) -> bool:
-    if isinstance(expr, list):
-        if expr and expr[0] == "then":
+# -------------------------
+# DEDUPLICATION
+# -------------------------
+
+def canonicalize_vars(expr):
+    mapping = {}
+    c = 0
+
+    def walk(n):
+        nonlocal c
+        if isinstance(n, str) and re.fullmatch(r"#\d+", n):
+            if n not in mapping:
+                mapping[n] = f"#{c}"
+                c += 1
+            return mapping[n]
+        if isinstance(n, list):
+            return [walk(x) for x in n]
+        return n
+
+    return walk(expr)
+
+
+def abstraction_exists(new_abs, abstractions):
+    target = sexpr_to_string(canonicalize_vars(parse_sexpr(new_abs.body)))
+    for a in abstractions:
+        if sexpr_to_string(canonicalize_vars(parse_sexpr(a.body))) == target:
             return True
-        return any(contains_then(child) for child in expr)
     return False
 
 
-def sexpr_to_string(expr: Any) -> str:
-    if isinstance(expr, list):
-        return "(" + " ".join(sexpr_to_string(x) for x in expr) + ")"
-    if expr is True:
-        return "true"
-    if expr is False:
-        return "false"
-    if expr is None:
-        return "nil"
-    return str(expr)
+# -------------------------
+# CODE EXECUTION
+# -------------------------
 
-
-def substitute(expr: Any, env: Dict[str, Any]) -> Any:
+def abstraction_to_python(abs_obj, schema: dict) -> str:
     """
-    Replace formal params like #0 with the AST bound in env["#0"].
+    Convert abstraction + schema into a documented Python function.
     """
-    if isinstance(expr, str):
-        if expr in env:
-            return deepcopy(env[expr])
-        return expr
 
-    if not isinstance(expr, list):
-        return expr
+    def flatten_then(expr):
+        if not isinstance(expr, list):
+            return [expr]
+        if expr[0] != "then":
+            return [expr]
 
-    return [substitute(x, env) for x in expr]
+        result = []
+        for child in expr[1:]:
+            result.extend(flatten_then(child))
+        return result
 
+    def expr_to_call(expr, var_map):
+        head = expr[0]
+        args = expr[1:]
 
-def get_formals(abs_obj) -> List[str]:
-    """
-    For stitch abstractions, the formal parameters are exactly #0..#(arity-1).
-    """
-    return [f"#{i}" for i in range(abs_obj.arity)]
-
-
-def deduce_arity_from_expr(expr: Any) -> int:
-    """
-    Infer arity from the rewritten body by finding the largest #k.
-    """
-    max_idx = -1
-
-    def walk(node: Any):
-        nonlocal max_idx
-        if isinstance(node, str):
-            m = re.fullmatch(r"#(\d+)", node)
-            if m:
-                max_idx = max(max_idx, int(m.group(1)))
-            return
-        if isinstance(node, list):
-            for child in node:
-                walk(child)
-
-    walk(expr)
-    return max_idx + 1 if max_idx >= 0 else 0
-
-
-def build_abstraction_index(abstractions) -> Dict[str, Any]:
-    return {a.name: a for a in abstractions}
-
-
-def expand_expr(
-    expr: Any,
-    abs_by_name: Dict[str, Any],
-    template_cache: Dict[str, Any],
-    env: Dict[str, Any] | None = None,
-    stack: List[str] | None = None,
-) -> Any:
-    """
-    Recursively inline all abstraction references.
-    """
-    if env is None:
-        env = {}
-    if stack is None:
-        stack = []
-
-    if isinstance(expr, str):
-        return deepcopy(env[expr]) if expr in env else expr
-
-    if not isinstance(expr, list) or not expr:
-        return expr
-
-    head = expr[0]
-
-    # Inline abstraction calls.
-    if isinstance(head, str) and head in abs_by_name:
-        callee = abs_by_name[head]
-
-        if head in stack:
-            cycle = " -> ".join(stack + [head])
-            raise ValueError(f"Recursive abstraction reference detected: {cycle}")
-
-        formals = get_formals(callee)
-        actuals = [expand_expr(arg, abs_by_name, template_cache, env, stack) for arg in expr[1:]]
-
-        if len(actuals) != len(formals):
-            raise ValueError(
-                f"Arity mismatch calling {head}: expected {len(formals)}, got {len(actuals)}"
-            )
-
-        # Cache the callee body with nested abstraction references already expanded.
-        if head not in template_cache:
-            template_cache[head] = expand_expr(
-                parse_sexpr(callee.body),
-                abs_by_name,
-                template_cache,
-                env={},
-                stack=stack + [head],
-            )
-
-        callee_template = template_cache[head]
-        local_env = dict(zip(formals, actuals))
-        return substitute(callee_template, local_env)
-
-    # General recursion.
-    expanded_head = expand_expr(head, abs_by_name, template_cache, env, stack)
-    expanded_children = [expand_expr(child, abs_by_name, template_cache, env, stack) for child in expr[1:]]
-
-    # Optional normalization for then.
-    if expanded_head == "then":
-        flat = []
-        for child in expanded_children:
-            if isinstance(child, list) and child and child[0] == "then":
-                flat.extend(child[1:])
+        py_args = []
+        for a in args:
+            if isinstance(a, str):
+                if a.startswith("#"):
+                    py_args.append(var_map[a])
+                elif a == "true":
+                    py_args.append("True")
+                elif a == "false":
+                    py_args.append("False")
+                elif a == "nil":
+                    py_args.append("None")
+                else:
+                    py_args.append(a)
             else:
-                flat.append(child)
-        if len(flat) == 1:
-            return flat[0]
-        return ["then"] + flat
+                py_args.append(str(a))
 
-    return [expanded_head] + expanded_children
+        return f"{head}({', '.join(py_args)})"
+
+    # -------------------------
+    # Build parameter mapping
+    # -------------------------
+    param_names = list(schema["parameters"]["properties"].keys())
+
+    # map #0 -> param_names[0], etc.
+    var_map = {f"#{i}": param_names[i] for i in range(abs_obj.arity)}
+
+    # -------------------------
+    # Parse + flatten
+    # -------------------------
+    parsed = parse_sexpr(abs_obj.body)
+    calls = flatten_then(parsed)
+
+    # -------------------------
+    # Convert calls
+    # -------------------------
+    call_lines = [expr_to_call(c, var_map) for c in calls]
+
+    # -------------------------
+    # Build docstring
+    # -------------------------
+    doc_lines = []
+
+    if schema.get("description"):
+        doc_lines.append(schema["description"])
+        doc_lines.append("")
+
+    doc_lines.append("Args:")
+
+    for name, info in schema["parameters"]["properties"].items():
+        desc = info.get("description", "")
+        typ = info.get("type", "Any")
+        doc_lines.append(f"    {name} ({typ}): {desc}")
+
+    docstring = "\n".join(doc_lines)
+
+    # -------------------------
+    # Build function
+    # -------------------------
+    indent = "    "
+    body = "\n".join(indent + line for line in call_lines)
+
+    func_name = schema.get("name", abs_obj.name)
+    params = ", ".join(param_names)
+
+    return f'''def {func_name}({params}):
+{indent}"""
+{indent}{docstring}
+{indent}"""
+{body}
+'''
 
 
-def rewrite_abstractions(abstractions) -> List[Abstraction]:
-    """
-    Inline all abstraction references and return a new list of stitch_core.Abstraction objects.
-    """
-    abs_by_name = build_abstraction_index(abstractions)
-    template_cache: Dict[str, Any] = {}
-    rewritten: List[Abstraction] = []
+# -------------------------
+# LEARNING LOOP
+# -------------------------
 
-    for abs_obj in abstractions:
-        body_ast = parse_sexpr(abs_obj.body)
-        expanded_body = expand_expr(body_ast, abs_by_name, template_cache)
-        body_str = sexpr_to_string(expanded_body)
-        arity = deduce_arity_from_expr(expanded_body)
-
-        rewritten.append(Abstraction(name=abs_obj.name, body=body_str, arity=arity))
-
-    return rewritten
-
-
-def learn_macros(traces, max_macros=10) -> Tuple[List[str], List[Dict[str, Any]]]:
+def learn_macros(traces, max_macros=10):
     global lambda_traces, macro_schemas
 
-    # Make sure we have a bit of a library before looking for abstractions
     if len(lambda_traces) < 3:
         return [], []
 
-    # Manual abstraction learning
     abstractions = []
     programs = deepcopy(lambda_traces)
-    while len(abstractions) < max_macros:
-        # Generate candidate abstractions using Stitch's compression algorithm
-        res = compress(
-            programs,
-            iterations=max_macros*2,
-            max_arity=5,
-            # tasks=[trace["prompt"] for trace in traces],
-            # allow_single_task=True
-        )
-        print(f"\nCompress Result: {res.abstractions}")
-        raw_abstractions = rewrite_abstractions(res.abstractions)
-        print(f"Rewritten Abstractions: {raw_abstractions}")
 
-        # Filter out invalid abstractions that don't meet our criteria
-        valid_macros = [abs for abs in raw_abstractions if is_valid_abstraction(abs.body) and not abstraction_learned(abs, abstractions)]
-        if not valid_macros:
+    while len(abstractions) < max_macros:
+        res = compress(programs, iterations=max_macros * 2, max_arity=5)
+        print(f"\nCompress Result: {res.abstractions}")
+
+        expanded = rewrite_abstractions(res.abstractions)
+        print(f"\nRewritten Abstractions: {expanded}")
+
+        candidates = [
+            a for a in expanded
+            if is_valid_abstraction(a.body)
+            and not abstraction_exists(a, abstractions)
+        ]
+
+        if not candidates:
             break
 
-        # Take first valid abstraction, add to library, and rewrite programs to use it for further abstraction discovery
-        abstractions.append(valid_macros[0])
-        programs = rewrite(programs, abstractions).rewritten
+        a = candidates[0]
+        a.name = f"fn_{len(abstractions)}"
+        abstractions.append(a)
 
-    # Schema generation
+        try:
+            programs = rewrite(programs, abstractions).rewritten
+        except StitchException as e:
+            print(f"Rewrite failed: {e}")
+            abstractions.pop()
+
     macro_schemas = []
+    code_file = "from rcg.llm import get_info, move_to_object, grasp_object, release_object, move_to_position\n\n"
+    macro_map = "\nMACRO_MAP = {\n"
     for abstraction in abstractions:
         document_prompt = f"Abstraction: {abstraction}\n\nTraces that use this abstraction:\n"
 
@@ -550,4 +613,14 @@ def learn_macros(traces, max_macros=10) -> Tuple[List[str], List[Dict[str, Any]]
         schema = json.loads(document_model.generate(document_prompt, memory=False))
         macro_schemas.append(schema)
 
-    return raw_abstractions, macro_schemas
+        # Generate code for this abstraction
+        code = abstraction_to_python(abstraction, schema)
+        code_file += code
+        macro_map += f"    \"{schema['name']}\": {schema['name']}\n"
+
+    with open("rcg/learned_macros.py", "w", encoding="utf-8") as f:
+        f.write(code_file)
+        macro_map += "}"
+        f.write(macro_map)
+
+    return abstractions, macro_schemas

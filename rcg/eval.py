@@ -17,11 +17,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 # Evaluation Prompts
 prompts = [
-    # "Show me all objects in the scene",
-    # "Move to banana 3",
-    # "Move to position [1, 2, 1]",
-    # "Grasp the object*",
-    # "Release the object**",
+    "Show me all objects in the scene",
+    "Move to banana 3",
+    "Move to position [1, 2, 1]",
+    "Grasp the object*",
+    "Release the object**",
     "Pick up the object, move to the right by 30cm, then release the object*",
     "Move to banana 3 and pick it up",
     "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
@@ -390,46 +390,7 @@ if __name__ == "__main__":
                 if macros:
                     write_log(f"MACROS:")
                     for schema in macros:
-                        write_log(json.dumps(schema, indent=4) + "\n")         
-
-                # ngram_prompt = f"User Request: {prompt}\nCode: {json.dumps(parsed_code, ensure_ascii=False)}"
-                # ngram_response = ngram_model.generate(ngram_prompt, memory=False)
-                # write_log(f"Ngram response for generated code:\n{ngram_response}\n")
-                # selected_ngrams = [
-                #     [parsed_code[int(i.strip()) - 1] for i in line.strip().split(",") if i.strip()]
-                #     for line in ngram_response.split("\n") if line.strip()
-                # ]
-
-                # for ngram in selected_ngrams:
-                #     if len(ngram) < 2:
-                #         continue
-                    
-                #     ngram_key = json.dumps([n[0] for n in ngram], ensure_ascii=False)
-                #     if ngram_key not in ngrams:
-                #         ngrams[ngram_key] = {"traces": []}
-
-                #     # topk = topk_tokens(prompt, ngram)
-                #     topk_prompt = f"User Request: {prompt}\nCode: {json.dumps(ngram, ensure_ascii=False)}"
-                #     topk_response = topk_model.generate(topk_prompt, memory=False)
-                #     write_log(f"Top-k response for ngram {ngram_key}: {topk_response}\n")
-                #     topk = [t.strip().lower() for t in topk_response.split(",") if t.strip()]
-
-                #     ngrams[ngram_key]["traces"].append({
-                #         "prompt": prompt,
-                #         "code": [{"name": n[0], "args": json.loads(n[1])} for n in ngram],
-                #         "topk_tokens": topk
-                #     })
-
-                # old_names, learned_ngrams, new_macros = learn_macros(ngrams)
-                # for old_name, ngram, macro in zip(old_names, learned_ngrams, new_macros):                    
-                #     for f in range(len(FUNCTION_SCHEMAS)):
-                #         if FUNCTION_SCHEMAS[f]["name"] == old_name:
-                #             FUNCTION_SCHEMAS[f] = macro
-                #             write_log(f"MODIFIED MACRO for {ngram}: {old_name} is now {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
-                #             break
-                #     else:
-                #         FUNCTION_SCHEMAS.append(macro)
-                #         write_log(f"LEARNED NEW MACRO for {ngram}: {macro['name']}\nDescription: {macro['description']}\nParameters: {json.dumps(macro['parameters'], indent=4)}\n")
+                        write_log(json.dumps(schema, indent=4, ensure_ascii=False) + "\n")
 
                 code_model.reset(get_system_prompt_code(macros))
                 eval_model.reset(get_system_prompt_eval(macros))
