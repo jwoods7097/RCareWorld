@@ -2,19 +2,11 @@ import os
 import json
 import threading
 import re
+import traceback
 from typing import Optional, Dict, Any
 from datetime import datetime
 from pathlib import Path
 from distutils.util import strtobool
-
-# Try to import OpenAI
-try:
-    from openai import OpenAI
-    OPENAI_AVAILABLE = True
-except ImportError:
-    OPENAI_AVAILABLE = False
-    OpenAI = None
-    print("[Warning] OpenAI package not installed. Install with: pip install openai")
 
 # import torch
 # from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
@@ -22,258 +14,10 @@ except ImportError:
 # from peft.utils.hotswap import hotswap_adapter
 
 # Import prompts from prompt.py
-from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_SUMMARY, FUNCTION_SCHEMAS
-
-# Load environment variables
-from dotenv import load_dotenv
-load_dotenv()
-
-# ============================================================================
-# LLM Object
-# ============================================================================
-class OpenAILLM:
-    """LLM abstraction and configuration"""
-
-    # OpenAI API settings (using custom Qwen3 API endpoint)
-    API_KEY = os.getenv("OPENAI_API_KEY", "")
-
-    # NOTE: BASE_URL typically ends with /v1
-    BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-    
-    # Use models supportting function calling
-    MODEL = os.getenv("OPENAI_MODEL", "gpt-5.1")
-
-    # OpenAI client instance (v1.0+ API)
-    _client = None
-  
-    def __init__(self, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048, reasoning="none"):
-        self.conversation_history = [{
-            "role": "system",
-            "content": system_prompt
-        }]
-
-        # Temperature and other generation params
-        self.temperature = temperature
-        self.max_tokens = max_tokens  # None = no limit
-        self.reasoning = reasoning
-
-    @classmethod
-    def set_api_key(cls, api_key: str):
-        """Set OpenAI API key."""
-        cls.API_KEY = api_key
-        cls._client = None  # Reset client to use new key
-
-    @classmethod
-    def set_base_url(cls, base_url: str):
-        """Set OpenAI base URL."""
-        cls.BASE_URL = base_url
-        cls._client = None  # Reset client to use new URL
-    
-    @classmethod
-    def set_model(cls, model: str):
-        """Set model."""
-        cls.MODEL = model
-
-    @classmethod
-    def init_pipeline(cls):
-        """Get or create OpenAI client instance."""
-        if not OPENAI_AVAILABLE:
-            raise RuntimeError("OpenAI package not available")
-
-        if cls._client is None:
-            cls._client = OpenAI(
-                api_key=cls.API_KEY,
-                base_url=cls.BASE_URL
-            )
-
-    def generate(self, prompt, memory=True):
-        # Verify that model has been instantiated
-        if self._client is None:
-            raise RuntimeError("The model has not been initialized yet, run LLM.init_pipeline() first.")
-        
-        # Call model
-        self.conversation_history.append({"role": "user", "content": prompt})
-        response = self._client.chat.completions.create(
-            model=self.MODEL,
-            messages=self.conversation_history,
-            temperature=self.temperature,
-            max_completion_tokens=self.max_tokens,
-            reasoning_effort=self.reasoning
-        )
-
-        assistant_message = response.choices[0].message.content
-
-        if memory:
-            # Add response to history
-            self.conversation_history.append({"role": "assistant", "content": assistant_message})
-        else:
-            # Remove user prompt from history
-            self.conversation_history.pop()
-
-        return assistant_message
-    
-    def reset(self, system_prompt=None):
-        if system_prompt is not None:
-            self.conversation_history = [{
-                "role": "system",
-                "content": system_prompt
-            }]
-        else:
-            self.conversation_history = [self.conversation_history[0]]
-
-    def add_info(self):
-        try:
-            # Get index of last get_info call
-            last_index = len(self.conversation_history) - 1 - self.conversation_history[::-1].index({"role": "user", "content": "Get the current scene information"})
-            
-            # Remove last get_info call and response from history
-            self.conversation_history.pop(last_index)
-            self.conversation_history.pop(last_index)
-        except ValueError:
-            pass
-        
-        # Add current get_info data to history
-        self.conversation_history.append({"role": "user", "content": "Get the current scene information"})
-        self.conversation_history.append({"role": "assistant", "content": json.dumps(get_info()['data'], ensure_ascii=False)})
-
-class LocalLLM:
-    """LLM abstraction and configuration"""
-
-    MODEL = os.getenv("MODEL", "Qwen/Qwen2.5-Coder-7B-Instruct")
-    PIPE = None
-  
-    def __init__(self, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048):
-        self.conversation_history = [{
-            "role": "system",
-            "content": system_prompt
-        }]
-
-        # Temperature and other generation params
-        self.temperature = temperature
-        self.max_tokens = max_tokens  # None = no limit
-
-    @classmethod
-    def set_model(cls, model: str):
-        """Set model."""
-        cls.MODEL = model
-
-    @classmethod
-    def init_pipeline(cls):
-        """Initialize transformers pipeline."""
-        cls.PIPE = pipeline(task="text-generation", model=cls.MODEL, dtype=torch.bfloat16, device_map="auto")
-
-    def generate(self, prompt, memory=True):
-        # Verify that model has been instantiated
-        if self.PIPE is None:
-            raise RuntimeError("The model has not been initialized yet, run LLM.init_pipeline() first.")
-        
-        # Call model
-        self.conversation_history.append({"role": "user", "content": prompt})
-        response = self.PIPE(
-            self.conversation_history,
-            temperature=self.temperature,
-            max_new_tokens=self.max_tokens
-        )
-        torch.cuda.empty_cache()
-
-        assistant_message = response[0]["generated_text"][-1]["content"]
-
-        if memory:
-            # Add response to history
-            self.conversation_history.append({"role": "assistant", "content": assistant_message})
-        else:
-            # Remove user prompt from history
-            self.conversation_history.pop()
-
-        return assistant_message
-    
-class LoRALLM:
-    """LLM abstraction and configuration"""
-
-    MODEL = os.getenv("MODEL", "Qwen/Qwen2.5-Coder-7B-Instruct")
-    BASE_MODEL = None
-    TOKENIZER = None
-    PEFT_MODEL = None
-  
-    def __init__(self, peft_model_id, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048):
-        # Verify that model has been instantiated
-        if self.BASE_MODEL is None:
-            raise RuntimeError("The model has not been initialized yet, run LLM.init_pipeline() first.")
-
-        # Initialize PEFT model
-        self.model_id = peft_model_id
-        if self.PEFT_MODEL is None:
-            self.PEFT_MODEL = PeftModel.from_pretrained(self.BASE_MODEL, self.model_id)
-        
-        # Initialize conversation history with system prompt
-        self.conversation_history = [{
-            "role": "system",
-            "content": system_prompt
-        }]
-
-        # Temperature and other generation params
-        self.temperature = temperature
-        self.max_tokens = max_tokens  # None = no limit
-
-    @classmethod
-    def set_model(cls, model: str):
-        """Set model."""
-        cls.MODEL = model
-
-    @classmethod
-    def init_pipeline(cls):
-        """Initialize transformers pipeline."""
-        cls.BASE_MODEL = AutoModelForCausalLM.from_pretrained(cls.MODEL, dtype=torch.bfloat16, device_map="auto")
-        cls.TOKENIZER = AutoTokenizer.from_pretrained(cls.MODEL)
-
-    def generate(self, prompt, memory=True):
-        # Verify that model has been instantiated
-        hotswap_adapter(self.PEFT_MODEL, self.model_id, adapter_name="default")
-        
-        # Tokenize input
-        self.conversation_history.append({"role": "user", "content": prompt})
-        text = self.TOKENIZER.apply_chat_template(
-            self.conversation_history, add_generation_prompt=True, tokenize=False
-        )
-        model_inputs = self.TOKENIZER([text], return_tensors="pt").to(self.PEFT_MODEL.device)
-        
-        # Generate output
-        generated_ids = self.PEFT_MODEL.generate(
-            **model_inputs,
-            temperature=self.temperature,
-            max_new_tokens=self.max_tokens
-        )
-        output_ids = generated_ids[0][len(model_inputs.input_ids[0]):]
-        torch.cuda.empty_cache()
-
-        assistant_message = self.TOKENIZER.decode(output_ids, skip_special_tokens=True)
-
-        if memory:
-            # Add response to history
-            self.conversation_history.append({"role": "assistant", "content": assistant_message})
-        else:
-            # Remove user prompt from history
-            self.conversation_history.pop()
-
-        return assistant_message
-    
-    def reset(self):
-        self.conversation_history = [self.conversation_history[0]]
-
-    def add_info(self):
-        try:
-            # Get index of last get_info call
-            last_index = len(self.conversation_history) - 1 - self.conversation_history[::-1].index({"role": "user", "content": "Get the current scene information"})
-            
-            # Remove last get_info call and response from history
-            self.conversation_history.pop(last_index)
-            self.conversation_history.pop(last_index)
-        except ValueError:
-            pass
-        
-        # Add current get_info data to history
-        self.conversation_history.append({"role": "user", "content": "Get the current scene information"})
-        self.conversation_history.append({"role": "assistant", "content": json.dumps(get_info()['data'], ensure_ascii=False)})
+from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_SUMMARY, FUNCTION_SCHEMAS, get_system_prompt_code, get_system_prompt_eval
+# from rcg.learned_macros import *
+from rcg.macro_stitch import learn_macros, sequence_to_expr, rewrite_json_calls
+from rcg.llms import OpenAILLM
 
 
 # ============================================================================
@@ -893,14 +637,15 @@ class LLMController:
     
     def __init__(self, enable_logging: bool = True, show_function_calls: bool = True):
         """Initialize LLM controller."""
+        self.traces = []
 
         # Initialize models
-        if not LLM.API_KEY:
+        if not OpenAILLM.API_KEY:
             raise ValueError("OpenAI API key not set")
-        LLM.init_pipeline()
-        self.code_model = LLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=0.1)
-        self.eval_model = LLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
-        self.summary_model = LLM(system_prompt=SYSTEM_PROMPT_SUMMARY, temperature=0.7)
+        OpenAILLM.init_pipeline()
+        self.code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=1.0, reasoning="medium")
+        self.eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
+        self.summary_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_SUMMARY, temperature=0.7)
 
         # Initialize logging
         self.enable_logging = enable_logging
@@ -910,11 +655,12 @@ class LLMController:
             log_dir = Path(__file__).parent.parent / "log"
             log_dir.mkdir(exist_ok=True)
             self.log_file = log_dir / f"llm_{timestamp}.log"
-            self._write_log(f"=== LLM Session Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
-            self._write_log(f"Model: {LLM.MODEL}")
+            self._write_log(f"Code Model: {self.code_model.MODEL}")
+            self._write_log(f"Eval Model: {self.eval_model.MODEL}")
+            self._write_log(f"Summary Model: {self.summary_model.MODEL}")
             self._write_log("")
 
-        print(f"[LLM Controller] Initialized with {LLM.MODEL}")
+        print(f"[LLM Controller] Initialized")
         if self.enable_logging:
             print(f"[LLM Controller] Logging to {self.log_file}")
     
@@ -927,13 +673,14 @@ class LLMController:
             self._write_log("")
 
         # Call get_info first, removing previous call
-        self.code_model.add_info()
-        self.eval_model.add_info()
+        info = get_info()
+        self.code_model.add_info(info)
+        self.eval_model.add_info(info)
 
         try:
             # Generate and evaluate code
-            code_message = self.geneval(None, user_input, include_input_in_eval=False, name="Syntax")
-            code_message = self.geneval(self.eval_model, user_input, include_input_in_eval=True, code_message=code_message, name="Function")
+            code_message = self.geneval(user_input, include_input_in_eval=True)
+            code_message = rewrite_json_calls(code_message)
 
             # Try to parse manual function call from text
             parsed_functions = self._parse_manual_function_call(code_message)
@@ -991,6 +738,26 @@ class LLMController:
                     self._write_log(final_message)
                     self._write_log("")
 
+                self.traces.append({
+                    "timestamp": datetime.now().isoformat(),
+                    "prompt": user_input,
+                    "final_code": parsed_functions,
+                })
+
+                lambda_expr = sequence_to_expr(parsed_functions)
+                self._write_log(f"Lambda expression: {lambda_expr}\n")
+
+                abstractions, macros = learn_macros(self.traces)
+                self._write_log(f"Learned abstractions: {abstractions}\n")
+
+                if macros:
+                    self._write_log(f"MACROS:")
+                    for schema in macros:
+                        self._write_log(json.dumps(schema, indent=4, ensure_ascii=False) + "\n")
+
+                self.code_model.update_system_prompt(get_system_prompt_code(macros))
+                self.eval_model.update_system_prompt(get_system_prompt_eval(macros))
+
                 return {
                     "success": True,
                     "function_called": function_names,
@@ -1013,48 +780,48 @@ class LLMController:
                 }
         
         except Exception as e:
+            traceback.print_exc()
             return {
                 "success": False,
                 "error": f"LLM error: {str(e)}"
             }
         
-    def geneval(self, eval_model, user_input, include_input_in_eval, eval_attempts=5, code_message=None, name=""):
+    def geneval(self, user_input, include_input_in_eval, macros = [], eval_attempts=5, code_message=None):
         """Generate and evaluate the code with the specified evaluation model."""
         correct = False
         eval_counter = 0
         eval_message = ""
         
         # Ensure generated code is correct
+        passed_function = False
         while not correct and eval_counter < eval_attempts:
             # Call code model
             if code_message is None or eval_counter > 0:
                 code_message = self.code_model.generate(user_input if not eval_message else eval_message)
-                print(f"Generated code:\n{code_message}")
-                if self.enable_logging:
-                    self._write_log(f"CODER RESULT: {code_message}\n")
+                self._write_log(f"CODER RESULT: {code_message}\n")
 
-            if eval_model is None:
-                # Evaluate code with static evaluator
-                correct, eval_message = self._static_evaluation(code_message)
-            else:
-                # Evaluate code with LLM
-                eval_prompt = f"User Request: {user_input}\nCode: {code_message}" if include_input_in_eval else f"Code: {code_message}"
-                eval_message = eval_model.generate(eval_prompt)
-                found = re.search(r"\b(True|False)\b", eval_message, re.IGNORECASE)
-                if found:
-                    correct = strtobool(found.group(1))
+            # Evaluate code with LLM
+            eval_prompt = f"User Request: {user_input}\nCode: {code_message}" if include_input_in_eval else f"Code: {code_message}"
+            eval_message = self.eval_model.generate(eval_prompt)
+            self._write_log(f"FUNCTION EVALUATOR RESULT: {eval_message}\n")
+            found = re.search(r"\b(True|False)\b", eval_message, re.IGNORECASE)
+            if found:
+                correct = strtobool(found.group(1))
 
-            print(f"{name} Evaluation: {eval_message}\n")
-            if self.enable_logging:
-                self._write_log(f"{name} EVALUATOR RESULT: {eval_message}\n")
+            # Evaluate code with static analysis
+            if correct:
+                passed_function = True
+                correct, eval_message = self._static_evaluation(code_message, macros)
+                self._write_log(f"SYNTAX EVALUATOR RESULT: {eval_message}\n")
 
             eval_counter += 1
 
-        if eval_model is not None:
-            eval_model.reset()
-        if eval_counter > eval_attempts:
+        if self.eval_model is not None:
+            self.eval_model.reset()
+        if eval_counter >= eval_attempts and not correct:
+            name = "SYNTAX" if passed_function else "FUNCTION"
             raise RuntimeError(f'Generated code failed {name} evaluation')
-
+        
         return code_message
     
     def reset(self):
@@ -1106,7 +873,7 @@ class LLMController:
 
         return found_functions
     
-    def _static_evaluation(self, code: str) -> tuple[bool, str]:
+    def _static_evaluation(self, code: str, macros: list = []) -> tuple[bool, str]:
         """Static evaluation of generated code."""
         
         # Parse function calls from code
@@ -1127,17 +894,21 @@ class LLMController:
                 reasoning += f"Arguments for function '{function_name}' are not valid JSON.\n"
                 function_args = {}
             
-            for schema in FUNCTION_SCHEMAS:
+            for schema in FUNCTION_SCHEMAS + macros:
                 # Check if function exists
                 if schema["name"] == function_name:
+                    # Check required arguments
+                    for req_arg in schema["parameters"]["required"]:
+                        if req_arg not in function_args:
+                            result = False
+                            reasoning += f"Missing required argument '{req_arg}' for function '{function_name}'.\n"
+                    
                     # Check provided arguments
-                    if any(arg_name not in function_args for arg_name in schema["parameters"]["required"]):
-                        result = False
-                        reasoning += f"Missing required arguments for function '{function_name}'.\n"
                     for arg_name, arg_value in function_args.items():
                         if arg_name not in schema["parameters"]["properties"]:
                             result = False
                             reasoning += f"Unexpected argument '{arg_name}' for function '{function_name}'.\n"
+                        
                         else:
                             # Check argument type
                             expected_type = schema["parameters"]["properties"][arg_name]["type"]

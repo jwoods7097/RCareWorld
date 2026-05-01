@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 from typing import Optional
 from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_NGRAM, SYSTEM_PROMPT_PLAN, SYSTEM_PROMPT_TOPK, get_system_prompt_code, get_system_prompt_eval
-from rcg.llm import OpenAILLM, LocalLLM, LoRALLM
+from rcg.llms import OpenAILLM
 from rcg.val import prompt_to_code_general
 # from rcg.macro import learn_macros
 from rcg.macro_stitch import sequence_to_expr, learn_macros, build_function_schema
@@ -308,11 +308,6 @@ if __name__ == "__main__":
             traces = json.load(f)
     except FileNotFoundError:
         traces = []
-    try:
-        with open('rcg/data/ngrams.json', 'r', encoding='utf-8') as f:
-            ngrams = json.load(f)
-    except FileNotFoundError:
-        ngrams = {}
     macros = []
 
     try:
@@ -324,7 +319,6 @@ if __name__ == "__main__":
         OpenAILLM.init_pipeline()
         code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=1.0, reasoning="medium")
         eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
-        ngram_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_NGRAM, temperature=0.1)
 
         # Initialize logging
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -404,7 +398,5 @@ if __name__ == "__main__":
     finally:
         # with open('rcg/data/traces.json', 'w', encoding='utf-8') as f:
         #     json.dump(traces, f, ensure_ascii=False, indent=4)
-        with open('rcg/data/ngrams.json', 'w', encoding='utf-8') as f:
-            json.dump(ngrams, f, ensure_ascii=False, indent=4)
         with open('rcg/data/schemas.json', 'w', encoding='utf-8') as f:
             json.dump(FUNCTION_SCHEMAS + macros, f, ensure_ascii=False, indent=4)

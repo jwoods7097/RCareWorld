@@ -6,13 +6,14 @@ import json
 import re
 from typing import Any, Iterable, List, Tuple, Dict, Optional
 from collections import defaultdict
-from rcg.llm import OpenAILLM
+from rcg.llms import OpenAILLM
 from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_DOCUMENT
 
 document_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_DOCUMENT, temperature=0.7)
 
 lambda_traces = []
 macro_schemas = []
+learned_abstractions = []
 
 
 # -------------------------
@@ -375,6 +376,7 @@ def is_valid_structure(expr):
     - 'then' is the only structural operator
     - function heads must be valid symbols (not #vars, not lists)
     """
+    global macro_schemas
 
     if isinstance(expr, str):
         return True
@@ -557,20 +559,201 @@ def abstraction_to_python(abs_obj, schema: dict) -> str:
 '''
 
 
+def rewrite_json_calls(json_str: str) -> str:
+    """
+    Expand macro calls in JSON into primitive-only JSON calls.
+
+    Handles:
+    - optional args via schema defaults
+    - abstraction expansion
+    - type casting via FUNCTION_SCHEMAS
+    - Banana name normalization
+    """
+    global learned_abstractions
+    abs_by_name = {a.name: a for a in learned_abstractions}
+    cache = {}
+
+    # -------------------------
+    # Helpers
+    # -------------------------
+
+    def flatten_then(expr):
+        if not isinstance(expr, list):
+            return [expr]
+        if expr[0] != "then":
+            return [expr]
+
+        result = []
+        for child in expr[1:]:
+            result.extend(flatten_then(child))
+        return result
+
+    def cast_value(value, expected_type):
+        if value is None:
+            return None
+
+        if expected_type == "number":
+            if isinstance(value, (int, float)):
+                return value
+            if isinstance(value, str):
+                return float(value)
+            return float(value)
+
+        if expected_type == "boolean":
+            if isinstance(value, bool):
+                return value
+            if isinstance(value, str):
+                return value.lower() == "true"
+            return bool(value)
+
+        if expected_type == "string":
+            return str(value)
+
+        return value
+
+    def normalize_object_names(obj):
+        if isinstance(obj, dict):
+            return {k: normalize_object_names(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [normalize_object_names(v) for v in obj]
+        if isinstance(obj, str):
+            return (
+                obj.replace("Banana_1", "Banana 1")
+                   .replace("Banana_2", "Banana 2")
+                   .replace("Banana_3", "Banana 3")
+            )
+        return obj
+
+    def json_call_to_sexpr(call):
+        func = call["function"]
+        args = call["args"]
+
+        schema = get_schema(func)
+        if schema is None:
+            raise ValueError(f"No schema for function '{func}'")
+
+        properties = schema["parameters"]["properties"]
+        required = set(schema["parameters"].get("required", []))
+
+        values = []
+
+        for name, prop in properties.items():
+            if name in args:
+                val = args[name]
+            elif "default" in prop:
+                val = prop["default"]
+            elif name in required:
+                raise ValueError(f"Missing required arg '{name}'")
+            else:
+                val = None
+
+            values.append(render_value(val))
+
+        return [func] + values
+
+    def sexpr_call_to_json(expr):
+        func = expr[0]
+        args = expr[1:]
+
+        schema = get_schema(func)
+        if schema is None:
+            raise ValueError(f"No schema for function '{func}'")
+
+        properties = schema["parameters"]["properties"]
+        arg_names = list(properties.keys())
+
+        arg_dict = {}
+
+        for i, val in enumerate(args):
+            if i >= len(arg_names):
+                continue
+
+            name = arg_names[i]
+            expected_type = properties[name].get("type", "string")
+
+            # normalize raw value
+            if isinstance(val, str):
+                if val == "true":
+                    val = True
+                elif val == "false":
+                    val = False
+                elif val == "nil":
+                    val = None
+                elif re.fullmatch(r"-?\d+(\.\d+)?", val):
+                    val = float(val) if "." in val else int(val)
+
+            val = cast_value(val, expected_type)
+            arg_dict[name] = val
+
+        return {
+            "function": func,
+            "args": arg_dict
+        }
+
+    # -------------------------
+    # Parse input
+    # -------------------------
+
+    try:
+        data = json.loads(json_str)
+        if isinstance(data, dict):
+            data = [data]
+    except:
+        data = [json.loads(line) for line in json_str.strip().splitlines()]
+
+    # -------------------------
+    # Expand
+    # -------------------------
+
+    output_calls = []
+
+    for call in data:
+        sexpr = json_call_to_sexpr(call)
+
+        expanded = expand_expr(
+            sexpr,
+            abs_by_name,
+            cache,
+            env={},
+            stack=[],
+            counter=[0],
+        )
+
+        flat = flatten_then(expanded)
+
+        for expr in flat:
+            if isinstance(expr, list) and isinstance(expr[0], str):
+                if expr[0] in abs_by_name:
+                    continue
+                output_calls.append(sexpr_call_to_json(expr))
+
+    # -------------------------
+    # Normalize names
+    # -------------------------
+
+    output_calls = [normalize_object_names(c) for c in output_calls]
+
+    # -------------------------
+    # Return
+    # -------------------------
+
+    return "\n".join(json.dumps(c) for c in output_calls)
+
+
 # -------------------------
 # LEARNING LOOP
 # -------------------------
 
 def learn_macros(traces, max_macros=10):
-    global lambda_traces, macro_schemas
+    global lambda_traces, macro_schemas, learned_abstractions
 
     if len(lambda_traces) < 3:
         return [], []
 
-    abstractions = []
+    learned_abstractions = []
     programs = deepcopy(lambda_traces)
 
-    while len(abstractions) < max_macros:
+    while len(learned_abstractions) < max_macros:
         res = compress(programs, iterations=max_macros * 2, max_arity=5)
         print(f"\nCompress Result: {res.abstractions}")
 
@@ -580,26 +763,26 @@ def learn_macros(traces, max_macros=10):
         candidates = [
             a for a in expanded
             if is_valid_abstraction(a.body)
-            and not abstraction_exists(a, abstractions)
+            and not abstraction_exists(a, learned_abstractions)
         ]
 
         if not candidates:
             break
 
         a = candidates[0]
-        a.name = f"fn_{len(abstractions)}"
-        abstractions.append(a)
+        a.name = f"fn_{len(learned_abstractions)}"
+        learned_abstractions.append(a)
 
         try:
-            programs = rewrite(programs, abstractions).rewritten
+            programs = rewrite(programs, learned_abstractions).rewritten
         except StitchException as e:
             print(f"Rewrite failed: {e}")
-            abstractions.pop()
+            learned_abstractions.pop()
 
     macro_schemas = []
     code_file = "from rcg.llm import get_info, move_to_object, grasp_object, release_object, move_to_position\n\n"
     macro_map = "\nMACRO_MAP = {\n"
-    for abstraction in abstractions:
+    for abstraction in learned_abstractions:
         document_prompt = f"Abstraction: {abstraction}\n\nTraces that use this abstraction:\n"
 
         # Collect traces that use this abstraction to provide context for documentation generation
@@ -623,4 +806,4 @@ def learn_macros(traces, max_macros=10):
         macro_map += "}"
         f.write(macro_map)
 
-    return abstractions, macro_schemas
+    return learned_abstractions, macro_schemas
