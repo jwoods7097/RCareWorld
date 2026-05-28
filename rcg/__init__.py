@@ -15,7 +15,7 @@ Example:
     env.step(100)
 """
 
-from rcg.env import KinovaTestEnv, create_test_env
+from rcg.env_banana import KinovaTestEnv, create_test_env
 
 __all__ = ["KinovaTestEnv", "create_test_env"]
 __version__ = "0.1.0"

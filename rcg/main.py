@@ -16,7 +16,6 @@ from dotenv import load_dotenv
 _PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(_PROJECT_ROOT))
 
-from rcg.env import KinovaTestEnv
 from rcg.llm_controller import LLMController
 from rcg import robot as rbt
 from rcg import gradio_ui as gradio
@@ -153,6 +152,14 @@ Examples:
         help="Unity connection port (default: 5004)"
     )
 
+    parser.add_argument(
+        "--env",
+        type=str,
+        choices=["bananas", "objects"],
+        default="bananas",
+        help="Environment to use (default: bananas)"
+    )
+
     return parser.parse_args()
 
 
@@ -165,6 +172,11 @@ def main():
     # Parse arguments
     args = parse_args()
     use_gradio = not args.no_gradio
+
+    if args.env == "bananas":
+        from rcg.env_banana import KinovaTestEnv
+    elif args.env == "objects":
+        from rcg.env_objects import KinovaTestEnv
 
     print("\n" + "="*70)
     print("KINOVA ROBOT LLM CONTROL SYSTEM - STARTING")
@@ -181,9 +193,9 @@ def main():
             port=args.unity_port
         )
         env.step(50)  # Wait for initialization
-        print("[Success] Environment initialized")
+        print(f"[Success] Environment {args.env} initialized")
     except Exception as e:
-        print(f"[Error] Failed to initialize environment: {e}")
+        print(f"[Error] Failed to initialize environment {args.env}: {e}")
         print("\nMake sure:")
         print("  1. Unity Editor is running")
         print("  2. Kinova scene is open")
@@ -204,18 +216,6 @@ def main():
         print("  2. Objects exist in Unity scene")
         env.close()
         return
-
-    # Register banana objects for LLM access
-    print("\n[2.5/4] Registering banana objects...")
-    try:
-        banana1 = env.get_banana1()
-        banana2 = env.get_banana2()
-        banana3 = env.get_banana3()
-        print("[Success] Registered 3 banana objects (IDs: 111111, 222222, 333333)")
-    except Exception as e:
-        print(f"[Warning] Failed to register bananas: {e}")
-        print("Bananas will not be visible to get_info() until registered in Unity")
-        print("To fix: Set Instance IDs in Unity Inspector to 111111, 222222, 333333")
 
     # Step 3: Initialize LLM
     print("\n[3/4] Initializing LLM controller...")

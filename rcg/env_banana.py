@@ -49,6 +49,7 @@ class KinovaTestEnv(RCareWorld):
     ):
         """Initialize Kinova test environment."""
         self.seed = seed
+        self.name = "bananas"
         
         super().__init__(
             executable_file=executable_file,
