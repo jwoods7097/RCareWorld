@@ -17,7 +17,8 @@ _PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(_PROJECT_ROOT))
 
 from rcg.env import KinovaTestEnv
-from rcg import llm
+from rcg.llm_controller import LLMController
+from rcg import robot as rbt
 from rcg import gradio_ui as gradio
 
 
@@ -223,10 +224,10 @@ def main():
         unity_lock = gradio.get_unity_lock()
 
         # Initialize LLM functions with shared lock
-        llm.initialize(env, robot, gripper, unity_lock=unity_lock)
+        rbt.initialize(env, robot, gripper, unity_lock=unity_lock)
 
         # Create LLM controller
-        llm_controller = llm.LLMController()
+        llm_controller = LLMController()
         print("[Success] LLM controller initialized")
     except Exception as e:
         print(f"[Error] Failed to initialize LLM: {e}")

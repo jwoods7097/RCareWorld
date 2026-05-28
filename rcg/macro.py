@@ -1,6 +1,6 @@
 import json
 from rcg.prompt import SYSTEM_PROMPT_DESCRIBE, SYSTEM_PROMPT_NAME, FUNCTION_SCHEMAS
-from rcg.llm import OpenAILLM
+from rcg.robot import OpenAILLM
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
