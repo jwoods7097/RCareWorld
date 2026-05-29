@@ -45,9 +45,9 @@ class KinovaTestEnv(RCareWorld):
     _strawberry1_id: int = 800013
     _strawberry2_id: int = 800014
     _strawberry3_id: int = 800015
-    _apple_id: int = 800016
-    _orange_id: int = 800017
-    _plum_id: int = 800018
+    _ham_id: int = 800016
+    _bread1_id: int = 800017
+    _bread2_id: int = 800018
     
     def __init__(
         self,
@@ -206,31 +206,31 @@ class KinovaTestEnv(RCareWorld):
             print(f"Make sure the object exists in Unity with Instance ID = {self._strawberry3_id}")
             raise
 
-    def get_apple(self):
-        """Get apple object."""
+    def get_ham(self):
+        """Get ham object."""
         try:
-            return self.GetAttr(self._apple_id)
+            return self.GetAttr(self._ham_id)
         except AssertionError:
-            print(f"Error: Apple with ID {self._apple_id} not found")
-            print(f"Make sure the object exists in Unity with Instance ID = {self._apple_id}")
+            print(f"Error: Ham with ID {self._ham_id} not found")
+            print(f"Make sure the object exists in Unity with Instance ID = {self._ham_id}")
             raise
 
-    def get_orange(self):
-        """Get orange object."""
+    def get_bread1(self):
+        """Get bread1 object."""
         try:
-            return self.GetAttr(self._orange_id)
+            return self.GetAttr(self._bread1_id)
         except AssertionError:
-            print(f"Error: Orange with ID {self._orange_id} not found")
-            print(f"Make sure the object exists in Unity with Instance ID = {self._orange_id}")
+            print(f"Error: Bread1 with ID {self._bread1_id} not found")
+            print(f"Make sure the object exists in Unity with Instance ID = {self._bread1_id}")
             raise
 
-    def get_plum(self):
-        """Get plum object."""
+    def get_bread2(self):
+        """Get bread2 object."""
         try:
-            return self.GetAttr(self._plum_id)
+            return self.GetAttr(self._bread2_id)
         except AssertionError:
-            print(f"Error: Plum with ID {self._plum_id} not found")
-            print(f"Make sure the object exists in Unity with Instance ID = {self._plum_id}")
+            print(f"Error: Bread2 with ID {self._bread2_id} not found")
+            print(f"Make sure the object exists in Unity with Instance ID = {self._bread2_id}")
             raise
     
     def _apply_seed(self, seed: int):
@@ -289,9 +289,9 @@ class KinovaTestEnv(RCareWorld):
         print(f"Strawberry1 ID:      {self._strawberry1_id}")
         print(f"Strawberry2 ID:      {self._strawberry2_id}")
         print(f"Strawberry3 ID:      {self._strawberry3_id}")
-        print(f"Apple ID:            {self._apple_id}")
-        print(f"Orange ID:           {self._orange_id}")
-        print(f"Plum ID:             {self._plum_id}")
+        print(f"Ham ID:              {self._ham_id}")
+        print(f"Bread1 ID:           {self._bread1_id}")
+        print(f"Bread2 ID:           {self._bread2_id}")
         print("="*70 + "\n")
     
     def test_connection(self):
