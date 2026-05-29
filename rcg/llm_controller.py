@@ -63,13 +63,16 @@ class LLMController:
         try:
             # Generate and evaluate code
             code_message = geneval(self.code_model, self.eval_model, user_input, include_input_in_eval=True, macros=self.macros)
-            code_message = rewrite_json_calls(code_message)
 
             # Try to parse manual function call from text
             parsed_functions = parse_manual_function_call(code_message)
 
             # Check for function call
             if parsed_functions:
+                # Convert parsed functions into primitives
+                code_message = rewrite_json_calls(code_message)
+                parsed_functions = parse_manual_function_call(code_message)
+
                 function_names = []
                 function_args_list = []
                 function_results = []

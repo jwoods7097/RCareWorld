@@ -155,7 +155,7 @@ Examples:
     parser.add_argument(
         "--env",
         type=str,
-        choices=["bananas", "objects"],
+        choices=["bananas", "objects", "feeding"],
         default="bananas",
         help="Environment to use (default: bananas)"
     )
@@ -177,6 +177,10 @@ def main():
         from rcg.env_banana import KinovaTestEnv
     elif args.env == "objects":
         from rcg.env_objects import KinovaTestEnv
+    elif args.env == "feeding":
+        from rcg.env_feeding import KinovaTestEnv
+    else:
+        raise ValueError(f"Invalid environment: {args.env}")
 
     print("\n" + "="*70)
     print("KINOVA ROBOT LLM CONTROL SYSTEM - STARTING")
