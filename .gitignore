@@ -242,3 +242,4 @@ cython_debug/
 
 # Project-specific ignores
 training_checkpoints/
+log/

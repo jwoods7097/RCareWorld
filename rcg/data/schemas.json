@@ -126,21 +126,5 @@
                 "z"
             ]
         }
-    },
-    {
-        "name": "move_to_and_grasp_object",
-        "description": "Moves the robotic arm to the specified object with a small vertical offset, then closes the gripper to grasp it.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "The exact name of the target object in the Unity scene for the arm to move to and grasp (e.g., \"Banana 1\")."
-                }
-            },
-            "required": [
-                "name"
-            ]
-        }
     }
 ]

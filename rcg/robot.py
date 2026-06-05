@@ -313,10 +313,11 @@ def get_info(name: Optional[str] = None) -> Dict[str, Any]:
                         "position": obj_data.get("position", [0.0, 0.0, 0.0]),
                         "rotation": obj_data.get("rotation", [0.0, 0.0, 0.0]),
                         "quaternion": obj_data.get("quaternion", [0.0, 0.0, 0.0, 1.0]),
+                        "scale": obj_data.get("scale", [1.0, 1.0, 1.0])
                     }
 
-                    if "scale" in obj_data:
-                        obj_info["scale"] = obj_data["scale"]
+                    if obj_data.get("colored", ""):
+                        obj_info["color"] = obj_data["colored"]
                     if "velocity" in obj_data:
                         obj_info["velocity"] = obj_data["velocity"]
 

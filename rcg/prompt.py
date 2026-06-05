@@ -211,6 +211,7 @@ User: "move forward 15cm"
    - "move forward" → z > 0
    - "move backward" / "move back" → z < 0
 4. **NEVER use Z-axis for up/down movement! Always use Y-axis!**
+5. For prompts that involve interaction with the user, their mouth is located at [-1.02, 1.60, -0.07]
 """
 
 SYSTEM_PROMPT_CODE = get_system_prompt_code()
@@ -232,6 +233,8 @@ Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
 - Move RIGHT → increase X (x > 0)
 - Move FORWARD → increase Z (z > 0)
 - Move BACKWARD → decrease Z (z < 0)
+
+For prompts that involve interaction with the user, their mouth is located at [-1.02, 1.60, -0.07]
 
 ## Available Functions:
 """ \

@@ -62,7 +62,6 @@ def static_evaluation(code: str, macros: list = []) -> tuple[bool, str]:
     # Parse function calls from code
     try:
         functions = parse_manual_function_call(code)
-        print(f"Parsed functions: {functions}")
     except:
         return (False, f"Code is not in valid JSON format")
         

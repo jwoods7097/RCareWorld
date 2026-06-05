@@ -1,5 +1,8 @@
+import csv
 import os
 import json
+from datetime import datetime
+from pathlib import Path
 
 # Try to import OpenAI
 try:
@@ -13,6 +16,13 @@ except ImportError:
 # Load environment variables
 from dotenv import load_dotenv
 load_dotenv()
+
+FLEX = True
+INPUT_PER_1M = 1.25
+CACHED_INPUT_PER_1M = 0.125
+OUTPUT_PER_1M = 10.00
+
+CSV_PATH = Path(__file__).parent.parent / "log" / "llm_usage.csv"
 
 # ============================================================================
 # LLM Object
@@ -84,8 +94,55 @@ class OpenAILLM:
             messages=self.conversation_history,
             temperature=self.temperature,
             max_completion_tokens=self.max_tokens,
-            reasoning_effort=self.reasoning
+            reasoning_effort=self.reasoning,
+            service_tier="flex" if FLEX else "default"
         )
+
+        usage = response.usage
+
+        input_tokens = usage.prompt_tokens or 0
+        output_tokens = usage.completion_tokens or 0
+        total_tokens = usage.total_tokens or 0
+
+        cached_input_tokens = 0
+        if usage.prompt_tokens_details:
+            cached_input_tokens = usage.prompt_tokens_details.cached_tokens or 0
+
+        reasoning_tokens = 0
+        if usage.completion_tokens_details:
+            reasoning_tokens = usage.completion_tokens_details.reasoning_tokens or 0
+
+        uncached_input_tokens = input_tokens - cached_input_tokens
+
+        total_cost = (
+            uncached_input_tokens / 1_000_000 * INPUT_PER_1M
+            + cached_input_tokens / 1_000_000 * CACHED_INPUT_PER_1M
+            + output_tokens / 1_000_000 * OUTPUT_PER_1M
+        )
+        if FLEX:
+            total_cost *= 0.5  # Apply 50% discount for flex tier
+
+        row = {
+            "timestamp": datetime.now().isoformat(),
+            "prompt": prompt,
+            "input_tokens": input_tokens,
+            "cached_input_tokens": cached_input_tokens,
+            "uncached_input_tokens": uncached_input_tokens,
+            "output_tokens": output_tokens,
+            "reasoning_tokens": reasoning_tokens,
+            "total_tokens": total_tokens,
+            "total_cost_usd": total_cost,
+        }
+
+        file_exists = os.path.exists(CSV_PATH)
+
+        with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=row.keys())
+
+            if not file_exists:
+                writer.writeheader()
+
+            writer.writerow(row)
 
         assistant_message = response.choices[0].message.content
 

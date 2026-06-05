@@ -1,0 +1,36 @@
+prompt,code,program_length,macro_usage,duration_seconds
+Give a strawberry to the user,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry2"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,23.361383
+Hand the human something to drink,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cup"", ""lift_height"": 0.4}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,244.795261
+Move the dangerous item away from the human,"{""function"": ""grasp_object"", ""args"": {""name"": ""Knife"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0, ""y"": 0, ""z"": -0.5, ""relative"": true}}",2,0,260.340878
+Place the peach on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Peach"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.15, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,34.755655
+Put the fork up to the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Fork"", ""lift_height"": 0.4}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.6, ""z"": -0.07, ""duration"": 2.5, ""relative"": false}}",2,0,37.368788
+Collect all strawberries onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry2"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry3"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {}}",9,0,16.552478
+Put the apple on the plate and use the knife to cut it,"{""function"": ""grasp_object"", ""args"": {""name"": ""Peach"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.15, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Knife"", ""lift_height"": 0.2}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.15, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.05, ""y"": 0.0, ""z"": 0.0, ""relative"": true, ""duration"": 1.0}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.10, ""y"": 0.0, ""z"": 0.0, ""relative"": true, ""duration"": 1.0}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.05, ""y"": 0.0, ""z"": 0.0, ""relative"": true, ""duration"": 1.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": true, ""lift_height"": 0.1}}",9,0,33.069817
+Grasp the napkin and wipe the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Napkin"", ""lift_height"": 0.3}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.05, ""y"": 0.0, ""z"": 0.0, ""duration"": 1.0, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.05, ""y"": 0.0, ""z"": 0.0, ""duration"": 1.0, ""relative"": true}}",4,0,21.138305

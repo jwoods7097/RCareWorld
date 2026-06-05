@@ -6,7 +6,8 @@ import re
 
 from stitch_core import Abstraction, StitchException, compress, rewrite
 from rcg.llm import OpenAILLM
-from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_DOCUMENT
+from rcg.robot import FUNCTION_SCHEMAS
+from rcg.prompt import SYSTEM_PROMPT_DOCUMENT
 
 
 document_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_DOCUMENT, temperature=0.7)
@@ -419,6 +420,7 @@ def build_macro_expansion_index(
 
 
 def rewrite_abstractions(abstractions: Iterable[Abstraction]) -> List[Abstraction]:
+    abstractions = list(abstractions)
     abs_by_name = build_abstraction_index(abstractions)
     cache: Dict[str, Any] = {}
     rewritten: List[Abstraction] = []
@@ -444,7 +446,18 @@ def count_primitive_calls(expr: Any) -> int:
 
 
 def is_literal_structure(expr: Any) -> bool:
-    if not isinstance(expr, list) or not expr:
+    """
+    Validate literal-only list structures such as (list ...) or (dict ...).
+
+    This is used for primitive argument values. It deliberately rejects:
+    - then expressions
+    - primitive or macro function calls
+    - variables in head position, e.g. (#0 ...)
+    - non-symbol heads
+    """
+    if not isinstance(expr, list):
+        return True
+    if not expr:
         return True
 
     head = expr[0]
@@ -452,25 +465,54 @@ def is_literal_structure(expr: Any) -> bool:
         return False
     if head == "then" or head.startswith("#") or is_known_function(head):
         return False
-    return all(is_literal_structure(child) for child in expr[1:])
+
+    return all(is_value_expr(child) for child in expr[1:])
+
+
+def is_value_expr(expr: Any) -> bool:
+    """
+    Validate something used as a primitive argument value.
+
+    Variables like #0 are allowed here, but full program expressions are not.
+    This prevents invalid abstractions such as:
+        (then (move_to_position ...) #0)
+    and function-valued arguments such as:
+        (move_to_position (grasp_object ...) ...)
+    """
+    if isinstance(expr, str):
+        return True
+    if not isinstance(expr, list):
+        return True
+    return is_literal_structure(expr)
 
 
 def is_valid_structure(expr: Any) -> bool:
+    """
+    Validate a full program expression.
+
+    At the program level, only these shapes are valid:
+    - (then <program> <program>)
+    - (<known_function> <value> ...)
+
+    Bare variables such as #0 are invalid as standalone program steps,
+    and variables/functions are invalid in function position.
+    """
     if isinstance(expr, str):
-        return True
+        return False
     if not isinstance(expr, list) or not expr:
         return False
 
     head = expr[0]
+
     if head == "then":
         return len(expr) == 3 and all(is_valid_structure(child) for child in expr[1:])
-    if not isinstance(head, str) or head.startswith("#") or not is_known_function(head):
+
+    if not isinstance(head, str):
+        return False
+    if head.startswith("#") or not is_known_function(head):
         return False
 
-    for arg in expr[1:]:
-        if isinstance(arg, list) and not is_literal_structure(arg):
-            return False
-    return True
+    return all(is_value_expr(arg) for arg in expr[1:])
 
 
 def is_valid_abstraction(s_expr: str) -> bool:
@@ -524,15 +566,17 @@ def abstraction_exists(new_abs: Abstraction, abstractions: Iterable[Abstraction]
 
 def sexpr_arg_to_python(arg: Any, var_map: Dict[str, str]) -> str:
     if isinstance(arg, str):
-        if arg.startswith("#"):
-            return var_map[arg]
+        if re.fullmatch(r"#\d+", arg):
+            return var_map.get(arg, f"arg{arg[1:]}")
         if arg == "true":
             return "True"
         if arg == "false":
             return "False"
         if arg == "nil":
             return "None"
-        return arg
+        if re.fullmatch(r"-?\d+(\.\d+)?", arg):
+            return arg
+        return repr(normalize_object_names(arg))
     return str(arg)
 
 
@@ -555,9 +599,22 @@ def build_python_docstring(schema: Dict[str, Any]) -> str:
 
 
 def abstraction_to_python(abs_obj: Abstraction, schema: Dict[str, Any]) -> str:
+    body_expr = parse_sexpr(abs_obj.body)
+
     param_names = list(schema["parameters"]["properties"].keys())
-    var_map = {f"#{i}": param_names[i] for i in range(min(abs_obj.arity, len(param_names)))}
-    calls = flatten_then(parse_sexpr(abs_obj.body))
+    required_arity = max(abs_obj.arity, deduce_arity(body_expr))
+
+    while len(param_names) < required_arity:
+        base = f"arg{len(param_names)}"
+        name = base
+        suffix = 2
+        while name in param_names:
+            name = f"{base}_{suffix}"
+            suffix += 1
+        param_names.append(name)
+
+    var_map = {f"#{i}": param_names[i] for i in range(required_arity)}
+    calls = flatten_then(body_expr)
     call_lines = [sexpr_call_to_python(call, var_map) for call in calls]
 
     indent = "    "
@@ -676,7 +733,7 @@ def build_document_prompt(abstraction: Abstraction, traces: List[Dict[str, Any]]
     prompt = f"Abstraction: {abstraction}\n\nTraces that use this abstraction:\n"
     for i, trace in enumerate(programs):
         if abstraction.name in trace:
-            prompt += f"Prompt: {traces[i]['prompt']}\nProgram: {abstraction.body}\n"
+            prompt += f"Prompt: {traces[i]['prompt']}\nProgram: {programs[i]}\n"
     return prompt
 
 
@@ -686,7 +743,7 @@ def write_learned_macros_file(abstractions: List[Abstraction], schemas: List[Dic
 
     for abstraction, schema in zip(abstractions, schemas):
         code_file += abstraction_to_python(abstraction, schema)
-        macro_map += f"    \"{schema['name']}\": {schema['name']}\n"
+        macro_map += f"    \"{schema['name']}\": {schema['name']},\n"
 
     macro_map += "}"
     with open("rcg/learned_macros.py", "w", encoding="utf-8") as f:
@@ -701,8 +758,13 @@ def learn_macros(traces: List[Dict[str, Any]], max_macros: int = 10) -> Tuple[Li
         return [], []
 
     learned_abstractions = []
+    macro_schemas = []
     programs = deepcopy(lambda_traces)
 
+    # During the loop, macro_schemas is populated with a structural placeholder
+    # for each accepted abstraction so that is_known_function recognises macro
+    # names when validating candidates in subsequent iterations.  The
+    # placeholders are replaced with real LLM-generated schemas after the loop.
     while len(learned_abstractions) < max_macros:
         res = compress(programs, iterations=max_macros * 2, max_arity=5)
         expanded = rewrite_abstractions(res.abstractions)
@@ -720,18 +782,32 @@ def learn_macros(traces: List[Dict[str, Any]], max_macros: int = 10) -> Tuple[Li
         candidate.name = f"fn_{len(learned_abstractions)}"
         learned_abstractions.append(candidate)
 
+        # Register a minimal placeholder schema immediately so that
+        # is_known_function returns True for this name in future iterations.
+        placeholder = build_function_schema(candidate.body)
+        placeholder["name"] = candidate.name
+        macro_schemas.append(placeholder)
+
         try:
             programs = rewrite(programs, learned_abstractions).rewritten
         except StitchException as exc:
             print(f"Rewrite failed: {exc}")
             learned_abstractions.pop()
+            macro_schemas.pop()
 
-    macro_schemas = []
-    for abstraction in learned_abstractions:
+    # Replace placeholders with LLM-generated schemas.  Skip the document
+    # model for any body we have already documented in this run.
+    _schema_cache: Dict[str, Dict[str, Any]] = {}
+    for i, abstraction in enumerate(learned_abstractions):
+        if abstraction.body in _schema_cache:
+            macro_schemas[i] = _schema_cache[abstraction.body]
+            continue
         schema = build_function_schema(abstraction.body)
         prompt = build_document_prompt(abstraction, traces, programs)
         prompt += f"Schema:\n{json.dumps(schema, indent=4)}"
-        macro_schemas.append(json.loads(document_model.generate(prompt, memory=False)))
+        result = json.loads(document_model.generate(prompt, memory=False))
+        _schema_cache[abstraction.body] = result
+        macro_schemas[i] = result
 
     write_learned_macros_file(learned_abstractions, macro_schemas)
     return learned_abstractions, macro_schemas

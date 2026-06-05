@@ -1,5 +1,7 @@
 from datetime import datetime
 import json
+import os
+import os
 from pathlib import Path
 from rcg.utils import start_logging, write_log, parse_manual_function_call, geneval
 from rcg.prompt import FUNCTION_SCHEMAS, SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, get_system_prompt_code, get_system_prompt_eval
@@ -7,30 +9,44 @@ from rcg.llm import OpenAILLM
 # from rcg.macro import learn_macros
 from rcg.macro_stitch import rewrite_json_calls, sequence_to_expr, learn_macros
 from tqdm import tqdm
+import argparse
+import csv
 
 # Evaluation Prompts
-prompts = [
-    "Show me all objects in the scene",
-    "Move to banana 3",
-    "Move to position [1, 2, 1]",
-    "Grasp the object*",
-    "Release the object**",
-    "Pick up the object, move to the right by 30cm, then release the object*",
-    "Move to banana 3 and pick it up",
-    "Move to the left by 30cm, up by 10cm, then to the right by 20cm",
+prompts_objects = [
+    "Grab the green cube",
+    "Move 20cm above the blue can",
+    "Grab the medium-sized cube",
+    "Grab a yellow fruit",
+    "Grab the cylindrical object",
+    "Put the crackers on the other side of the table",
+    "Move rightmost banana to the left of the can",
+    "Move leftmost fruit 15cm closer to me",
+    "Pick up closest food item to the red cube",
+    "Move the orange to the center of the table",
+    "Move leftmost banana 10cm to the right, then move rightmost banana 5cm to the left",
+    "Pick up the apple and throw it on the ground",
+    "Move to the smallest cube, then move to the largest cube",
+    "Pick up the sphere, move it to the right 50cm, then release it",
     "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
-    "Is there a banana in this scene? If so, move to it. Otherwise, move to the left by 25cm",
-    "Move the leftmost banana so that it is now the middle banana",
-    "Move the rightmost banana forward by 10cm",
-    "Move banana 1 to the left of banana 3",
-    "Move banana 2 10cm closer to me",
-    "Pick up the closest banana to the camera",
-    "Move the gripper in a circle",
-    "Move to all 3 bananas in sequence",
-    "Clear all bananas off the table",
-    "Move all the bananas next to each other",
-    "Put all bananas in a line",
-    # "Pick up leftmost banana"
+    "Clear the table",
+    "Remove the non-food items on the table",
+    "Sort objects by shape",
+    "Stack all the cubes",
+    "Put warm-colored objects next to each other",
+]
+
+prompts_feeding = [
+    "Give a strawberry to the user",
+    "Hand the human something to drink",
+    "Move the dangerous item away from the human",
+    "Place the peach on the plate",
+    "Put the fork up to the user's mouth",
+    "Collect all strawberries onto the plate",
+    "Put the apple on the plate and use the knife to cut it",
+    "Feed the apple first and then the orange to the user",
+    "Assemble a ham sandwich on the plate",
+    "Grasp the napkin and wipe the user's mouth",
 ]
 
 # Macro Learning Test Prompts
@@ -44,18 +60,18 @@ prompts = [
 # ]
 
 # Macro Modification Test Prompts
-prompts = [
-    "Move to and grasp Banana 1",
-    "Move to and grasp Banana 1",
-    "Move to and grasp Banana 1",
-    "Move to and grasp Banana 1",
-    "Move to and grasp Banana 2",
-    "Move to and grasp Banana 2",
-]
+# prompts = [
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 1",
+#     "Move to and grasp Banana 2",
+#     "Move to and grasp Banana 2",
+# ]
 
 num_reps = 1
 
-def add_info(model, prompt: str):
+def add_info(model, env):
     try:
         # Get index of last get_info call
         last_index = len(model.conversation_history) - 1 - model.conversation_history[::-1].index({"role": "user", "content": "Get the current scene information"})
@@ -67,15 +83,26 @@ def add_info(model, prompt: str):
         pass
     
     # Load pre-generated get_info data from file
-    with open(Path(__file__).parent / "data/get_info.json", 'r', encoding='utf-8') as f:
+    if env == "feeding":
+        file_name = "get_info_feeding.json"
+    else:
+        file_name = "get_info_objects.json"
+
+    with open(Path(__file__).parent / f"data/{file_name}", 'r', encoding='utf-8') as f:
         get_info = json.load(f)
-    i = prompt.count("*")
     
     # Add current get_info data to history
     model.conversation_history.append({"role": "user", "content": "Get the current scene information"})
-    model.conversation_history.append({"role": "assistant", "content": json.dumps(get_info[i], ensure_ascii=False)})
+    model.conversation_history.append({"role": "assistant", "content": json.dumps(get_info, ensure_ascii=False)})
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="Evaluate LLM-generated code for controlling a Kinova robot in Unity.")
+    parser.add_argument("--env", type=str, choices=["objects", "feeding"], default="objects", help="Environment to use (default: objects)")
+    args = parser.parse_args()
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    csv_path = Path(__file__).parent / "results" / f"eval_{timestamp}.csv"
 
     # Initialize database
     try:
@@ -90,7 +117,6 @@ if __name__ == "__main__":
         # Initialize models
         if not OpenAILLM.API_KEY:
             raise ValueError("OpenAI API key not set")
-        # LoRALLM.init_pipeline()
         OpenAILLM.init_pipeline()
         code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=1.0, reasoning="medium")
         eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
@@ -103,6 +129,7 @@ if __name__ == "__main__":
         write_log("")
 
         # Evaluate each prompt multiple times
+        prompts = prompts_feeding if args.env == "feeding" else prompts_objects
         for prompt in tqdm(prompts):
             total_time = 0
             successes = 0
@@ -112,17 +139,16 @@ if __name__ == "__main__":
                 success = True
                 
                 # Call get_info first, removing previous call
-                add_info(code_model, prompt)
-                add_info(eval_model, prompt)
-                user_input = prompt.replace("*", "")
+                add_info(code_model, args.env)
+                add_info(eval_model, args.env)
 
                 try:
                     # Generate and evaluate code
-                    code_message = geneval(code_model, eval_model, user_input, include_input_in_eval=True, macros=macros)
-                    code_message = rewrite_json_calls(code_message)
+                    code_message = geneval(code_model, eval_model, prompt, include_input_in_eval=True, macros=macros)
+                    primitive_code_message = rewrite_json_calls(code_message)
 
                     # Try to parse manual function call from text
-                    parsed_code = parse_manual_function_call(code_message)
+                    parsed_code = parse_manual_function_call(primitive_code_message)
                     write_log(f"Parsed functions: {parsed_code}\n")
                 except Exception as e:
                     write_log(f"Error during evaluation: {e}\n")
@@ -136,14 +162,36 @@ if __name__ == "__main__":
                 total_time += duration
                 successes += 1
 
+                # Compute experiment results
+                parse_raw = parse_manual_function_call(code_message)
+                result = {
+                    "prompt": prompt,
+                    "code": code_message,
+                    "program_length": len(parse_raw),
+                    "macro_usage": len([f for f in parse_raw if f[0] not in [schema["name"] for schema in FUNCTION_SCHEMAS]]),
+                    "duration_seconds": duration,
+                }
+
+                # Append results to CSV file
+                file_exists = os.path.exists(csv_path)
+                with open(csv_path, "a", newline="", encoding="utf-8") as f:
+                    writer = csv.DictWriter(f, fieldnames=result.keys())
+
+                    if not file_exists:
+                        writer.writeheader()
+
+                    writer.writerow(result)
+
+                # Append trace to database
                 traces.append({
                     "timestamp": datetime.now().isoformat(),
-                    "prompt": user_input,
+                    "prompt": prompt,
                     "final_code": parsed_code,
                     "success": success,
                     "duration_seconds": duration,
                 })
 
+                # Lambda conversion and macro learning
                 lambda_expr = sequence_to_expr(parsed_code)
                 write_log(f"Lambda expression: {lambda_expr}\n")
 

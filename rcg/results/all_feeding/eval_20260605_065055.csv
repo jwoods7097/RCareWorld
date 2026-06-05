@@ -1,0 +1,49 @@
+prompt,code,program_length,macro_usage,duration_seconds
+Give a strawberry to the user,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1"", ""lift_height"": 0.3}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,18.9786
+Hand the human something to drink,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cup"", ""lift_height"": 0.3}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {}}",3,0,33.178415
+Move the dangerous item away from the human,"{""function"": ""grasp_object"", ""args"": {""name"": ""Knife"", ""lift_height"": 0.4}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0, ""y"": 0, ""z"": -0.5, ""duration"": 2.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {}}",3,0,18.767816
+Place the peach on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Peach""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_y"": 0.15, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,4.98821
+Put the fork up to the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Fork"", ""lift_height"": 0.4}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}",2,0,42.758157
+Collect all strawberries onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry2"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry3"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",9,0,20.535842
+Put the apple on the plate and use the knife to cut it,"{""function"": ""grasp_object"", ""args"": {""name"": ""Peach""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_y"": 0.15}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Knife""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Peach"", ""offset_y"": 0.15}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.0, ""z"": 0.05, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.0, ""z"": -0.05, ""relative"": true}}",7,0,13.956006
+Feed the apple first and then the orange to the user,"{""function"": ""hand_object_to_user"", ""args"": {""lift_before_release"": true, ""name"": ""Apple""}}
+{""function"": ""hand_object_to_user"", ""args"": {""lift_before_release"": true, ""name"": ""Orange""}}",2,2,14.386826
+Assemble a ham sandwich on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Bread1"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.2, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Ham"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.25, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Bread2"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.3, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",9,0,28.816924
+Grasp the napkin and wipe the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Napkin"", ""lift_height"": 0.4}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.02, ""duration"": 1.0, ""relative"": false}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.12, ""duration"": 1.0, ""relative"": false}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 1.0, ""relative"": false}}",5,0,17.556911

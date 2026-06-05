@@ -23,6 +23,7 @@ _unity_lock = threading.Lock()
 # Control settings
 MOVEMENT_DISTANCE = 0.25  # Movement distance in meters (25cm)
 
+_show_debug = False  # Set to True to show function calls
 
 def get_unity_lock():
     """Get the Unity communication lock for thread safety."""
@@ -325,6 +326,12 @@ def move_camera_back() -> str:
 # Chat Interface Functions
 # ============================================================================
 
+def set_debug(show: bool):
+    """Set debug mode to show function calls."""
+    global _show_debug
+    _show_debug = show
+
+
 def process_chat_message(message: str, history: List[dict]) -> Tuple[List[dict], str]:
     """
     Process user message through LLM controller.
@@ -348,7 +355,7 @@ def process_chat_message(message: str, history: List[dict]) -> Tuple[List[dict],
             response_parts = []
 
             # Add function call info if available
-            if result.get("function_called"):
+            if result.get("function_called") and _show_debug:
                 for i, func_name in enumerate(result.get("function_called")):
                     func_result = result.get("function_result")[i]
 
@@ -424,8 +431,24 @@ def create_interface() -> gr.Blocks:
         """
     ) as interface:
 
-        # Title
-        gr.Markdown("# RCareGen")
+        # Header: Title and Debug Toggle
+        with gr.Row():
+            # Title
+            gr.Markdown("# RCareGen")
+
+            # Spacer takes up remaining space
+            gr.Column(scale=1)
+
+            # Debug toggle
+            debug_toggle = gr.Checkbox(
+                label="Developer Mode",
+                value=False,
+                scale=0
+            )
+            debug_toggle.change(
+                fn=set_debug,
+                inputs=debug_toggle
+            )
 
         # Top: Camera Feed and controls
         with gr.Row():
