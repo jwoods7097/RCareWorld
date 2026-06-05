@@ -485,6 +485,10 @@ def grasp_object(
         def _execute_grasp():
             global _grasped_object, _grasped_object_id  # CRITICAL: Must declare global in nested function!
 
+            if _grasped_object is not None:
+                print(f"[DUMMY GRASP] Warning: Already grasping '{_grasped_object.data.get('name', 'Unknown')}'")
+                return None, None, None, None, None, None
+
             print(f"[DUMMY GRASP] Starting dummy grasp for '{name}'")
             _global_env.step()
             target_obj = None
@@ -552,7 +556,7 @@ def grasp_object(
         if target_obj is None:
             return {
                 "success": False,
-                "message": f"Object '{name}' not found in scene",
+                "message": f"Could not grasp object '{name}'",
                 "data": {}
             }
 

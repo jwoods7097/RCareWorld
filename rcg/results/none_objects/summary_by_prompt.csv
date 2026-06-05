@@ -1,0 +1,21 @@
+prompt,avg_program_length,avg_macro_usage,avg_macro_usage_pct_of_program_length,avg_runtime_seconds,num_runs
+Grab the green cube,1.0,0.0,0.0,3.0026344000000003,5
+Move 20cm above the blue can,1.0,0.0,0.0,1.6934586,5
+Grab the medium-sized cube,1.0,0.0,0.0,1.8109094,5
+Grab a yellow fruit,1.0,0.0,0.0,3.2386502,5
+Grab the cylindrical object,1.0,0.0,0.0,1.5320442,5
+Put the crackers on the other side of the table,0.6,0.0,0.0,16.6419816,5
+Move rightmost banana to the left of the can,1.6,0.0,0.0,10.2161148,5
+Move leftmost fruit 15cm closer to me,1.0,0.0,0.0,14.252733000000001,5
+Pick up closest food item to the red cube,1.0,0.0,0.0,6.033748,5
+Move the orange to the center of the table,0.6,0.0,0.0,12.556851,5
+"Move leftmost banana 10cm to the right, then move rightmost banana 5cm to the left",2.0,0.0,0.0,7.819149400000001,5
+Pick up the apple and throw it on the ground,1.0,0.0,0.0,8.4335632,5
+"Pick up the sphere, move it to the right 50cm, then release it",2.2,0.0,0.0,3.2163936,5
+"Move to the smallest cube, then move to the largest cube",1.6,0.0,0.0,6.643331599999999,5
+"Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",1.6,0.0,0.0,9.9971634,5
+Clear the table,0.8,0.0,0.0,15.104279,5
+Remove the non-food items on the table,5.4,0.0,0.0,10.7661678,5
+Sort objects by shape,0.8,0.0,0.0,5.8452991999999995,5
+Stack all the cubes,0.8,0.0,0.0,13.810665199999999,5
+Put warm-colored objects next to each other,0.8,0.0,0.0,12.8415918,5

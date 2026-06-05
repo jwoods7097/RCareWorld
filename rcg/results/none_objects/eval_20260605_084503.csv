@@ -1,0 +1,38 @@
+prompt,code,program_length,macro_usage,duration_seconds
+Grab the green cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube3""}}",1,0,2.120394
+Move 20cm above the blue can,"{""function"": ""move_to_object"", ""args"": {""name"": ""Can"", ""offset_x"": 0.0, ""offset_y"": 0.2, ""offset_z"": 0.0, ""duration"": 2.0}}",1,0,1.503337
+Grab the medium-sized cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube2""}}",1,0,1.187575
+Grab a yellow fruit,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana1"", ""lift_height"": 0.5}}",1,0,1.742512
+Grab the cylindrical object,"{""function"": ""grasp_object"", ""args"": {""name"": ""Can""}}",1,0,1.579489
+Put the crackers on the other side of the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Crackers""}}",1,0,10.585616
+Move rightmost banana to the left of the can,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana1"", ""lift_height"": 0.5}}",1,0,12.648397
+Move leftmost fruit 15cm closer to me,"
+{""function"": ""grasp_object"", ""args"": {""name"": ""Orange""}}",1,0,13.673668
+Pick up closest food item to the red cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Apple""}}",1,0,5.209201
+Move the orange to the center of the table,,0,0,15.597848
+"Move leftmost banana 10cm to the right, then move rightmost banana 5cm to the left","{""function"": ""grasp_object"", ""args"": {""name"": ""Banana2"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.1, ""y"": 0.0, ""z"": 0.0, ""duration"": 2.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Banana1"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.05, ""y"": 0.0, ""z"": 0.0, ""duration"": 2.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",6,0,9.161796
+Pick up the apple and throw it on the ground,"{""function"": ""grasp_object"", ""args"": {""name"": ""Apple"", ""lift_height"": 0.5}}",1,0,7.144716
+"Move to the smallest cube, then move to the largest cube","{""function"": ""move_to_object"", ""args"": {""name"": ""Cube3""}}",1,0,1.803527
+"Pick up the sphere, move it to the right 50cm, then release it","{""function"": ""grasp_object"", ""args"": {""name"": ""Sphere""}}",1,0,3.6348
+"Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm","{""function"": ""move_to_position"", ""args"": {""x"": 0.2, ""y"": -0.2, ""z"": 0.0, ""relative"": true}}",1,0,7.828279
+Clear the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Crackers"", ""lift_height"": 0.5}}",1,0,15.304108
+Remove the non-food items on the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube1"", ""lift_height"": 0.3}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.1, ""z"": 0.6, ""duration"": 2.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Cube2"", ""lift_height"": 0.3}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.1, ""z"": 0.6, ""duration"": 2.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Cube3"", ""lift_height"": 0.3}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.1, ""z"": 0.6, ""duration"": 2.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Sphere"", ""lift_height"": 0.3}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.1, ""z"": 0.6, ""duration"": 2.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",12,0,7.852029
+Sort objects by shape,"{""function"": ""get_info"", ""args"": {}}",1,0,4.338893
+Stack all the cubes,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube2"", ""lift_height"": 0.3}}",1,0,10.899952
+Put warm-colored objects next to each other,,0,0,17.961991

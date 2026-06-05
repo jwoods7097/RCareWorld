@@ -1,0 +1,36 @@
+prompt,code,program_length,macro_usage,duration_seconds
+Give a strawberry to the user,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1""}}",1,0,6.240392
+Hand the human something to drink,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cup"", ""lift_height"": 0.5}}",1,0,9.59162
+Move the dangerous item away from the human,"{""function"": ""move_to_object"", ""args"": {""name"": ""Knife""}}",1,0,11.72984
+Place the peach on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Peach""}}",1,0,6.392931
+Put the fork up to the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Fork"", ""lift_height"": 0.3}}",1,0,5.979288
+Collect all strawberries onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1"", ""lift_height"": 0.3}}",1,0,6.440777
+Put the apple on the plate and use the knife to cut it,"There’s currently no object named “Apple” in the scene.
+
+Available fruit-like objects are:
+- Banana
+- Peach
+- Strawberry1 / Strawberry2 / Strawberry3
+- Bread1 / Bread2 (not fruit, but food items)
+- Ham
+
+Do you want me to:
+- treat the **Peach** as the apple, or
+- use some other specific object instead?",0,0,9.300599
+Feed the apple first and then the orange to the user,"{""function"": ""get_info"", ""args"": {}}
+{""function"": ""get_info"", ""args"": {}}",2,0,3.236243
+Assemble a ham sandwich on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Bread1"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.15, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": -0.13, ""z"": 0.0, ""duration"": 2.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Ham"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.15, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": -0.09, ""z"": 0.0, ""duration"": 2.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Bread2"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.15, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": -0.06, ""z"": 0.0, ""duration"": 2.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",12,0,13.498772
+Grasp the napkin and wipe the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Napkin"", ""lift_height"": 0.3}}",1,0,5.192108
