@@ -365,7 +365,8 @@ def process_chat_message(message: str, history: List[dict]) -> Tuple[List[dict],
                         response_parts.append(f"**[Function: {func_name}]** ✗ {func_result.get('message', 'Failed')}")
 
             # Add LLM response
-            response_parts.append(f"**Skills Used:** {result['used_skills']}")
+            if 'used_skills' in result:
+                response_parts.append(f"**Skills Used:** {result['used_skills']}")
             response_parts.append(result["llm_response"])
 
             bot_response = "\n\n".join(response_parts)
@@ -415,7 +416,7 @@ def create_interface() -> gr.Blocks:
     """
 
     with gr.Blocks(
-        title="RCareGen",
+        title="SkillComposer",
         theme=gr.themes.Soft(),
         css="""
         * {
@@ -447,7 +448,7 @@ def create_interface() -> gr.Blocks:
         # Header: Title and Debug Toggle
         with gr.Row():
             # Title
-            gr.Markdown("# RCareGen")
+            gr.Markdown("# SkillComposer")
 
             # Spacer takes up remaining space
             gr.Column(scale=1)

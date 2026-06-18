@@ -198,6 +198,9 @@ class LLMController:
             "final_code": self.cached_output,
         })
 
+        lambda_expr = sequence_to_expr(self.cached_output)
+        write_log(f"Lambda expression: {lambda_expr}\n")
+
         abstractions, self.macros = learn_macros(self.traces)
         write_log(f"Learned abstractions: {abstractions}\n")
 
