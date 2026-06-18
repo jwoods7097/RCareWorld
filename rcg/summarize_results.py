@@ -33,11 +33,21 @@ PROMPT_ORDER = [
     "Move the dangerous item away from the human",
     "Place the peach on the plate",
     "Put the fork up to the user’s mouth",
+    "Pick up the spoon and hand it to the user",
+    "Swap the fork with the knife",
+    "Move the glass to the left of the plate",
+    "Feed the strawberry closest to the ham to the user",
+    "Put the largest fruit onto the plate",
     "Collect all strawberries onto the plate",
     "Put the apple on the plate and use the knife to cut it",
     "Feed the apple first and then the orange to the user",
     "Assemble a ham sandwich on the plate",
     "Grasp the napkin and wipe the user’s mouth",
+    "Feed all the food on the table to the user",
+    "Put all yellow fruits onto the plate",
+    "Make a small snack by placing bread, ham, and a strawberry on the plate",
+    "Put the peach and banana on the plate, then feed the banana to the user",
+    "Prepare a healthy meal",
 ]
 
 

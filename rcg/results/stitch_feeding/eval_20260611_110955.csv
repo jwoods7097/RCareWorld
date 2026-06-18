@@ -1,0 +1,38 @@
+prompt,code,program_length,macro_usage,duration_seconds
+Give a strawberry to the user,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.6, ""z"": 0.03, ""duration"": 3.0, ""relative"": false}}",2,0,8.524355
+Hand the human something to drink,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cup"", ""lift_height"": 0.5}}",1,0,12.883702
+Move the dangerous item away from the human,,0,0,19.045341
+Place the peach on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Peach"", ""lift_height"": 0.5}}",1,0,7.362667
+Put the fork up to the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Fork""}}",1,0,5.579866
+Pick up the spoon and hand it to the user,"{""function"": ""grasp_object"", ""args"": {""name"": ""Spoon"", ""lift_height"": 0.5}}",1,0,18.004677
+Swap the fork with the knife,"{""function"": ""grasp_object"", ""args"": {""name"": ""Fork""}}",1,0,9.209886
+Move the glass to the left of the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cup""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": -0.15, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {}}",3,0,15.833646
+Feed the strawberry closest to the ham to the user,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry3"", ""lift_height"": 0.5}}",1,0,10.952457
+Put the largest fruit onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.5}}",1,0,11.832419
+Collect all strawberries onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.2, ""offset_z"": 0.0, ""duration"": 2.0}}",2,0,6.742941
+Put the apple on the plate and use the knife to cut it,"{""function"": ""get_info"", ""args"": {""name"": ""Apple""}}
+{""function"": ""get_info"", ""args"": {""name"": ""Apple""}}",2,0,3.462743
+Feed the apple first and then the orange to the user,"{""function"": ""get_info"", ""args"": {""name"": ""Apple""}}",1,0,9.150831
+Assemble a ham sandwich on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Bread1"", ""lift_height"": 0.3}}",1,0,13.584517
+Grasp the napkin and wipe the user's mouth,,0,0,22.060142
+Feed all the food on the table to the user,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.5}}",1,0,13.55985
+Put all yellow fruits onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.5}}",1,0,10.318248
+"Make a small snack by placing bread, ham, and a strawberry on the plate","{""function"": ""grasp_object"", ""args"": {""name"": ""Bread1""}}",1,0,9.491491
+"Put the peach and banana on the plate, then feed the banana to the user","{""function"": ""grasp_object"", ""args"": {""name"": ""Peach"", ""lift_height"": 0.4}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": -0.05, ""z"": 0.0, ""duration"": 1.5, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.2, ""z"": 0.0, ""duration"": 1.5, ""relative"": true}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.4}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": -0.05, ""z"": 0.0, ""duration"": 1.5, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.2, ""z"": 0.0, ""duration"": 1.5, ""relative"": true}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.4}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 3.0, ""relative"": false}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 3.0, ""relative"": false}}",13,0,11.146497
+Prepare a healthy meal,"{""function"": ""get_info"", ""args"": {}}",1,0,8.703179

@@ -238,7 +238,8 @@ def nest_then(exprs: List[str]) -> str:
 def sequence_to_expr(actions: Iterable[Tuple[str, str]]) -> str:
     exprs = [action_to_expr(action) for action in fill_args(actions)]
     expr = nest_then(exprs)
-    lambda_traces.append(expr)
+    if expr.strip() != "()" and expr.strip() != "":
+        lambda_traces.append(expr)
     return expr
 
 
@@ -753,9 +754,6 @@ def write_learned_macros_file(abstractions: List[Abstraction], schemas: List[Dic
 
 def learn_macros(traces: List[Dict[str, Any]], max_macros: int = 10) -> Tuple[List[Abstraction], List[Dict[str, Any]]]:
     global macro_schemas, learned_abstractions
-
-    if len(lambda_traces) < 3:
-        return [], []
 
     learned_abstractions = []
     macro_schemas = []

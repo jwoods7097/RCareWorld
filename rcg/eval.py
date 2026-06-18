@@ -26,8 +26,8 @@ prompts_objects = [
     "Move the orange to the center of the table",
     "Move leftmost banana 10cm to the right, then move rightmost banana 5cm to the left",
     "Pick up the apple and throw it on the ground",
-    "Move to the smallest cube, then move to the largest cube",
     "Pick up the sphere, move it to the right 50cm, then release it",
+    "Move to the smallest cube, then move to the largest cube",
     "Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",
     "Clear the table",
     "Remove the non-food items on the table",
@@ -42,11 +42,21 @@ prompts_feeding = [
     "Move the dangerous item away from the human",
     "Place the peach on the plate",
     "Put the fork up to the user's mouth",
+    "Pick up the spoon and hand it to the user",
+    "Swap the fork with the knife",
+    "Move the glass to the left of the plate",
+    "Feed the strawberry closest to the ham to the user",
+    "Put the largest fruit onto the plate",
     "Collect all strawberries onto the plate",
     "Put the apple on the plate and use the knife to cut it",
     "Feed the apple first and then the orange to the user",
     "Assemble a ham sandwich on the plate",
     "Grasp the napkin and wipe the user's mouth",
+    "Feed all the food on the table to the user",
+    "Put all yellow fruits onto the plate",
+    "Make a small snack by placing bread, ham, and a strawberry on the plate",
+    "Put the peach and banana on the plate, then feed the banana to the user",
+    "Prepare a healthy meal"
 ]
 
 # Macro Learning Test Prompts
@@ -99,90 +109,95 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Evaluate LLM-generated code for controlling a Kinova robot in Unity.")
     parser.add_argument("--env", type=str, choices=["objects", "feeding"], default="objects", help="Environment to use (default: objects)")
+    parser.add_argument("--no-eval", action="store_true", help="Disable evaluation")
+    parser.add_argument("--no-macro", action="store_true", help="Disable macro learning")
     args = parser.parse_args()
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_path = Path(__file__).parent / "results" / f"eval_{timestamp}.csv"
 
     # Initialize database
-    try:
-        with open('rcg/data/traces.json', 'r', encoding='utf-8') as f:
-            traces = json.load(f)
-    except FileNotFoundError:
-        traces = []
+    traces = []
     macros = []
 
-    try:
-
-        # Initialize models
-        if not OpenAILLM.API_KEY:
-            raise ValueError("OpenAI API key not set")
-        OpenAILLM.init_pipeline()
-        code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=1.0, reasoning="medium")
+    # Initialize models
+    if not OpenAILLM.API_KEY:
+        raise ValueError("OpenAI API key not set")
+    OpenAILLM.init_pipeline()
+    code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=1.0, reasoning="medium")
+    if not args.no_eval:
         eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
 
-        # Initialize logging
-        start_logging("eval")
-        write_log(f"=== LLM Evaluation Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
-        write_log(f"Code Model: {code_model.MODEL}")
+    # Initialize logging
+    start_logging("eval")
+    write_log(f"=== LLM Evaluation Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
+    write_log(f"Code Model: {code_model.MODEL}")
+    if not args.no_eval:
         write_log(f"Eval Model: {eval_model.MODEL}")
-        write_log("")
+    write_log("")
 
-        # Evaluate each prompt multiple times
+    if "prompts" not in globals():
         prompts = prompts_feeding if args.env == "feeding" else prompts_objects
-        for prompt in tqdm(prompts):
-            total_time = 0
-            successes = 0
-            for i in range(num_reps):
-                write_log(f"=== Iteration {i+1} of Prompt: {prompt} ===")
-                start_time = datetime.now()
-                success = True
-                
-                # Call get_info first, removing previous call
-                add_info(code_model, args.env)
+    
+    # Evaluate each prompt multiple times
+    for prompt in tqdm(prompts):
+        total_time = 0
+        successes = 0
+        for i in range(num_reps):
+            write_log(f"=== Iteration {i+1} of Prompt: {prompt} ===")
+            start_time = datetime.now()
+            success = True
+            
+            # Call get_info first, removing previous call
+            add_info(code_model, args.env)
+            if not args.no_eval:
                 add_info(eval_model, args.env)
 
-                try:
-                    # Generate and evaluate code
-                    code_message = geneval(code_model, eval_model, prompt, include_input_in_eval=True, macros=macros)
-                    primitive_code_message = rewrite_json_calls(code_message)
+            # Generate and evaluate code
+            try:
+                if args.no_eval:
+                    code_message = code_model.generate(prompt)
+                    write_log(f"CODER RESULT: {code_message}\n")
+                else:
+                    code_message = geneval(code_model, eval_model, prompt, include_input_in_eval=True, macros=macros)                       
+            except Exception as e:
+                write_log(f"Error during evaluation: {e}\n")
+                continue
+            finally:
+                code_model.reset()
+                eval_model.reset()
+            
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+            total_time += duration
+            successes += 1
 
-                    # Try to parse manual function call from text
-                    parsed_code = parse_manual_function_call(primitive_code_message)
-                    write_log(f"Parsed functions: {parsed_code}\n")
-                except Exception as e:
-                    write_log(f"Error during evaluation: {e}\n")
-                    continue
-                finally:
-                    code_model.reset()
-                    eval_model.reset()
-                
-                end_time = datetime.now()
-                duration = (end_time - start_time).total_seconds()
-                total_time += duration
-                successes += 1
+            # Compute experiment results
+            parse_raw = parse_manual_function_call(code_message)
+            write_log(f"Parsed functions: {parse_raw}\n")
+            result = {
+                "prompt": prompt,
+                "code": code_message,
+                "program_length": len(parse_raw),
+                "macro_usage": len([f for f in parse_raw if f[0] not in [schema["name"] for schema in FUNCTION_SCHEMAS]]),
+                "duration_seconds": duration,
+            }
 
-                # Compute experiment results
-                parse_raw = parse_manual_function_call(code_message)
-                result = {
-                    "prompt": prompt,
-                    "code": code_message,
-                    "program_length": len(parse_raw),
-                    "macro_usage": len([f for f in parse_raw if f[0] not in [schema["name"] for schema in FUNCTION_SCHEMAS]]),
-                    "duration_seconds": duration,
-                }
+            # Append results to CSV file
+            file_exists = os.path.exists(csv_path)
+            with open(csv_path, "a", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=result.keys())
 
-                # Append results to CSV file
-                file_exists = os.path.exists(csv_path)
-                with open(csv_path, "a", newline="", encoding="utf-8") as f:
-                    writer = csv.DictWriter(f, fieldnames=result.keys())
+                if not file_exists:
+                    writer.writeheader()
 
-                    if not file_exists:
-                        writer.writeheader()
+                writer.writerow(result)
 
-                    writer.writerow(result)
-
+            if not args.no_macro:
                 # Append trace to database
+                primitive_code_message = rewrite_json_calls(code_message)
+                parsed_code = parse_manual_function_call(primitive_code_message)
+                write_log(f"Parsed primitive functions: {parsed_code}\n")
                 traces.append({
                     "timestamp": datetime.now().isoformat(),
                     "prompt": prompt,
@@ -203,17 +218,10 @@ if __name__ == "__main__":
                     for schema in macros:
                         write_log(json.dumps(schema, indent=4, ensure_ascii=False) + "\n")
 
-                code_model.reset(get_system_prompt_code(macros))
+            code_model.reset(get_system_prompt_code(macros))
+            if not args.no_eval:
                 eval_model.reset(get_system_prompt_eval(macros))
 
-            avg_time = total_time / successes if successes > 0 else float('inf')
-            write_log(f"Success Rate for Prompt '{prompt}': {successes / num_reps}")
-            write_log(f"Average Duration for Prompt '{prompt}': {avg_time:.1f} seconds\n\n")
-
-    except KeyboardInterrupt:
-        pass
-    finally:
-        # with open('rcg/data/traces.json', 'w', encoding='utf-8') as f:
-        #     json.dump(traces, f, ensure_ascii=False, indent=4)
-        with open('rcg/data/schemas.json', 'w', encoding='utf-8') as f:
-            json.dump(FUNCTION_SCHEMAS + macros, f, ensure_ascii=False, indent=4)
+        avg_time = total_time / successes if successes > 0 else float('inf')
+        write_log(f"Success Rate for Prompt '{prompt}': {successes / num_reps}")
+        write_log(f"Average Duration for Prompt '{prompt}': {avg_time:.1f} seconds\n\n")

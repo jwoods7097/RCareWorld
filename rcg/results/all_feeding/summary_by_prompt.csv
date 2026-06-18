@@ -1,11 +1,21 @@
 prompt,avg_program_length,avg_macro_usage,avg_macro_usage_pct_of_program_length,avg_runtime_seconds,num_runs
-Give a strawberry to the user,3.0,0.0,0.0,28.2279998,5
-Hand the human something to drink,3.0,0.0,0.0,71.24789100000001,5
-Move the dangerous item away from the human,2.8,0.0,0.0,69.96861779999999,5
-Place the peach on the plate,3.0,0.2,0.2,17.238722,5
-Put the fork up to the user’s mouth,2.2,0.0,0.0,26.5189026,5
-Collect all strawberries onto the plate,8.4,0.6,0.1,29.849927400000002,5
-Put the apple on the plate and use the knife to cut it,7.6,0.0,0.0,28.978096400000005,5
-Feed the apple first and then the orange to the user,6.0,0.5,0.25,34.24163675,4
-Assemble a ham sandwich on the plate,9.0,0.0,0.0,37.81794925,4
-Grasp the napkin and wipe the user’s mouth,5.4,0.0,0.0,22.244956,5
+Give a strawberry to the user,3.0,0.0,0.0,27.598593800000003,5
+Hand the human something to drink,3.0,0.0,0.0,33.985239,4
+Move the dangerous item away from the human,3.0,0.0,0.0,51.317049999999995,5
+Place the peach on the plate,1.8,0.6,0.6,20.51558,5
+Put the fork up to the user’s mouth,1.6,0.4,0.4,30.812102,5
+Pick up the spoon and hand it to the user,2.0,0.6,0.5,30.7476092,5
+Swap the fork with the knife,4.0,1.2,0.6,53.1483346,5
+Move the glass to the left of the plate,1.8,0.6,0.6,20.6388372,5
+Feed the strawberry closest to the ham to the user,3.0,0.25,0.25,44.056214999999995,4
+Put the largest fruit onto the plate,1.4,0.8,0.8,11.126711400000001,5
+Collect all strawberries onto the plate,6.0,1.5,0.5,34.99550725,4
+Put the apple on the plate and use the knife to cut it,7.75,0.25,0.041666666666666664,41.020934249999996,4
+Feed the apple first and then the orange to the user,1.8,1.8,1.0,34.674343199999996,5
+Assemble a ham sandwich on the plate,4.2,2.4,0.8,34.568983,5
+Grasp the napkin and wipe the user’s mouth,5.75,0.0,0.0,34.31319975,4
+Feed all the food on the table to the user,23.4,1.8,0.2,39.4301874,5
+Put all yellow fruits onto the plate,6.4,0.0,0.0,17.0059754,5
+"Make a small snack by placing bread, ham, and a strawberry on the plate",9.0,0.0,0.0,36.4528658,5
+"Put the peach and banana on the plate, then feed the banana to the user",7.4,0.4,0.09523809523809523,31.571428200000003,5
+Prepare a healthy meal,13.75,0.25,0.025,38.26685675,4

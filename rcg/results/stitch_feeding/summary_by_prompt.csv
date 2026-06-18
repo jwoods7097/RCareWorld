@@ -1,0 +1,21 @@
+prompt,avg_program_length,avg_macro_usage,avg_macro_usage_pct_of_program_length,avg_runtime_seconds,num_runs
+Give a strawberry to the user,1.4,0.0,0.0,9.6795726,5
+Hand the human something to drink,1.0,0.0,0.0,10.604720799999999,5
+Move the dangerous item away from the human,0.8,0.0,0.0,15.9632336,5
+Place the peach on the plate,1.0,0.0,0.0,6.1761086,5
+Put the fork up to the user’s mouth,1.4,0.0,0.0,12.3812066,5
+Pick up the spoon and hand it to the user,1.0,0.2,0.2,7.7444862,5
+Swap the fork with the knife,1.0,0.0,0.0,13.969192800000002,5
+Move the glass to the left of the plate,1.2,0.0,0.0,12.146546,5
+Feed the strawberry closest to the ham to the user,1.4,0.2,0.2,10.2243076,5
+Put the largest fruit onto the plate,1.4,0.0,0.0,8.254410400000001,5
+Collect all strawberries onto the plate,1.0,0.0,0.0,10.9324162,5
+Put the apple on the plate and use the knife to cut it,1.4,0.0,0.0,5.7734118,5
+Feed the apple first and then the orange to the user,1.0,0.0,0.0,8.3933216,5
+Assemble a ham sandwich on the plate,1.0,0.0,0.0,11.462063599999999,5
+Grasp the napkin and wipe the user’s mouth,2.4,0.2,0.25,15.94219,5
+Feed all the food on the table to the user,0.8,0.2,0.25,17.148835,5
+Put all yellow fruits onto the plate,1.0,0.0,0.0,10.8943174,5
+"Make a small snack by placing bread, ham, and a strawberry on the plate",2.4,0.0,0.0,9.8641644,5
+"Put the peach and banana on the plate, then feed the banana to the user",3.4,0.0,0.0,11.3171894,5
+Prepare a healthy meal,0.8,0.0,0.0,15.9785282,5

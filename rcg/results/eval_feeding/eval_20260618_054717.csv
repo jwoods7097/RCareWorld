@@ -1,0 +1,144 @@
+prompt,code,program_length,macro_usage,duration_seconds
+Give a strawberry to the user,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,49.818182
+Hand the human something to drink,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cup""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,39.258956
+Move the dangerous item away from the human,"{""function"": ""grasp_object"", ""args"": {""name"": ""Knife"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.5, ""y"": 0.3, ""z"": -0.5, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,70.374446
+Place the peach on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Peach"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.15, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.05, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",4,0,38.712522
+Put the fork up to the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Fork""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.6, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}",2,0,21.833698
+Pick up the spoon and hand it to the user,"{""function"": ""move_to_object"", ""args"": {""name"": ""Spoon""}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Spoon""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.6, ""z"": -0.07, ""duration"": 2.5, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",4,0,26.156469
+Swap the fork with the knife,"{""function"": ""grasp_object"", ""args"": {""name"": ""Fork"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Knife"", ""offset_y"": 0.1, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Knife"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Fork"", ""offset_y"": 0.1, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {}}",6,0,56.118656
+Move the glass to the left of the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cup""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": -0.15, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,63.05773
+Feed the strawberry closest to the ham to the user,"{""function"": ""get_info"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry3""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",4,0,73.849249
+Put the largest fruit onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,22.518419
+Collect all strawberries onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry2"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry3"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",9,0,36.536402
+Put the apple on the plate and use the knife to cut it,"{""function"": ""grasp_object"", ""args"": {""name"": ""Peach"", ""lift_height"": 0.4}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.2, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Knife"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Knife"", ""lift_height"": 0.1}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Peach"", ""offset_x"": 0.0, ""offset_y"": 0.15, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": -0.05, ""z"": 0.0, ""duration"": 0.4, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.05, ""z"": 0.0, ""duration"": 0.4, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": -0.05, ""z"": 0.0, ""duration"": 0.4, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.05, ""z"": 0.0, ""duration"": 0.4, ""relative"": true}}",10,0,35.843565
+Feed the apple first and then the orange to the user,"{""function"": ""get_info"", ""args"": {""name"": ""Apple""}}
+{""function"": ""get_info"", ""args"": {""name"": ""Orange""}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Apple""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Orange""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",8,0,77.988523
+Assemble a ham sandwich on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Bread1"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_y"": 0.2}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Ham"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Bread1"", ""offset_y"": 0.02}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Bread2"", ""lift_height"": 0.3}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Ham"", ""offset_y"": 0.02}}
+{""function"": ""release_object"", ""args"": {}}",9,0,37.277715
+Grasp the napkin and wipe the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Napkin"", ""lift_height"": 0.3}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.03, ""y"": 0.0, ""z"": 0.0, ""duration"": 0.5, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.06, ""y"": 0.0, ""z"": 0.0, ""duration"": 0.5, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.03, ""y"": 0.0, ""z"": 0.0, ""duration"": 0.5, ""relative"": true}}",5,0,40.224511
+Feed all the food on the table to the user,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry2""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry3""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Ham""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Peach""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Bread1""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Bread2""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {}}",24,0,56.535071
+Put all yellow fruits onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Peach""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",6,0,27.453356
+"Make a small snack by placing bread, ham, and a strawberry on the plate","{""function"": ""grasp_object"", ""args"": {""name"": ""Bread2""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate""}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Ham""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate""}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate""}}
+{""function"": ""release_object"", ""args"": {}}",9,0,65.419579
+"Put the peach and banana on the plate, then feed the banana to the user","{""function"": ""grasp_object"", ""args"": {""name"": ""Peach"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.1, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",9,0,46.738863
+Prepare a healthy meal,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_y"": 0.2, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Peach"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_y"": 0.2, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry1"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_y"": 0.2, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry2"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_y"": 0.2, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry3"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_y"": 0.2, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",15,0,71.81266

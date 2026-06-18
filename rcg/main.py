@@ -160,6 +160,12 @@ Examples:
         help="Environment to use (default: bananas)"
     )
 
+    parser.add_argument(
+        "--alt",
+        action="store_true",
+        help="Use only the code generation model (no evaluation)"
+    )
+
     return parser.parse_args()
 
 
@@ -231,7 +237,7 @@ def main():
         rbt.initialize(env, robot, gripper, unity_lock=unity_lock)
 
         # Create LLM controller
-        llm_controller = LLMController()
+        llm_controller = LLMController(coder_only=args.alt)
         print("[Success] LLM controller initialized")
     except Exception as e:
         print(f"[Error] Failed to initialize LLM: {e}")

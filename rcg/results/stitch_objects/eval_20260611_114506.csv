@@ -1,0 +1,58 @@
+prompt,code,program_length,macro_usage,duration_seconds
+Grab the green cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube3""}}",1,0,2.282653
+Move 20cm above the blue can,"{""function"": ""move_to_object"", ""args"": {""name"": ""Can"", ""offset_x"": 0.0, ""offset_y"": 0.2, ""offset_z"": 0.0, ""duration"": 2.0}}",1,0,1.507585
+Grab the medium-sized cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube2""}}",1,0,1.533007
+Grab a yellow fruit,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana1""}}",1,0,2.01638
+Grab the cylindrical object,"{""function"": ""grasp_object"", ""args"": {""name"": ""Can""}}",1,0,1.818268
+Put the crackers on the other side of the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Crackers""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.7, ""y"": 1.35, ""z"": -0.4, ""duration"": 3.0, ""relative"": false}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.7, ""y"": 1.25, ""z"": -0.4, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",4,0,18.435646
+Move rightmost banana to the left of the can,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana1"", ""lift_height"": 0.5}}",1,0,8.077103
+Move leftmost fruit 15cm closer to me,"{""function"": ""grasp_object"", ""args"": {""name"": ""Orange"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0, ""y"": 0, ""z"": -0.15, ""duration"": 2.0, ""relative"": true}}
+",2,0,9.827757
+Pick up closest food item to the red cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Apple""}}",1,0,5.471963
+Move the orange to the center of the table,,0,0,17.308732
+"Move leftmost banana 10cm to the right, then move rightmost banana 5cm to the left","{""function"": ""grasp_object"", ""args"": {""name"": ""Banana2""}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.10, ""y"": 0.0, ""z"": 0.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Banana1""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.05, ""y"": 0.0, ""z"": 0.0, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",6,0,13.013606
+Pick up the apple and throw it on the ground,"{""function"": ""grasp_object"", ""args"": {""name"": ""Apple"", ""lift_height"": 0.5}}",1,0,11.224126
+"Move to the smallest cube, then move to the largest cube","{""function"": ""move_to_object"", ""args"": {""name"": ""Cube3""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Cube1""}}",2,0,13.29202
+"Pick up the sphere, move it to the right 50cm, then release it","{""function"": ""grasp_object"", ""args"": {""name"": ""Sphere""}}",1,0,3.014967
+"Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm","{""function"": ""move_to_position"", ""args"": {""x"": 0.2, ""y"": -0.2, ""z"": 0.0, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.2, ""y"": -0.2, ""z"": 0.0, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.2, ""y"": 0.2, ""z"": 0.0, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.2, ""y"": 0.2, ""z"": 0.0, ""relative"": true}}",4,0,11.980931
+Clear the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Crackers""}}",1,0,11.700484
+Remove the non-food items on the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube3""}}",1,0,12.893021
+Sort objects by shape,"Here’s the scene, grouped by shape:
+
+**Cubes / box-like**
+- Cube1 – red cube, scale [0.1, 0.1, 0.1]
+- Cube2 – blue cube, scale [0.075, 0.075, 0.075]
+- Cube3 – green cube, scale [0.05, 0.05, 0.05]
+- Crackers – box-shaped package
+
+**Spheres / round**
+- Orange – spherical fruit
+- Apple – roughly spherical fruit
+- Sphere – green sphere, scale [0.1, 0.1, 0.1]
+
+**Cylinders / cans**
+- Can – cylindrical can
+
+**Banana-shaped (curved)**
+- Banana1 – yellow banana
+- Banana2 – yellow banana
+
+**Robots / controllers / camera (non-graspable scene elements)**
+- kinova_gen3_7dof-robotiq85 – robot arm base
+- robotiq_arg2f_85_model – gripper model
+- Camera – scene camera",0,0,8.517813
+Stack all the cubes,,0,0,23.792432
+Put warm-colored objects next to each other,,0,0,23.752077

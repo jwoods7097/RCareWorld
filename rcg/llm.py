@@ -17,7 +17,7 @@ except ImportError:
 from dotenv import load_dotenv
 load_dotenv()
 
-FLEX = True
+FLEX = False
 INPUT_PER_1M = 1.25
 CACHED_INPUT_PER_1M = 0.125
 OUTPUT_PER_1M = 10.00

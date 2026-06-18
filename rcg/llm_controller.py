@@ -20,17 +20,21 @@ from rcg.utils import geneval, parse_manual_function_call, start_logging, write_
 class LLMController:
     """LLM controller for processing natural language commands."""
     
-    def __init__(self, enable_logging: bool = True, show_function_calls: bool = True):
+    def __init__(self, enable_logging: bool = True, show_function_calls: bool = True, coder_only: bool = False):
         """Initialize LLM controller."""
         self.traces = []
         self.macros = []
+        self.cached_input = None
+        self.cached_output = None
 
         # Initialize models
+        self.coder_only = coder_only
         if not OpenAILLM.API_KEY:
             raise ValueError("OpenAI API key not set")
         OpenAILLM.init_pipeline()
         self.code_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_CODE, temperature=1.0, reasoning="medium")
-        self.eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
+        if not self.coder_only:
+            self.eval_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_EVAL, temperature=0.7)
         self.summary_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_SUMMARY, temperature=0.7)
 
         # Initialize logging
@@ -39,7 +43,8 @@ class LLMController:
         if self.enable_logging:
             start_logging("llm")
             write_log(f"Code Model: {self.code_model.MODEL}")
-            write_log(f"Eval Model: {self.eval_model.MODEL}")
+            if not self.coder_only:
+                write_log(f"Eval Model: {self.eval_model.MODEL}")
             write_log(f"Summary Model: {self.summary_model.MODEL}")
             write_log("")
 
@@ -58,20 +63,29 @@ class LLMController:
         # Call get_info first, removing previous call
         info = get_info()
         self.code_model.add_info(info)
-        self.eval_model.add_info(info)
+        if not self.coder_only:
+            self.eval_model.add_info(info)
 
         try:
             # Generate and evaluate code
-            code_message = geneval(self.code_model, self.eval_model, user_input, include_input_in_eval=True, macros=self.macros)
+            if self.coder_only:
+                code_message = self.code_model.generate(user_input)
+                write_log(f"CODER RESULT: {code_message}\n")
+            else:
+                code_message = geneval(self.code_model, self.eval_model, user_input, include_input_in_eval=True, macros=self.macros)
 
             # Try to parse manual function call from text
             parsed_functions = parse_manual_function_call(code_message)
+            used_skills = set()
+            for func in parsed_functions:
+                used_skills.add(func[0])
 
             # Check for function call
             if parsed_functions:
                 # Convert parsed functions into primitives
-                code_message = rewrite_json_calls(code_message)
-                parsed_functions = parse_manual_function_call(code_message)
+                if not self.coder_only:
+                    code_message = rewrite_json_calls(code_message)
+                    parsed_functions = parse_manual_function_call(code_message)
 
                 function_names = []
                 function_args_list = []
@@ -124,32 +138,19 @@ class LLMController:
                     write_log(final_message)
                     write_log("")
 
-                self.traces.append({
-                    "timestamp": datetime.now().isoformat(),
-                    "prompt": user_input,
-                    "final_code": parsed_functions,
-                })
-
-                lambda_expr = sequence_to_expr(parsed_functions)
-                write_log(f"Lambda expression: {lambda_expr}\n")
-
-                abstractions, self.macros = learn_macros(self.traces)
-                write_log(f"Learned abstractions: {abstractions}\n")
-
-                if self.macros:
-                    write_log(f"MACROS:")
-                    for schema in self.macros:
-                        write_log(json.dumps(schema, indent=4, ensure_ascii=False) + "\n")
-
-                self.code_model.update_system_prompt(get_system_prompt_code(self.macros))
-                self.eval_model.update_system_prompt(get_system_prompt_eval(self.macros))
+                if not self.coder_only:
+                    if self.cached_input is not None:
+                        self.learn_macros()
+                    self.cached_input = user_input
+                    self.cached_output = parsed_functions
 
                 return {
                     "success": True,
                     "function_called": function_names,
                     "function_args": function_args_list,
                     "function_result": function_results,
-                    "llm_response": final_message
+                    "llm_response": final_message,
+                    "used_skills": list(used_skills)
                 }
             else:
                 # No function call at all
@@ -175,8 +176,37 @@ class LLMController:
     def reset(self):
         """Reset conversation history."""
         self.code_model.reset()
+        if not self.coder_only:
+            self.eval_model.reset()
         print("[LLM Controller] Conversation history reset")
         if self.enable_logging:
             write_log("\n" + "="*80)
             write_log("CONVERSATION RESET")
             write_log("="*80 + "\n")
+
+    def reset_cache(self):
+        self.cached_input = None
+        self.cached_output = None
+
+    def learn_macros(self):
+        if self.cached_input is None:
+            return
+
+        self.traces.append({
+            "timestamp": datetime.now().isoformat(),
+            "prompt": self.cached_input,
+            "final_code": self.cached_output,
+        })
+
+        abstractions, self.macros = learn_macros(self.traces)
+        write_log(f"Learned abstractions: {abstractions}\n")
+
+        if self.macros:
+            write_log(f"MACROS:")
+            for schema in self.macros:
+                write_log(json.dumps(schema, indent=4, ensure_ascii=False) + "\n")
+
+        self.code_model.update_system_prompt(get_system_prompt_code(self.macros))
+        self.eval_model.update_system_prompt(get_system_prompt_eval(self.macros))
+
+        self.reset_cache()

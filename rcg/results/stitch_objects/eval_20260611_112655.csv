@@ -1,0 +1,23 @@
+prompt,code,program_length,macro_usage,duration_seconds
+Grab the green cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube3""}}",1,0,2.935923
+Move 20cm above the blue can,"{""function"": ""move_to_object"", ""args"": {""name"": ""Can"", ""offset_x"": 0.0, ""offset_y"": 0.2, ""offset_z"": 0.0, ""duration"": 2.0}}",1,0,1.965374
+Grab the medium-sized cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube2""}}",1,0,1.621035
+Grab a yellow fruit,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana1""}}",1,0,4.06824
+Grab the cylindrical object,"{""function"": ""grasp_object"", ""args"": {""name"": ""Can"", ""lift_height"": 0.5}}",1,0,2.424894
+Put the crackers on the other side of the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Crackers""}}
+",1,0,21.616334
+Move rightmost banana to the left of the can,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana1"", ""lift_height"": 0.5}}",1,0,6.30427
+Move leftmost fruit 15cm closer to me,,0,0,34.068791
+Pick up closest food item to the red cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Apple"", ""lift_height"": 0.5}}",1,0,7.955013
+Move the orange to the center of the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Orange"", ""lift_height"": 0.3}}",1,0,14.328965
+"Move leftmost banana 10cm to the right, then move rightmost banana 5cm to the left","{""function"": ""grasp_object"", ""args"": {""name"": ""Banana2""}}",1,0,5.003938
+Pick up the apple and throw it on the ground,"{""function"": ""grasp_object"", ""args"": {""name"": ""Apple"", ""lift_height"": 0.5}}",1,0,13.798457
+"Move to the smallest cube, then move to the largest cube","{""function"": ""move_to_object"", ""args"": {""name"": ""Cube3""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Cube1""}}",2,0,14.936281
+"Pick up the sphere, move it to the right 50cm, then release it","{""function"": ""grasp_object"", ""args"": {""name"": ""Sphere"", ""lift_height"": 0.5}}",1,0,7.759329
+"Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm","{""function"": ""move_to_position"", ""args"": {""x"": 0.2, ""y"": -0.2, ""z"": 0.0, ""relative"": true}}",1,0,11.66237
+Clear the table,,0,0,28.565944
+Remove the non-food items on the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube3"", ""lift_height"": 0.5}}",1,0,20.95746
+Sort objects by shape,"{""function"": ""get_info"", ""args"": {}}",1,0,10.928073
+Stack all the cubes,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube2"", ""lift_height"": 0.3}}",1,0,14.294897
+Put warm-colored objects next to each other,"{""function"": ""grasp_object"", ""args"": {""name"": ""Orange"", ""lift_height"": 0.5}}",1,0,15.640465

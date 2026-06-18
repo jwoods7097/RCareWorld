@@ -365,6 +365,7 @@ def process_chat_message(message: str, history: List[dict]) -> Tuple[List[dict],
                         response_parts.append(f"**[Function: {func_name}]** ✗ {func_result.get('message', 'Failed')}")
 
             # Add LLM response
+            response_parts.append(f"**Skills Used:** {result['used_skills']}")
             response_parts.append(result["llm_response"])
 
             bot_response = "\n\n".join(response_parts)
@@ -384,6 +385,15 @@ def process_chat_message(message: str, history: List[dict]) -> Tuple[List[dict],
         history.append({"role": "user", "content": message})
         history.append({"role": "assistant", "content": error_msg})
         return history, f"✗ {error_msg}"
+
+# System feedback  
+def positive_feedback(self):
+    _global_llm_controller.learn_macros()
+    return "Gave positive feedback"
+
+def negative_feedback(self):
+    _global_llm_controller.reset_cache()
+    return "Gave negative feedback"
 
 
 # ============================================================================
@@ -427,6 +437,9 @@ def create_interface() -> gr.Blocks:
         }
         .movement-controls-grid > .row {
             width: 100% !important;
+        }
+        .thumb-row {
+            flex-wrap: nowrap !important;
         }
         """
     ) as interface:
@@ -552,7 +565,12 @@ def create_interface() -> gr.Blocks:
                         scale=4,
                         lines=1
                     )
-                    chat_submit = gr.Button("Send", variant="primary", scale=1)
+
+                    with gr.Column(scale=1):
+                        chat_submit = gr.Button("Send", variant="primary")
+                        with gr.Row(elem_classes="thumb-row", scale=1):
+                            thumbs_up = gr.Button("👍")
+                            thumbs_down = gr.Button("👎")
 
                 # Chat status
                 chat_status = gr.Textbox(
@@ -600,6 +618,10 @@ def create_interface() -> gr.Blocks:
         # Gripper button handlers
         btn_grasp.click(fn=grasp_action, inputs=None, outputs=btn_status)
         btn_release.click(fn=release_action, inputs=None, outputs=btn_status)
+
+        # Feedback button handlers
+        thumbs_up.click(fn=positive_feedback, inputs=None, outputs=btn_status)
+        thumbs_down.click(fn=negative_feedback, inputs=None, outputs=btn_status)
 
         # Chat interface handlers
         chat_submit.click(
