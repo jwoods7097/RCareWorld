@@ -807,5 +807,4 @@ def learn_macros(traces: List[Dict[str, Any]], max_macros: int = 10) -> Tuple[Li
         _schema_cache[abstraction.body] = result
         macro_schemas[i] = result
 
-    write_learned_macros_file(learned_abstractions, macro_schemas)
     return learned_abstractions, macro_schemas

@@ -570,8 +570,8 @@ def create_interface() -> gr.Blocks:
                     with gr.Column(scale=1):
                         chat_submit = gr.Button("Send", variant="primary")
                         with gr.Row(elem_classes="thumb-row", scale=1):
-                            thumbs_up = gr.Button("👍")
-                            thumbs_down = gr.Button("👎")
+                            thumbs_up = gr.Button("👍", visible=False)
+                            thumbs_down = gr.Button("👎", visible=False)
 
                 # Chat status
                 chat_status = gr.Textbox(

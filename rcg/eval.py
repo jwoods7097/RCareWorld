@@ -165,7 +165,8 @@ if __name__ == "__main__":
                 continue
             finally:
                 code_model.reset()
-                eval_model.reset()
+                if not args.no_eval:
+                    eval_model.reset()
             
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()

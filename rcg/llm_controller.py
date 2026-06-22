@@ -4,13 +4,15 @@ import re
 import traceback
 from datetime import datetime
 from typing import Dict, Any
+import csv
+from pathlib import Path
 
 # Import prompts from prompt.py
 from rcg.prompt import SYSTEM_PROMPT_CODE, SYSTEM_PROMPT_EVAL, SYSTEM_PROMPT_SUMMARY, get_system_prompt_code, get_system_prompt_eval
 # from rcg.learned_macros import *
 from rcg.macro_stitch import learn_macros, sequence_to_expr, rewrite_json_calls
 from rcg.llm import OpenAILLM
-from rcg.robot import get_info, execute_function
+from rcg.robot import FUNCTION_SCHEMAS, get_info, execute_function
 from rcg.utils import geneval, parse_manual_function_call, start_logging, write_log, LOG_FILE
 
 # ============================================================================
@@ -48,16 +50,21 @@ class LLMController:
             write_log(f"Summary Model: {self.summary_model.MODEL}")
             write_log("")
 
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            self.csv_path = Path(__file__).parent / "results" / f"user_{timestamp}.csv"
+
         print(f"[LLM Controller] Initialized")
         if self.enable_logging:
             print(f"[LLM Controller] Logging to {LOG_FILE}")
+            print(f"[LLM Controller] Results will be saved to {self.csv_path}")
     
     def process_command(self, user_input: str) -> Dict[str, Any]:
         """Process user command using wrapper function calling."""
         # Log user input
+        start_time = datetime.now()
         if self.enable_logging:
             write_log("─" * 80)
-            write_log(f"[{datetime.now().strftime('%H:%M:%S')}] USER: {user_input}")
+            write_log(f"[{start_time.strftime('%H:%M:%S')}] USER: {user_input}")
             write_log("")
 
         # Call get_info first, removing previous call
@@ -84,8 +91,8 @@ class LLMController:
             if parsed_functions:
                 # Convert parsed functions into primitives
                 if not self.coder_only:
-                    code_message = rewrite_json_calls(code_message)
-                    parsed_functions = parse_manual_function_call(code_message)
+                    primitive_code_message = rewrite_json_calls(code_message)
+                    parsed_functions = parse_manual_function_call(primitive_code_message)
 
                 function_names = []
                 function_args_list = []
@@ -139,10 +146,32 @@ class LLMController:
                     write_log("")
 
                 if not self.coder_only:
-                    if self.cached_input is not None:
-                        self.learn_macros()
                     self.cached_input = user_input
                     self.cached_output = parsed_functions
+                    if self.cached_input is not None:
+                        self.learn_macros()
+
+                # Log results to CSV
+                end_time = datetime.now()
+                duration = (end_time - start_time).total_seconds()
+
+                result = {
+                    "prompt": user_input,
+                    "code": code_message,
+                    "program_length": len(parsed_functions),
+                    "macro_usage": len([f for f in parsed_functions if f[0] not in [schema["name"] for schema in FUNCTION_SCHEMAS]]),
+                    "duration_seconds": duration,
+                    }
+
+                # Append results to CSV file
+                file_exists = os.path.exists(self.csv_path)
+                with open(self.csv_path, "a", newline="", encoding="utf-8") as f:
+                    writer = csv.DictWriter(f, fieldnames=result.keys())
+
+                    if not file_exists:
+                        writer.writeheader()
+
+                    writer.writerow(result)
 
                 return {
                     "success": True,
