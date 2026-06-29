@@ -212,6 +212,7 @@ User: "move forward 15cm"
    - "move backward" / "move back" → z < 0
 4. **NEVER use Z-axis for up/down movement! Always use Y-axis!**
 5. For prompts that involve interaction with the user, their mouth is located at [-1.02, 1.60, -0.07]
+6. For prompts that involve the plate, you need to drop items 15cm above the plate's actual location to avoid collisions.
 """
 
 SYSTEM_PROMPT_CODE = get_system_prompt_code()
@@ -234,7 +235,8 @@ Unity uses: **X = left/right, Y = UP/DOWN (vertical), Z = forward/back**
 - Move FORWARD → increase Z (z > 0)
 - Move BACKWARD → decrease Z (z < 0)
 
-For prompts that involve interaction with the user, their mouth is located at [-1.02, 1.60, -0.07]
+For prompts that involve interaction with the user, their mouth is located at [-1.02, 1.60, -0.07].
+For prompts that involve the plate, you need to drop items 15cm above the plate's actual location to avoid collisions.
 
 ## Available Functions:
 """ \
