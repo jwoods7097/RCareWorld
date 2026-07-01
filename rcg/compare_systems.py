@@ -6,8 +6,15 @@ import html
 import pandas as pd
 import gradio as gr
 
+# Update this import to match your project structure.
+# Example:
+# from your_module import FUNCTION_SCHEMAS
+from rcg.robot import FUNCTION_SCHEMAS
+
 
 RESULTS_DIR = Path(__file__).parent / "results"
+
+PRIMITIVE_FUNCTION_NAMES = {schema["name"] for schema in FUNCTION_SCHEMAS}
 
 
 def csv_timestamp(path: Path):
@@ -99,6 +106,29 @@ def extract_functions(code_value):
     return unique
 
 
+def split_function_categories(functions):
+    primitive_functions = []
+    learned_functions = []
+
+    for fn in functions:
+        if fn in PRIMITIVE_FUNCTION_NAMES:
+            primitive_functions.append(fn)
+        else:
+            learned_functions.append(fn)
+
+    return primitive_functions, learned_functions
+
+
+def render_function_chips(functions, empty_text):
+    if not functions:
+        return f'<span class="muted">{html.escape(empty_text)}</span>'
+
+    return "".join(
+        f'<span class="chip">{html.escape(fn)}</span>'
+        for fn in functions
+    )
+
+
 def summarize_csv(csv_path):
     df = pd.read_csv(csv_path)
 
@@ -108,20 +138,18 @@ def summarize_csv(csv_path):
     if "code" not in df.columns:
         raise ValueError(f"{csv_path.name} does not contain a 'code' column.")
 
-    grouped = {}
+    rows = []
 
     for _, row in df.iterrows():
         prompt = str(row["prompt"])
         functions = extract_functions(row["code"])
 
-        if prompt not in grouped:
-            grouped[prompt] = []
+        rows.append({
+            "prompt": prompt,
+            "functions": functions,
+        })
 
-        for fn in functions:
-            if fn not in grouped[prompt]:
-                grouped[prompt].append(fn)
-
-    return grouped
+    return rows
 
 
 def render_conversation(title, csv_path, grouped):
@@ -133,16 +161,21 @@ def render_conversation(title, csv_path, grouped):
         """
     ]
 
-    for prompt, functions in grouped.items():
+    for row in grouped:
+        prompt, functions = row["prompt"], row["functions"]
         safe_prompt = html.escape(prompt)
 
-        if functions:
-            function_html = "".join(
-                f'<span class="chip">{html.escape(fn)}</span>'
-                for fn in functions
-            )
-        else:
-            function_html = '<span class="muted">No function values found</span>'
+        primitive_functions, learned_functions = split_function_categories(functions)
+
+        primitive_html = render_function_chips(
+            primitive_functions,
+            "No primitive skills used"
+        )
+
+        learned_html = render_function_chips(
+            learned_functions,
+            "No learned skills used"
+        )
 
         parts.append(
             f"""
@@ -154,7 +187,16 @@ def render_conversation(title, csv_path, grouped):
 
                 <div class="function-bubble">
                     <div class="label">Skills Used</div>
-                    <div class="chips">{function_html}</div>
+
+                    <div class="function-row">
+                        <span class="function-category">Primitive Skills:</span>
+                        <span class="chips">{primitive_html}</span>
+                    </div>
+
+                    <div class="function-row">
+                        <span class="function-category">Learned Skills:</span>
+                        <span class="chips">{learned_html}</span>
+                    </div>
                 </div>
             </div>
             """
@@ -250,8 +292,23 @@ css = """
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: black;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     font-weight: 700;
+}
+
+.function-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 8px;
+    color: black;
+}
+
+.function-category {
+    min-width: 115px;
+    font-weight: 700;
+    color: black;
+    font-size: 14px;
 }
 
 .chips {

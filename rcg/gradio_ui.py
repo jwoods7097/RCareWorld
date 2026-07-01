@@ -5,6 +5,7 @@ import threading
 from typing import Optional, Tuple, List
 import io
 from PIL import Image
+from rcg.robot import FUNCTION_SCHEMAS
 
 # Global references (will be set by initialize())
 _global_env = None
@@ -364,9 +365,16 @@ def process_chat_message(message: str, history: List[dict]) -> Tuple[List[dict],
                     else:
                         response_parts.append(f"**[Function: {func_name}]** ✗ {func_result.get('message', 'Failed')}")
 
-            # Add LLM response
+            # Add skills used
             if 'used_skills' in result:
-                response_parts.append(f"**Skills Used:** {result['used_skills']}")
+                learned_skills = [f for f in result['used_skills'] if f not in [schema["name"] for schema in FUNCTION_SCHEMAS]]
+                primitive_skills = list(set(result['used_skills']) - set(learned_skills))
+                if primitive_skills:
+                    response_parts.append(f"**Primitive Skills Used:** {primitive_skills}")
+                if learned_skills:
+                    response_parts.append(f"**Learned Skills Used:** {learned_skills}")
+           
+            # Add LLM response
             response_parts.append(result["llm_response"])
 
             bot_response = "\n\n".join(response_parts)
