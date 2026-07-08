@@ -48,8 +48,8 @@ prompts_feeding = [
     "Feed the strawberry closest to the ham to the user",
     "Put the largest fruit onto the plate",
     "Collect all strawberries onto the plate",
-    "Put the apple on the plate and use the knife to cut it",
-    "Feed the apple first and then the orange to the user",
+    "Put the peach on the plate and use the knife to cut it",
+    "Feed the peach first and then the banana to the user",
     "Assemble a ham sandwich on the plate",
     "Grasp the napkin and wipe the user's mouth",
     "Feed all the food on the table to the user",
@@ -181,6 +181,7 @@ if __name__ == "__main__":
                 "code": code_message,
                 "program_length": len(parse_raw),
                 "macro_usage": len([f for f in parse_raw if f[0] not in [schema["name"] for schema in FUNCTION_SCHEMAS]]),
+                "num_macros": len(macros),
                 "duration_seconds": duration,
             }
 

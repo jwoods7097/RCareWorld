@@ -4,10 +4,15 @@ import matplotlib.pyplot as plt
 
 
 RESULTS_DIR = Path("results")
-SUMMARY_FILE = "summary_by_prompt.csv"
 OUTPUT_FILE = "plots/macro_usage.pdf"
 
+PROMPT_COLUMN = "prompt"
+PROGRAM_LENGTH_COLUMN = "program_length"
+MACRO_USAGE_COLUMN = "macro_usage"
+NUM_MACROS_COLUMN = "num_macros"
+
 MACRO_COLUMN = "avg_macro_usage_pct_of_program_length"
+NUM_MACROS_AVG_COLUMN = "avg_num_macros"
 
 
 prompts_objects = [
@@ -102,6 +107,109 @@ def clean_environment_name(subfolder_name: str) -> str:
     return name
 
 
+def load_raw_csvs_for_subfolder(subfolder: Path, env_type: str) -> pd.DataFrame | None:
+    rows = []
+
+    for csv_file in sorted(subfolder.glob("*.csv")):
+        if csv_file.name == "summary_by_prompt.csv":
+            continue
+
+        df = pd.read_csv(csv_file)
+
+        required_columns = [
+            PROMPT_COLUMN,
+            PROGRAM_LENGTH_COLUMN,
+            MACRO_USAGE_COLUMN,
+            NUM_MACROS_COLUMN,
+        ]
+
+        missing = [col for col in required_columns if col not in df.columns]
+        if missing:
+            print(f"Skipping {csv_file}: missing columns {missing}")
+            continue
+
+        temp = df[required_columns].copy()
+        temp["prompt"] = temp[PROMPT_COLUMN].apply(normalize_prompt)
+        temp["source_file"] = csv_file.name
+
+        temp["macro_usage_pct_of_program_length"] = (
+            temp[MACRO_USAGE_COLUMN] / temp[PROGRAM_LENGTH_COLUMN]
+        )
+
+        rows.append(
+            temp[
+                [
+                    "prompt",
+                    "macro_usage_pct_of_program_length",
+                    NUM_MACROS_COLUMN,
+                    "source_file",
+                ]
+            ]
+        )
+
+    if not rows:
+        return None
+
+    return pd.concat(rows, ignore_index=True)
+
+
+def summarize_subfolder(subfolder: Path, env_type: str) -> pd.DataFrame | None:
+    raw = load_raw_csvs_for_subfolder(subfolder, env_type)
+
+    if raw is None:
+        print(f"No valid raw CSVs found in {subfolder}")
+        return None
+
+    prompt_order = [
+        normalize_prompt(p)
+        for p in prompt_order_for_environment(env_type)
+    ]
+
+    grouped = (
+        raw
+        .groupby("prompt", as_index=False, sort=False)
+        .agg(
+            avg_macro_usage_pct_of_program_length=(
+                "macro_usage_pct_of_program_length",
+                "mean",
+            ),
+            avg_num_macros=(NUM_MACROS_COLUMN, "mean"),
+        )
+    )
+
+    grouped = (
+        grouped
+        .set_index("prompt")
+        .reindex(prompt_order)
+        .fillna(
+            {
+                MACRO_COLUMN: 0,
+                NUM_MACROS_AVG_COLUMN: 0,
+            }
+        )
+        .reset_index()
+        .rename(columns={"index": "prompt"})
+    )
+
+    grouped["prompt_number"] = range(1, len(prompt_order) + 1)
+    grouped["environment"] = clean_environment_name(subfolder.name)
+    grouped["environment_type"] = env_type
+    grouped["subfolder"] = subfolder.name
+
+    missing_prompts = grouped[
+        (grouped[MACRO_COLUMN] == 0) &
+        (grouped[NUM_MACROS_AVG_COLUMN] == 0)
+    ]
+
+    if not missing_prompts.empty:
+        print(
+            f"{subfolder}: filled {len(missing_prompts)} missing prompt(s) with 0 "
+            f"out of {len(prompt_order)} expected prompts"
+        )
+
+    return grouped
+
+
 def load_all_summaries():
     rows = []
 
@@ -118,61 +226,12 @@ def load_all_summaries():
             print(f"Skipping {subfolder}: name does not contain objects or feeding")
             continue
 
-        summary_path = subfolder / SUMMARY_FILE
+        summary = summarize_subfolder(subfolder, env_type)
 
-        if not summary_path.exists():
-            print(f"Skipping {subfolder}: missing {SUMMARY_FILE}")
+        if summary is None:
             continue
 
-        df = pd.read_csv(summary_path)
-
-        if "prompt" not in df.columns:
-            print(f"Skipping {summary_path}: missing column prompt")
-            continue
-
-        if MACRO_COLUMN not in df.columns:
-            print(f"Skipping {summary_path}: missing column {MACRO_COLUMN}")
-            continue
-
-        prompt_order = [normalize_prompt(p) for p in prompt_order_for_environment(env_type)]
-
-        df = df[["prompt", MACRO_COLUMN]].copy()
-        df["prompt"] = df["prompt"].apply(normalize_prompt)
-
-        # If a prompt appears multiple times, average it.
-        df = (
-            df
-            .groupby("prompt", as_index=False, sort=False)
-            .agg({MACRO_COLUMN: "mean"})
-        )
-
-        # Reindex to the true prompt list for this environment.
-        # Missing prompts get macro usage = 0.
-        df = (
-            df
-            .set_index("prompt")
-            .reindex(prompt_order)
-            .fillna({MACRO_COLUMN: 0})
-            .reset_index()
-            .rename(columns={"index": "prompt"})
-        )
-
-        df["prompt_number"] = range(1, len(prompt_order) + 1)
-        df["environment"] = clean_environment_name(subfolder.name)
-        df["environment_type"] = env_type
-        df["subfolder"] = subfolder.name
-
-        expected_count = len(prompt_order)
-        actual_nonzero_count = (df[MACRO_COLUMN] != 0).sum()
-        missing_count = expected_count - actual_nonzero_count
-
-        if missing_count > 0:
-            print(
-                f"{subfolder}: filled {missing_count} missing prompt(s) with 0 "
-                f"out of {expected_count} expected prompts"
-            )
-
-        rows.append(df)
+        rows.append(summary)
 
     if not rows:
         return None
@@ -180,9 +239,58 @@ def load_all_summaries():
     return pd.concat(rows, ignore_index=True)
 
 
-def plot_environment(ax, df: pd.DataFrame, env_type: str, title: str):
-    subset = df[df["environment_type"] == env_type]
+def add_prompt_group_dividers(ax, env_type: str, add_labels: bool):
+    if env_type == "objects":
+        group_size = 5
+        group_names = [
+            "Object Manipulation",
+            "Spatial Reasoning",
+            "Multi-Step Actions",
+            "Goal Planning",
+        ]
+    elif env_type == "feeding":
+        group_size = 10
+        group_names = [
+            "Human-Robot Interaction",
+            "Multi-Step Human-Robot Interaction",
+        ]
+    else:
+        return
 
+    prompt_count = len(prompt_order_for_environment(env_type))
+
+    for boundary in range(group_size, prompt_count, group_size):
+        ax.axvline(
+            boundary + 0.5,
+            color="black",
+            linestyle="--",
+            linewidth=1,
+            alpha=0.8,
+        )
+
+    if not add_labels:
+        return
+
+    y_min, y_max = ax.get_ylim()
+    ax.set_ylim(y_min, 1.19)
+
+    for i, group_name in enumerate(group_names):
+        start = i * group_size + 1
+        end = min((i + 1) * group_size, prompt_count)
+        center = (start + end) / 2
+
+        ax.text(
+            center,
+            1.1,
+            group_name,
+            ha="center",
+            va="bottom",
+            fontsize=8,
+        )
+
+
+def plot_macro_usage(ax, df: pd.DataFrame, env_type: str, title: str):
+    subset = df[df["environment_type"] == env_type]
     prompt_count = len(prompt_order_for_environment(env_type))
 
     if subset.empty:
@@ -195,7 +303,7 @@ def plot_environment(ax, df: pd.DataFrame, env_type: str, title: str):
             va="center",
             transform=ax.transAxes,
         )
-        ax.set_xlim(1, prompt_count)
+        ax.set_xlim(0.5, prompt_count + 0.5)
         return
 
     for environment, env_df in subset.groupby("environment", sort=False):
@@ -209,16 +317,58 @@ def plot_environment(ax, df: pd.DataFrame, env_type: str, title: str):
         )
 
     ax.set_title(title)
-    ax.set_xlabel("Prompt number")
-    ax.set_ylabel("Average macro usage proportion")
+    ax.set_ylabel("Avg macro usage proportion")
     ax.set_xlim(0.5, prompt_count + 0.5)
     ax.set_xticks(range(1, prompt_count + 1))
     ax.grid(True, alpha=0.3)
+
+    add_prompt_group_dividers(ax, env_type, add_labels=True)
+
+
+def plot_num_macros(ax, df: pd.DataFrame, env_type: str):
+    subset = df[df["environment_type"] == env_type]
+    prompt_count = len(prompt_order_for_environment(env_type))
+
+    if subset.empty:
+        ax.set_xlim(0.5, prompt_count + 0.5)
+        return
+
+    environments = list(subset["environment"].drop_duplicates())
+    num_environments = len(environments)
+
+    total_width = 0.8
+    bar_width = total_width / max(num_environments, 1)
+
+    for i, environment in enumerate(environments):
+        env_df = subset[subset["environment"] == environment].sort_values("prompt_number")
+
+        x = env_df["prompt_number"]
+        offset = -total_width / 2 + bar_width / 2 + i * bar_width
+
+        ax.bar(
+            x + offset,
+            env_df[NUM_MACROS_AVG_COLUMN],
+            width=bar_width,
+            label=environment,
+            alpha=0.8,
+        )
+
+    ax.set_xlabel("Prompt number")
+    ax.set_ylabel("Avg learned macros")
+    ax.set_xlim(0.5, prompt_count + 0.5)
+    ax.set_xticks(range(1, prompt_count + 1))
+    ax.grid(True, axis="y", alpha=0.3)
+
+    add_prompt_group_dividers(ax, env_type, add_labels=False)
 
 
 def main():
     if not RESULTS_DIR.exists():
         raise FileNotFoundError(f"Could not find folder: {RESULTS_DIR}")
+
+    output_dir = Path(OUTPUT_FILE).parent
+    if str(output_dir) != ".":
+        output_dir.mkdir(parents=True, exist_ok=True)
 
     df = load_all_summaries()
 
@@ -227,24 +377,39 @@ def main():
         return
 
     fig, axes = plt.subplots(
-        nrows=1,
+        nrows=2,
         ncols=2,
-        figsize=(14, 5),
-        sharey=True,
+        figsize=(12, 5),
+        sharex="col",
+        gridspec_kw={
+            "height_ratios": [3, 1],
+        },
     )
 
-    plot_environment(
-        axes[0],
+    plot_macro_usage(
+        axes[0, 0],
         df,
         env_type="objects",
         title="Objects Environment",
     )
 
-    plot_environment(
-        axes[1],
+    plot_macro_usage(
+        axes[0, 1],
         df,
         env_type="feeding",
         title="Feeding Environment",
+    )
+
+    plot_num_macros(
+        axes[1, 0],
+        df,
+        env_type="objects",
+    )
+
+    plot_num_macros(
+        axes[1, 1],
+        df,
+        env_type="feeding",
     )
 
     fig.suptitle("Macro Usage by Prompt")

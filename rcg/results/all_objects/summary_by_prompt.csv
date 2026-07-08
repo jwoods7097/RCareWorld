@@ -1,20 +1,21 @@
 prompt,avg_program_length,avg_macro_usage,avg_macro_usage_pct_of_program_length,avg_runtime_seconds,num_runs
-Grab the green cube,1.2,0.0,0.0,13.620644799999999,5
-Move 20cm above the blue can,1.0,0.0,0.0,6.3245918,5
-Grab the medium-sized cube,1.6,0.0,0.0,25.3697358,5
-Grab a yellow fruit,1.4,0.0,0.0,70.9697882,5
-Grab the cylindrical object,1.0,0.0,0.0,8.1017168,5
-Put the crackers on the other side of the table,3.0,0.2,0.06666666666666667,77.335646,5
-Move rightmost banana to the left of the can,3.0,0.0,0.0,77.6531094,5
-Move leftmost fruit 15cm closer to me,2.2,0.4,0.4,55.3227342,5
-Pick up closest food item to the red cube,1.25,0.25,0.25,41.31583,4
-Move the orange to the center of the table,1.6666666666666667,0.6666666666666666,0.6666666666666666,16.447177,3
-"Move leftmost banana 10cm to the right, then move rightmost banana 5cm to the left",4.666666666666667,0.6666666666666666,0.3333333333333333,56.733174,3
-Pick up the apple and throw it on the ground,3.0,0.2,0.06666666666666667,58.153064400000005,5
-"Pick up the sphere, move it to the right 50cm, then release it",2.2,0.4,0.4,16.2526856,5
-"Move to the smallest cube, then move to the largest cube",2.0,0.0,0.0,27.533844600000002,5
-"Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",4.0,0.0,0.0,21.862873200000003,5
-Clear the table,10.0,10.0,1.0,160.72646699999999,5
-Remove the non-food items on the table,7.6,2.8,0.6,73.27993000000001,5
-Stack all the cubes,4.0,1.2,0.5,124.3943352,5
-Put warm-colored objects next to each other,6.0,4.75,0.875,61.78188075,4
+Grab the green cube,1.4,0.0,0.0,13.169618199999999,5
+Move 20cm above the blue can,1.0,0.0,0.0,3.7777316,5
+Grab the medium-sized cube,1.4,0.0,0.0,16.8762934,5
+Grab a yellow fruit,1.4,0.0,0.0,34.222886599999995,5
+Grab the cylindrical object,1.0,0.4,0.4,4.250221,5
+Put the crackers on the other side of the table,3.0,0.2,0.06666666666666667,56.239974800000006,5
+Move rightmost banana to the left of the can,3.2,0.2,0.06666666666666667,79.5064712,5
+Move leftmost fruit 15cm closer to me,2.2,0.6,0.4666666666666666,41.956356,5
+Pick up closest food item to the red cube,1.75,0.25,0.25,53.771264,4
+Move the orange to the center of the table,1.5,0.75,0.75,43.2523595,4
+"Move leftmost banana 10cm to the right, then move rightmost banana 5cm to the left",2.8,1.6,0.8,25.3052864,5
+Pick up the apple and throw it on the ground,2.6,0.4,0.26666666666666666,41.07773519999999,5
+"Pick up the sphere, move it to the right 50cm, then release it",1.4,0.8,0.8,9.3082836,5
+"Move to the smallest cube, then move to the largest cube",2.0,0.0,0.0,22.6193892,5
+"Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm",4.0,0.0,0.0,32.8720644,5
+Clear the table,14.0,8.0,0.8,87.3995584,5
+Remove the non-food items on the table,10.8,2.8,0.3333333333333333,60.959738,5
+Sort objects by shape,5.333333333333333,5.333333333333333,1.0,94.47477399999998,3
+Stack all the cubes,3.0,1.8,0.8,78.8273032,5
+Put warm-colored objects next to each other,4.4,4.4,1.0,111.09982260000001,5

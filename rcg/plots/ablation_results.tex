@@ -1,0 +1,43 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{Summary of ablation experiments for each prompt category, averaged over all trials and environments.}
+\label{tab:ablation_results}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llrrrr}
+\toprule
+Prompt Category & System & Success Rate & Program Length & Macro Usage (\%) & Runtime (s) \\
+\midrule
+\multirow{4}{*}{Object Manipulation} & Coder LLM & \textbf{1.00} & 1.00 & 0.00 & 2.26 \\
+ & Coder LLM + Eval LLM & 0.96 & 1.32 & 0.00 & 9.58 \\
+ & Coder LLM + Stitch & \textbf{1.00} & 1.08 & 0.00 & \textbf{2.24} \\
+ & SkillComposer & \textbf{1.00} & 1.24 & \textbf{8.00} & 14.46 \\
+\midrule
+\multirow{4}{*}{Spatial Reasoning} & Coder LLM & 0.24 & 0.96 & 0.00 & \textbf{11.94} \\
+ & Coder LLM + Eval LLM & \textbf{0.76} & 2.82 & 0.00 & 50.43 \\
+ & Coder LLM + Stitch & 0.24 & 1.00 & 0.00 & 14.51 \\
+ & SkillComposer & 0.44 & 2.33 & \textbf{32.00} & 54.95 \\
+\midrule
+\multirow{4}{*}{Multi-Step Actions} & Coder LLM & 0.32 & 1.68 & 0.00 & \textbf{7.21} \\
+ & Coder LLM + Eval LLM & \textbf{1.00} & 3.60 & 0.00 & 22.51 \\
+ & Coder LLM + Stitch & 0.32 & 1.80 & 0.00 & 9.38 \\
+ & SkillComposer & 0.92 & 2.56 & \textbf{37.33} & 26.24 \\
+\midrule
+\multirow{4}{*}{Goal Planning} & Coder LLM & 0.08 & 1.72 & 0.00 & \textbf{11.67} \\
+ & Coder LLM + Eval LLM & 0.68 & 13.07 & 0.00 & 50.33 \\
+ & Coder LLM + Stitch & 0.00 & 0.64 & 0.00 & 16.50 \\
+ & SkillComposer & \textbf{0.80} & 7.51 & \textbf{78.67} & 86.55 \\
+\midrule
+\multirow{4}{*}{Human-Robot Interaction} & Coder LLM & 0.14 & 1.16 & 0.00 & 15.96 \\
+ & Coder LLM + Eval LLM & \textbf{0.94} & 3.44 & 0.00 & 47.49 \\
+ & Coder LLM + Stitch & 0.16 & 1.16 & 4.00 & \textbf{10.71} \\
+ & SkillComposer & 0.90 & 2.75 & \textbf{27.50} & 45.68 \\
+\midrule
+\multirow{4}{*}{Multi-Step Human-Robot Interaction} & Coder LLM & 0.03 & 1.62 & 0.00 & 16.31 \\
+ & Coder LLM + Eval LLM & \textbf{1.00} & 11.15 & 0.00 & 52.00 \\
+ & Coder LLM + Stitch & 0.05 & 1.60 & 6.25 & \textbf{12.94} \\
+ & SkillComposer & \textbf{1.00} & 10.53 & \textbf{10.00} & 58.29 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}

@@ -157,7 +157,8 @@ def cast_value(value: Any, expected_type: str) -> Any:
     if value is None:
         return None
     if expected_type == "number":
-        return value if isinstance(value, (int, float)) else float(value)
+        if isinstance(value, (int, float)):
+            return value
     if expected_type == "boolean":
         if isinstance(value, bool):
             return value
@@ -645,7 +646,10 @@ def parse_json_calls(json_text: str) -> List[Dict[str, Any]]:
     except Exception:
         pass
 
-    return [json.loads(line) for line in text.splitlines() if line.strip()]
+    try:
+        return [json.loads(line) for line in text.splitlines() if line.strip()]
+    except Exception:
+        return []
 
 
 def json_call_to_sexpr(call: Dict[str, Any]) -> List[Any]:

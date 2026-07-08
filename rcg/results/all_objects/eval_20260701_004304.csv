@@ -1,0 +1,59 @@
+prompt,code,program_length,macro_usage,num_macros,duration_seconds
+Grab the green cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube3""}}",1,0,0,5.302263
+Move 20cm above the blue can,"{""function"": ""move_to_object"", ""args"": {""name"": ""Can"", ""offset_y"": 0.2}}",1,0,0,3.66914
+Grab the medium-sized cube,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube2""}}",1,0,0,12.295741
+Grab a yellow fruit,"{""function"": ""move_to_object"", ""args"": {""name"": ""Banana1""}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Banana1""}}",2,0,0,21.477715
+Grab the cylindrical object,"{""function"": ""grasp_object"", ""args"": {""name"": ""Can""}}",1,0,0,3.462727
+Put the crackers on the other side of the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Crackers""}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.0, ""z"": 0.6, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {}}",3,0,0,66.926563
+Move rightmost banana to the left of the can,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana1"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.55, ""y"": 1.4851895570755005, ""z"": -0.3490000069141388, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,0,72.842484
+Move leftmost fruit 15cm closer to me,"{""function"": ""move_and_place_object"", ""args"": {""relative"": true, ""x"": 0.0, ""y"": 0.0, ""z"": 0.15, ""name"": ""Orange""}}",1,1,1,29.961619
+Move the orange to the center of the table,"{""function"": ""move_object_to_position_and_release"", ""args"": {""relative"": false, ""x"": -1.18, ""y"": 1.24, ""z"": -0.33, ""name"": ""Orange""}}",1,1,1,41.486916
+"Move leftmost banana 10cm to the right, then move rightmost banana 5cm to the left","{""function"": ""move_object_and_place"", ""args"": {""relative"": true, ""x"": 0.1, ""y"": 0, ""z"": 0, ""name"": ""Banana2""}}
+{""function"": ""move_object_and_place"", ""args"": {""relative"": true, ""x"": -0.05, ""y"": 0, ""z"": 0, ""name"": ""Banana1""}}",2,2,1,18.833147
+Pick up the apple and throw it on the ground,"{""function"": ""grasp_object"", ""args"": {""name"": ""Apple"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": -0.7, ""z"": 0.4, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,1,35.922796
+"Pick up the sphere, move it to the right 50cm, then release it","{""function"": ""move_and_place_object"", ""args"": {""relative"": true, ""x"": 0.5, ""y"": 0.0, ""z"": 0.0, ""name"": ""Sphere""}}",1,1,1,10.764053
+"Move to the smallest cube, then move to the largest cube","{""function"": ""move_to_object"", ""args"": {""name"": ""Cube3""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Cube1""}}",2,0,1,17.494386
+"Move the gripper down and to the right by 20cm, down and to the left by 20cm, up and to the left by 20cm, and up and to the right by 20cm","{""function"": ""move_to_position"", ""args"": {""x"": 0.2, ""y"": -0.2, ""z"": 0, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.2, ""y"": -0.2, ""z"": 0, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.2, ""y"": 0.2, ""z"": 0, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.2, ""y"": 0.2, ""z"": 0, ""relative"": true}}",4,0,1,20.982215
+Clear the table,"{""function"": ""move_object_and_release"", ""args"": {""relative"": false, ""x"": -2.2, ""y"": 1.5, ""z"": -0.8, ""name"": ""Apple""}}
+{""function"": ""move_object_and_release"", ""args"": {""relative"": false, ""x"": -2.2, ""y"": 1.5, ""z"": -0.8, ""name"": ""Banana1""}}
+{""function"": ""move_object_and_release"", ""args"": {""relative"": false, ""x"": -2.2, ""y"": 1.5, ""z"": -0.8, ""name"": ""Banana2""}}
+{""function"": ""move_object_and_release"", ""args"": {""relative"": false, ""x"": -2.2, ""y"": 1.5, ""z"": -0.8, ""name"": ""Orange""}}
+{""function"": ""move_object_and_release"", ""args"": {""relative"": false, ""x"": -2.2, ""y"": 1.5, ""z"": -0.8, ""name"": ""Can""}}
+{""function"": ""move_object_and_release"", ""args"": {""relative"": false, ""x"": -2.2, ""y"": 1.5, ""z"": -0.8, ""name"": ""Crackers""}}
+{""function"": ""move_object_and_release"", ""args"": {""relative"": false, ""x"": -2.2, ""y"": 1.5, ""z"": -0.8, ""name"": ""Cube1""}}
+{""function"": ""move_object_and_release"", ""args"": {""relative"": false, ""x"": -2.2, ""y"": 1.5, ""z"": -0.8, ""name"": ""Cube2""}}
+{""function"": ""move_object_and_release"", ""args"": {""relative"": false, ""x"": -2.2, ""y"": 1.5, ""z"": -0.8, ""name"": ""Cube3""}}
+{""function"": ""move_object_and_release"", ""args"": {""relative"": false, ""x"": -2.2, ""y"": 1.5, ""z"": -0.8, ""name"": ""Sphere""}}",10,10,1,101.003105
+Remove the non-food items on the table,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cube1""}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0, ""y"": 0.2, ""z"": -0.5, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Cube2""}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0, ""y"": 0.2, ""z"": -0.5, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Cube3""}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0, ""y"": 0.2, ""z"": -0.5, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {}}
+
+{""function"": ""grasp_object"", ""args"": {""name"": ""Sphere""}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0, ""y"": 0.2, ""z"": -0.5, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {}}",12,0,1,81.972892
+Stack all the cubes,"{""function"": ""pick_and_place_object"", ""args"": {""relative"": false, ""x"": -1.1269986629486084, ""y"": 1.2850083, ""z"": -0.5480003356933594, ""name"": ""Cube1""}}
+{""function"": ""pick_and_place_object"", ""args"": {""relative"": false, ""x"": -1.1269986629486084, ""y"": 1.3350083, ""z"": -0.5480003356933594, ""name"": ""Cube2""}}
+{""function"": ""pick_and_place_object"", ""args"": {""relative"": false, ""x"": -1.1269986629486084, ""y"": 1.3850083, ""z"": -0.5480003356933594, ""name"": ""Cube3""}}",3,3,1,101.236027
+Put warm-colored objects next to each other,"{""function"": ""move_object_and_release"", ""args"": {""name"": ""Apple"", ""relative"": false, ""x"": -1.69, ""y"": 1.24, ""z"": -0.322}}
+{""function"": ""move_object_and_release"", ""args"": {""name"": ""Banana1"", ""relative"": false, ""x"": -1.73, ""y"": 1.24, ""z"": -0.322}}
+{""function"": ""move_object_and_release"", ""args"": {""name"": ""Banana2"", ""relative"": false, ""x"": -1.81, ""y"": 1.24, ""z"": -0.322}}
+{""function"": ""move_object_and_release"", ""args"": {""name"": ""Cube1"", ""relative"": false, ""x"": -1.65, ""y"": 1.285, ""z"": -0.322}}",4,4,1,179.002005
