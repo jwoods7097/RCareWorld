@@ -3,6 +3,7 @@ import os
 import json
 from datetime import datetime
 from pathlib import Path
+import requests
 
 # Try to import OpenAI
 try:
@@ -30,7 +31,7 @@ CSV_PATH = Path(__file__).parent.parent / "log" / "llm_usage.csv"
 class OpenAILLM:
     """LLM abstraction and configuration"""
 
-    # OpenAI API settings (using custom Qwen3 API endpoint)
+    # OpenAI API settings
     API_KEY = os.getenv("OPENAI_API_KEY", "")
 
     # NOTE: BASE_URL typically ends with /v1
@@ -38,9 +39,9 @@ class OpenAILLM:
     
     # Use models supportting function calling
     MODEL = os.getenv("OPENAI_MODEL", "gpt-5.1")
-
-    # OpenAI client instance (v1.0+ API)
-    _client = None
+    
+    # OpenAI request headers
+    headers = None
   
     def __init__(self, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=2048, reasoning="none"):
         self.conversation_history = [{
@@ -57,13 +58,12 @@ class OpenAILLM:
     def set_api_key(cls, api_key: str):
         """Set OpenAI API key."""
         cls.API_KEY = api_key
-        cls._client = None  # Reset client to use new key
+        cls.headers = None  # Reset client to use new key
 
     @classmethod
     def set_base_url(cls, base_url: str):
         """Set OpenAI base URL."""
         cls.BASE_URL = base_url
-        cls._client = None  # Reset client to use new URL
     
     @classmethod
     def set_model(cls, model: str):
@@ -73,86 +73,60 @@ class OpenAILLM:
     @classmethod
     def init_pipeline(cls):
         """Get or create OpenAI client instance."""
-        if not OPENAI_AVAILABLE:
-            raise RuntimeError("OpenAI package not available")
-
-        if cls._client is None:
-            cls._client = OpenAI(
-                api_key=cls.API_KEY,
-                base_url=cls.BASE_URL
-            )
+        cls.headers = {
+            "Authorization": f"Bearer {cls.API_KEY}",
+            "Content-Type": "application/json"
+        }
 
     def generate(self, prompt, memory=True):
         # Verify that model has been instantiated
-        if self._client is None:
+        if self.headers is None:
             raise RuntimeError("The model has not been initialized yet, run LLM.init_pipeline() first.")
         
         # Call model
-        self.conversation_history.append({"role": "user", "content": prompt})
-        response = self._client.chat.completions.create(
-            model=self.MODEL,
-            messages=self.conversation_history,
-            temperature=self.temperature,
-            max_completion_tokens=self.max_tokens,
-            reasoning_effort=self.reasoning,
-            service_tier="flex" if FLEX else "default"
-        )
+        payload = {
+            "action": "query",
+            "request_source": "override_params",
+            "model_provider": "openai",
+            "model_name": self.MODEL,
+            "query": prompt,
+            "history": self.conversation_history,
+            "model_params": {
+                "temperature": self.temperature,
+                "max_tokens": self.max_tokens,
+                "thinking_level": self.reasoning.upper()
+            },
+            "response_format": {"type": "json"}
+        }
+        response = requests.post(self.BASE_URL, json=payload, headers=self.headers).json()
 
-        usage = response.usage
-
+        # Compute usage statistics and log to CSV
+        usage = response["metadata"].get("usage_metric", None)
         if usage is not None:
-            input_tokens = usage.prompt_tokens or 0
-            output_tokens = usage.completion_tokens or 0
-            total_tokens = usage.total_tokens or 0
-
-            cached_input_tokens = 0
-            if usage.prompt_tokens_details:
-                cached_input_tokens = usage.prompt_tokens_details.cached_tokens or 0
-
-            reasoning_tokens = 0
-            if usage.completion_tokens_details:
-                reasoning_tokens = usage.completion_tokens_details.reasoning_tokens or 0
-
-            uncached_input_tokens = input_tokens - cached_input_tokens
-
-            total_cost = (
-                uncached_input_tokens / 1_000_000 * INPUT_PER_1M
-                + cached_input_tokens / 1_000_000 * CACHED_INPUT_PER_1M
-                + output_tokens / 1_000_000 * OUTPUT_PER_1M
-            )
-            if FLEX:
-                total_cost *= 0.5  # Apply 50% discount for flex tier
-
+            # Get statistics
             row = {
                 "timestamp": datetime.now().isoformat(),
                 "prompt": prompt,
-                "input_tokens": input_tokens,
-                "cached_input_tokens": cached_input_tokens,
-                "uncached_input_tokens": uncached_input_tokens,
-                "output_tokens": output_tokens,
-                "reasoning_tokens": reasoning_tokens,
-                "total_tokens": total_tokens,
-                "total_cost_usd": total_cost,
+                "input_tokens": usage["input_token_count"],
+                "output_tokens": usage["output_token_count"],
+                "total_tokens": usage["total_token_count"],
+                "total_cost": usage["total_token_cost"],
             }
 
+            # Write to CSV
             file_exists = os.path.exists(CSV_PATH)
-
             with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
                 writer = csv.DictWriter(f, fieldnames=row.keys())
-
                 if not file_exists:
                     writer.writeheader()
-
                 writer.writerow(row)
 
-        assistant_message = response.choices[0].message.content
+        assistant_message = response["response"]
 
+        # Add response to history
         if memory:
-            # Add response to history
+            self.conversation_history.append({"role": "user", "content": prompt})
             self.conversation_history.append({"role": "assistant", "content": assistant_message})
-        else:
-            # Remove user prompt from history
-            self.conversation_history.pop()
 
         return assistant_message
     
