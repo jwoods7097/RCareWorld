@@ -8,6 +8,7 @@ from stitch_core import Abstraction, StitchException, compress, rewrite
 from rcg.llm import OpenAILLM
 from rcg.robot import FUNCTION_SCHEMAS
 from rcg.prompt import SYSTEM_PROMPT_DOCUMENT
+from rcg.utils import write_log
 
 
 document_model = OpenAILLM(system_prompt=SYSTEM_PROMPT_DOCUMENT, temperature=0.7)
@@ -324,11 +325,41 @@ def fresh_var(counter: List[int]) -> str:
 
 
 def substitute(expr: Any, env: Dict[str, Any]) -> Any:
+    """
+    Substitute variables while supporting variables in function position.
+
+    Example:
+        (#2 2.0 false)
+
+    with:
+        #2 -> (move_to_position -1.02 1.6 -0.07)
+
+    becomes:
+        (move_to_position -1.02 1.6 -0.07 2.0 false)
+    """
     if isinstance(expr, str):
         return deepcopy(env[expr]) if expr in env else expr
-    if isinstance(expr, list):
-        return [substitute(x, env) for x in expr]
-    return expr
+
+    if not isinstance(expr, list):
+        return expr
+
+    if not expr:
+        return []
+
+    head = expr[0]
+    substituted_args = [substitute(arg, env) for arg in expr[1:]]
+
+    if isinstance(head, str) and head in env:
+        substituted_head = deepcopy(env[head])
+
+        # Splice a partially applied function into function position.
+        if isinstance(substituted_head, list):
+            return substituted_head + substituted_args
+
+        return [substituted_head] + substituted_args
+
+    substituted_head = substitute(head, env)
+    return [substituted_head] + substituted_args
 
 
 def expand_expr(
@@ -339,6 +370,16 @@ def expand_expr(
     stack: Optional[List[str]] = None,
     counter: Optional[List[int]] = None,
 ) -> Any:
+    """
+    Recursively inline abstractions.
+
+    Handles:
+    - zero-arity abstractions used as bare symbols
+    - partial application
+    - function-position substitution
+    - calls created by substitution
+    - right-nested then normalization
+    """
     if env is None:
         env = {}
     if stack is None:
@@ -346,43 +387,141 @@ def expand_expr(
     if counter is None:
         counter = [0]
 
+    # Atomic expression.
     if isinstance(expr, str):
-        return deepcopy(env[expr]) if expr in env else expr
+        if expr in env:
+            replacement = deepcopy(env[expr])
+            return expand_expr(
+                replacement,
+                abs_by_name,
+                cache,
+                env={},
+                stack=stack,
+                counter=counter,
+            )
+
+        # A zero-arity abstraction may appear as a bare symbol.
+        if expr in abs_by_name and abs_by_name[expr].arity == 0:
+            if expr in stack or len(stack) > 50:
+                return expr
+
+            callee = abs_by_name[expr]
+
+            # Cache only the parsed body, not an expanded body containing
+            # context-dependent fresh variables.
+            if expr not in cache:
+                cache[expr] = parse_sexpr(callee.body)
+
+            return expand_expr(
+                deepcopy(cache[expr]),
+                abs_by_name,
+                cache,
+                env={},
+                stack=stack + [expr],
+                counter=counter,
+            )
+
+        return expr
+
     if not isinstance(expr, list) or not expr:
         return expr
 
     head = expr[0]
 
+    # A normal abstraction call.
     if isinstance(head, str) and head in abs_by_name:
         if head in stack or len(stack) > 50:
             return expr
 
         callee = abs_by_name[head]
         formals = get_formals(callee)
-        actuals = [expand_expr(arg, abs_by_name, cache, env, stack, counter) for arg in expr[1:]]
 
-        if len(actuals) < len(formals):
-            actuals += [fresh_var(counter) for _ in range(len(formals) - len(actuals))]
-        elif len(actuals) > len(formals):
-            actuals = actuals[:len(formals)]
-
-        if head not in cache:
-            cache[head] = expand_expr(
-                parse_sexpr(callee.body),
+        actuals = [
+            expand_expr(
+                arg,
                 abs_by_name,
                 cache,
-                env={},
-                stack=stack + [head],
+                env=env,
+                stack=stack,
                 counter=counter,
             )
+            for arg in expr[1:]
+        ]
 
-        return substitute(cache[head], dict(zip(formals, actuals)))
+        # Partial application: create fresh parameters for missing arguments.
+        while len(actuals) < len(formals):
+            actuals.append(fresh_var(counter))
 
-    expanded_head = expand_expr(head, abs_by_name, cache, env, stack, counter)
-    expanded_children = [expand_expr(child, abs_by_name, cache, env, stack, counter) for child in expr[1:]]
+        # Do not silently discard over-applied arguments.
+        extra_actuals = actuals[len(formals):]
+        actuals = actuals[:len(formals)]
+
+        if head not in cache:
+            cache[head] = parse_sexpr(callee.body)
+
+        # Expand a fresh copy each time. Expanded templates may contain
+        # context-specific fresh variables and should not be cached.
+        template = expand_expr(
+            deepcopy(cache[head]),
+            abs_by_name,
+            cache,
+            env={},
+            stack=stack + [head],
+            counter=counter,
+        )
+
+        substituted = substitute(
+            template,
+            dict(zip(formals, actuals)),
+        )
+
+        # Over-application means applying the expanded result to remaining args.
+        if extra_actuals:
+            if isinstance(substituted, list):
+                substituted = substituted + extra_actuals
+            else:
+                substituted = [substituted] + extra_actuals
+
+        # Substitution may create another macro call, so expand again.
+        return expand_expr(
+            substituted,
+            abs_by_name,
+            cache,
+            env={},
+            stack=stack + [head],
+            counter=counter,
+        )
+
+    expanded_head = expand_expr(
+        head,
+        abs_by_name,
+        cache,
+        env=env,
+        stack=stack,
+        counter=counter,
+    )
+
+    expanded_children = [
+        expand_expr(
+            child,
+            abs_by_name,
+            cache,
+            env=env,
+            stack=stack,
+            counter=counter,
+        )
+        for child in expr[1:]
+    ]
 
     if expanded_head == "then":
-        return make_nested_then(flatten_then(["then"] + expanded_children))
+        return make_nested_then(
+            flatten_then(["then"] + expanded_children)
+        )
+
+    # A partially applied expression may have expanded into a list in
+    # function position. Splice it into the surrounding call.
+    if isinstance(expanded_head, list):
+        return expanded_head + expanded_children
 
     return [expanded_head] + expanded_children
 
@@ -421,15 +560,35 @@ def build_macro_expansion_index(
     return index
 
 
-def rewrite_abstractions(abstractions: Iterable[Abstraction]) -> List[Abstraction]:
-    abstractions = list(abstractions)
+def rewrite_abstractions(
+    abstractions: Iterable[Abstraction],
+) -> List[Abstraction]:
     abs_by_name = build_abstraction_index(abstractions)
     cache: Dict[str, Any] = {}
     rewritten: List[Abstraction] = []
 
     for i, abs_obj in enumerate(abstractions):
-        body = expand_expr(parse_sexpr(abs_obj.body), abs_by_name, cache)
-        rewritten.append(Abstraction(f"fn_{i}", sexpr_to_string(body), deduce_arity(body)))
+        body_ast = parse_sexpr(abs_obj.body)
+
+        # Fresh variables must not collide with variables already in this body.
+        counter = [deduce_arity(body_ast)]
+
+        expanded_body = expand_expr(
+            body_ast,
+            abs_by_name,
+            cache,
+            env={},
+            stack=[],
+            counter=counter,
+        )
+
+        rewritten.append(
+            Abstraction(
+                name=f"fn_{i}",
+                body=sexpr_to_string(expanded_body),
+                arity=deduce_arity(expanded_body),
+            )
+        )
 
     return rewritten
 
@@ -769,7 +928,15 @@ def learn_macros(traces: List[Dict[str, Any]], max_macros: int = 10) -> Tuple[Li
     # placeholders are replaced with real LLM-generated schemas after the loop.
     while len(learned_abstractions) < max_macros:
         res = compress(programs, iterations=max_macros * 2, max_arity=5)
+        write_log(f"Compression result:")
+        for abstraction in res.abstractions:
+            write_log(f"  {abstraction}")
+        write_log(f"\n")
         expanded = rewrite_abstractions(res.abstractions)
+        write_log(f"Expanded abstractions:")
+        for abstraction in expanded:
+            write_log(f"  {abstraction}")
+        write_log(f"\n")
         candidates = [
             abstraction
             for abstraction in expanded
@@ -781,6 +948,7 @@ def learn_macros(traces: List[Dict[str, Any]], max_macros: int = 10) -> Tuple[Li
             break
 
         candidate = candidates[0]
+        write_log(f"Selected candidate: {candidate}\n")
         candidate.name = f"fn_{len(learned_abstractions)}"
         learned_abstractions.append(candidate)
 
@@ -793,9 +961,68 @@ def learn_macros(traces: List[Dict[str, Any]], max_macros: int = 10) -> Tuple[Li
         try:
             programs = rewrite(programs, learned_abstractions).rewritten
         except StitchException as exc:
-            print(f"Rewrite failed: {exc}")
-            learned_abstractions.pop()
-            macro_schemas.pop()
+            message = str(exc)
+
+            left_match = re.search(
+                r'left:\s*"((?:\\.|[^"\\])*)"',
+                message,
+                flags=re.DOTALL,
+            )
+            right_match = re.search(
+                r'right:\s*"((?:\\.|[^"\\])*)"',
+                message,
+                flags=re.DOTALL,
+            )
+
+            if left_match is None or right_match is None:
+                print(f"Rewrite failed: {exc}")
+                learned_abstractions.pop()
+                continue
+
+            try:
+                left_body = json.loads(f'"{left_match.group(1)}"')
+                right_body = json.loads(f'"{right_match.group(1)}"')
+            except json.JSONDecodeError:
+                print(f"Could not parse Stitch mismatch: {exc}")
+                learned_abstractions.pop()
+                continue
+
+            current = learned_abstractions[-1]
+
+            current_canonical = sexpr_to_string(
+                canonicalize_vars(parse_sexpr(current.body))
+            )
+            left_canonical = sexpr_to_string(
+                canonicalize_vars(parse_sexpr(left_body))
+            )
+            right_canonical = sexpr_to_string(
+                canonicalize_vars(parse_sexpr(right_body))
+            )
+
+            if current_canonical == left_canonical:
+                corrected_body = right_body
+            elif current_canonical == right_canonical:
+                corrected_body = left_body
+            else:
+                print(
+                    "Rewrite failed: neither side of the Stitch mismatch "
+                    "matches the current abstraction."
+                )
+                learned_abstractions.pop()
+                continue
+
+            learned_abstractions[-1] = Abstraction(
+                name=current.name,
+                body=corrected_body,
+                arity=deduce_arity(parse_sexpr(corrected_body)),
+            )
+
+            try:
+                programs = rewrite(programs, learned_abstractions).rewritten
+            except StitchException as retry_exc:
+                print(f"Rewrite failed again after correcting abstraction: {retry_exc}")
+                learned_abstractions.pop()
+                continue
 
     # Replace placeholders with LLM-generated schemas.  Skip the document
     # model for any body we have already documented in this run.
