@@ -556,7 +556,7 @@ def grasp_object(
         if target_obj is None:
             return {
                 "success": False,
-                "message": f"Could not grasp object '{name}'",
+                "message": f"Could not grasp object '{name}', already grasping '{_grasped_object.data.get('name', 'Unknown')}'",
                 "data": {}
             }
 

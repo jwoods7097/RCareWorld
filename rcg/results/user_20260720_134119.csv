@@ -1,0 +1,11 @@
+prompt,code,program_length,macro_usage,duration_seconds
+show me all objects in the scene,"{""function"": ""get_info"", ""args"": {}}",1,0,7.747372
+place a slice of bread on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Bread1""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.050999999, ""y"": 1.497345805, ""z"": -0.368419468, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,40.573914
+place the ham on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Ham""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.0509997606277466, ""y"": 1.4973387718200684, ""z"": -0.36841869354248047, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,38.524355
+drop the other slice of bread onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Bread2""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.0509943962097168, ""y"": 1.4974135160446167, ""z"": -0.36842143535614014, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,29.024739

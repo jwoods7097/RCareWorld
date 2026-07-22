@@ -1,0 +1,8 @@
+prompt,code,program_length,macro_usage,duration_seconds
+show me all objects in the scene,"{""function"": ""get_info"", ""args"": {}}",1,0,8.528155
+place a slice of bread on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Bread1""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.25, ""offset_z"": 0.0}}
+{""function"": ""release_object"", ""args"": {}}",3,0,53.156957
+place the ham on top of the bread on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Ham""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.1746939420700073, ""y"": 1.5419522523880005, ""z"": -0.3611932098865509, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,37.592761

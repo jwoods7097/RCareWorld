@@ -1,42 +1,42 @@
 \begin{table*}[t]
 \centering
 \small
-\caption{Summary of ablation experiments for each prompt category, averaged over all trials and environments.}
+\caption{Summary of ablation experiments for each prompt category, averaged over all trials and environments. A representative prompt from each category is provided for reference.}
 \label{tab:ablation_results}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{llrrrr}
+\begin{tabular}{lllcccc}
 \toprule
-Prompt Category & System & Success Rate & Program Length & Macro Usage (\%) & Runtime (s) \\
+Prompt Category & Example Prompt & System & Success Rate & Program Length & Macro Usage (\%) & Runtime (s) \\
 \midrule
-\multirow{4}{*}{Object Manipulation} & Coder LLM & \textbf{1.00} & 1.00 & 0.00 & 2.26 \\
- & Coder LLM + Eval LLM & 0.96 & 1.32 & 0.00 & 9.58 \\
- & Coder LLM + Stitch & \textbf{1.00} & 1.08 & 0.00 & \textbf{2.24} \\
- & SkillComposer & \textbf{1.00} & 1.24 & \textbf{8.00} & 14.46 \\
+\multirow{4}{*}{Object Manipulation} & \multirow{4}{*}{\parbox{3cm}{\raggedright\emph{Grab a yellow fruit}}} & Coder LLM & \textbf{1.00 $\pm$ 0.00} & 1.00 $\pm$ 0.00 & -- & 2.26 $\pm$ 0.80 \\
+ &  & Coder LLM + Eval LLM & 0.96 $\pm$ 0.09 & 1.32 $\pm$ 0.44 & -- & 9.58 $\pm$ 9.86 \\
+ &  & Coder LLM + Stitch & \textbf{1.00 $\pm$ 0.00} & 1.08 $\pm$ 0.11 & 0.00 $\pm$ 0.00 & \textbf{2.24 $\pm$ 0.67} \\
+ &  & SkillComposer & 0.96 $\pm$ 0.09 & 1.32 $\pm$ 0.36 & \textbf{8.00 $\pm$ 17.89} & 13.97 $\pm$ 9.80 \\
 \midrule
-\multirow{4}{*}{Spatial Reasoning} & Coder LLM & 0.24 & 0.96 & 0.00 & \textbf{11.94} \\
- & Coder LLM + Eval LLM & \textbf{0.76} & 2.82 & 0.00 & 50.43 \\
- & Coder LLM + Stitch & 0.24 & 1.00 & 0.00 & 14.51 \\
- & SkillComposer & 0.44 & 2.33 & \textbf{32.00} & 54.95 \\
+\multirow{4}{*}{Spatial Reasoning} & \multirow{4}{*}{\parbox{3cm}{\raggedright\emph{Move rightmost banana to the left of the can}}} & Coder LLM & 0.24 $\pm$ 0.43 & 0.96 $\pm$ 0.41 & -- & \textbf{11.94 $\pm$ 4.05} \\
+ &  & Coder LLM + Eval LLM & \textbf{0.76 $\pm$ 0.43} & 2.82 $\pm$ 0.76 & -- & 50.43 $\pm$ 17.02 \\
+ &  & Coder LLM + Stitch & 0.24 $\pm$ 0.43 & 1.00 $\pm$ 0.58 & 0.00 $\pm$ 0.00 & 14.51 $\pm$ 5.80 \\
+ &  & SkillComposer & 0.40 $\pm$ 0.42 & 2.06 $\pm$ 0.90 & \textbf{37.33 $\pm$ 43.87} & 30.47 $\pm$ 18.28 \\
 \midrule
-\multirow{4}{*}{Multi-Step Actions} & Coder LLM & 0.32 & 1.68 & 0.00 & \textbf{7.21} \\
- & Coder LLM + Eval LLM & \textbf{1.00} & 3.60 & 0.00 & 22.51 \\
- & Coder LLM + Stitch & 0.32 & 1.80 & 0.00 & 9.38 \\
- & SkillComposer & 0.92 & 2.56 & \textbf{37.33} & 26.24 \\
+\multirow{4}{*}{Multi-Step Actions} & \multirow{4}{*}{\parbox{3cm}{\raggedright\emph{Pick up the sphere, move it to the right 50cm, then release it}}} & Coder LLM & 0.32 $\pm$ 0.27 & 1.68 $\pm$ 0.46 & -- & \textbf{7.21 $\pm$ 2.55} \\
+ &  & Coder LLM + Eval LLM & \textbf{1.00 $\pm$ 0.00} & 3.60 $\pm$ 1.52 & -- & 22.51 $\pm$ 11.81 \\
+ &  & Coder LLM + Stitch & 0.32 $\pm$ 0.23 & 1.80 $\pm$ 0.71 & 0.00 $\pm$ 0.00 & 9.38 $\pm$ 3.28 \\
+ &  & SkillComposer & 0.96 $\pm$ 0.09 & 2.32 $\pm$ 1.10 & \textbf{45.33 $\pm$ 51.08} & 20.59 $\pm$ 10.74 \\
 \midrule
-\multirow{4}{*}{Goal Planning} & Coder LLM & 0.08 & 1.72 & 0.00 & \textbf{11.67} \\
- & Coder LLM + Eval LLM & 0.68 & 13.07 & 0.00 & 50.33 \\
- & Coder LLM + Stitch & 0.00 & 0.64 & 0.00 & 16.50 \\
- & SkillComposer & \textbf{0.80} & 7.51 & \textbf{78.67} & 86.55 \\
+\multirow{4}{*}{Goal Planning} & \multirow{4}{*}{\parbox{3cm}{\raggedright\emph{Stack all the cubes}}} & Coder LLM & 0.08 $\pm$ 0.18 & 1.72 $\pm$ 2.06 & -- & \textbf{11.67 $\pm$ 3.62} \\
+ &  & Coder LLM + Eval LLM & 0.68 $\pm$ 0.39 & 13.07 $\pm$ 11.21 & -- & 50.33 $\pm$ 26.83 \\
+ &  & Coder LLM + Stitch & 0.00 $\pm$ 0.00 & 0.64 $\pm$ 0.22 & 0.00 $\pm$ 0.00 & 16.50 $\pm$ 5.07 \\
+ &  & SkillComposer & \textbf{0.76 $\pm$ 0.33} & 6.17 $\pm$ 4.48 & \textbf{86.00 $\pm$ 21.91} & 49.18 $\pm$ 9.25 \\
 \midrule
-\multirow{4}{*}{Human-Robot Interaction} & Coder LLM & 0.14 & 1.16 & 0.00 & 15.96 \\
- & Coder LLM + Eval LLM & \textbf{0.94} & 3.44 & 0.00 & 47.49 \\
- & Coder LLM + Stitch & 0.16 & 1.16 & 4.00 & \textbf{10.71} \\
- & SkillComposer & 0.90 & 2.75 & \textbf{27.50} & 45.68 \\
+\multirow{4}{*}{Human-Robot Interaction} & \multirow{4}{*}{\parbox{3cm}{\raggedright\emph{Put the fork up to the user's mouth}}} & Coder LLM & 0.14 $\pm$ 0.19 & 1.16 $\pm$ 0.32 & -- & 15.96 $\pm$ 4.33 \\
+ &  & Coder LLM + Eval LLM & \textbf{0.94 $\pm$ 0.13} & 3.44 $\pm$ 1.05 & -- & 47.49 $\pm$ 15.50 \\
+ &  & Coder LLM + Stitch & 0.16 $\pm$ 0.18 & 1.16 $\pm$ 0.23 & 4.00 $\pm$ 8.43 & \textbf{10.71 $\pm$ 2.98} \\
+ &  & SkillComposer & 0.86 $\pm$ 0.23 & 2.86 $\pm$ 1.04 & \textbf{22.00 $\pm$ 23.94} & 33.36 $\pm$ 12.14 \\
 \midrule
-\multirow{4}{*}{Multi-Step Human-Robot Interaction} & Coder LLM & 0.03 & 1.62 & 0.00 & 16.31 \\
- & Coder LLM + Eval LLM & \textbf{1.00} & 11.15 & 0.00 & 52.00 \\
- & Coder LLM + Stitch & 0.05 & 1.60 & 6.25 & \textbf{12.94} \\
- & SkillComposer & \textbf{1.00} & 10.53 & \textbf{10.00} & 58.29 \\
+\multirow{4}{*}{Multi-Step Human-Robot Interaction} & \multirow{4}{*}{\parbox{3cm}{\raggedright\emph{Feed the peach first and then the banana to the user}}} & Coder LLM & 0.02 $\pm$ 0.06 & 1.46 $\pm$ 1.07 & -- & 16.06 $\pm$ 2.50 \\
+ &  & Coder LLM + Eval LLM & 0.98 $\pm$ 0.06 & 10.39 $\pm$ 6.05 & -- & 53.95 $\pm$ 11.09 \\
+ &  & Coder LLM + Stitch & 0.04 $\pm$ 0.08 & 1.52 $\pm$ 0.90 & 5.00 $\pm$ 10.54 & \textbf{11.77 $\pm$ 3.60} \\
+ &  & SkillComposer & \textbf{1.00 $\pm$ 0.00} & 5.50 $\pm$ 1.75 & \textbf{55.82 $\pm$ 34.06} & 27.98 $\pm$ 11.37 \\
 \bottomrule
 \end{tabular}%
 }

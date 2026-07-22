@@ -1,10 +1,11 @@
 from pathlib import Path
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 
 
-RESULTS_DIR = Path("plots")
-OUTPUT_FILE = RESULTS_DIR / "ablation_results.tex"
+RESULTS_DIR = Path("results")
+OUTPUT_FILE = Path("plots/ablation_results.tex")
 
 SYSTEMS = [
     "Coder LLM",
@@ -20,7 +21,14 @@ METRICS = [
     "Runtime",
 ]
 
+# Program length is never bolded.
 DO_NOT_BOLD = {"Program Length"}
+
+# Macro usage is not applicable to systems without Stitch/macros.
+NO_MACRO_USAGE_SYSTEMS = {
+    "Coder LLM",
+    "Coder LLM + Eval LLM",
+}
 
 
 prompts_objects = [
@@ -58,8 +66,8 @@ prompts_feeding = [
     "Feed the strawberry closest to the ham to the user",
     "Put the largest fruit onto the plate",
     "Collect all strawberries onto the plate",
-    "Put the apple on the plate and use the knife to cut it",
-    "Feed the apple first and then the orange to the user",
+    "Put the peach on the plate and use the knife to cut it",
+    "Feed the peach first and then the banana to the user",
     "Assemble a ham sandwich on the plate",
     "Grasp the napkin and wipe the user's mouth",
     "Feed all the food on the table to the user",
@@ -80,6 +88,20 @@ PROMPT_CATEGORIES = {
 }
 
 
+EXAMPLE_PROMPTS = {
+    "Object Manipulation": "Grab a yellow fruit",
+    "Spatial Reasoning": "Move rightmost banana to the left of the can",
+    "Multi-Step Actions": (
+        "Pick up the sphere, move it to the right 50cm, then release it"
+    ),
+    "Goal Planning": "Stack all the cubes",
+    "Human-Robot Interaction": "Put the fork up to the user's mouth",
+    "Multi-Step Human-Robot Interaction": (
+        "Feed the peach first and then the banana to the user"
+    ),
+}
+
+
 def normalize_prompt(prompt: str) -> str:
     return (
         str(prompt)
@@ -91,6 +113,7 @@ def normalize_prompt(prompt: str) -> str:
 
 def latex_escape(text: str) -> str:
     replacements = {
+        "\\": r"\textbackslash{}",
         "&": r"\&",
         "%": r"\%",
         "$": r"\$",
@@ -98,24 +121,28 @@ def latex_escape(text: str) -> str:
         "_": r"\_",
         "{": r"\{",
         "}": r"\}",
+        "~": r"\textasciitilde{}",
+        "^": r"\textasciicircum{}",
     }
 
-    text = str(text)
+    escaped = str(text)
 
     for old, new in replacements.items():
-        text = text.replace(old, new)
+        escaped = escaped.replace(old, new)
 
-    return text
+    return escaped
 
 
 def find_excel_file() -> Path:
     excel_files = sorted(
-        list(RESULTS_DIR.glob("*.xlsx")) +
-        list(RESULTS_DIR.glob("*.xls"))
+        list(RESULTS_DIR.glob("*.xlsx"))
+        + list(RESULTS_DIR.glob("*.xls"))
     )
 
     if not excel_files:
-        raise FileNotFoundError(f"No Excel file found in {RESULTS_DIR}")
+        raise FileNotFoundError(
+            f"No Excel file found in {RESULTS_DIR}"
+        )
 
     if len(excel_files) > 1:
         print("Multiple Excel files found. Using the first one:")
@@ -144,36 +171,51 @@ def flatten_columns(columns) -> list[str]:
 
 
 def load_results_sheet(excel_path: Path) -> pd.DataFrame:
-    # This handles spreadsheets with merged system headers, e.g.
-    # first header row = system names, second header row = metric names.
+    # Handles merged system headers:
+    # row 1 = system names
+    # row 2 = metric names
     df = pd.read_excel(excel_path, header=[0, 1])
     df.columns = flatten_columns(df.columns)
 
-    # If the two-row header read did not work, fall back to a single header row.
+    # Fall back to a single header row if necessary.
     if not any("Success Rate" in col for col in df.columns):
         df = pd.read_excel(excel_path)
         df.columns = flatten_columns(df.columns)
 
     prompt_col = None
+
     for col in df.columns:
         if "prompt" in col.lower():
             prompt_col = col
             break
 
     if prompt_col is None:
-        raise ValueError(f"Could not find a prompt column. Columns were: {list(df.columns)}")
+        raise ValueError(
+            "Could not find a prompt column. "
+            f"Columns were: {list(df.columns)}"
+        )
 
     df = df.rename(columns={prompt_col: "Prompt"})
+
+    # Remove blank prompt rows before converting to strings.
+    df = df[df["Prompt"].notna()].copy()
     df["Prompt"] = df["Prompt"].apply(normalize_prompt)
 
-    # Remove rows like "Average" or blank rows.
-    df = df[df["Prompt"].notna()]
-    df = df[~df["Prompt"].str.lower().isin(["average", "averages", "avg", "nan"])]
+    # Remove aggregate rows such as "Average".
+    df = df[
+        ~df["Prompt"]
+        .str.lower()
+        .isin(["average", "averages", "avg", "nan"])
+    ]
 
     return df
 
 
-def find_metric_column(df: pd.DataFrame, system: str, metric: str) -> str:
+def find_metric_column(
+    df: pd.DataFrame,
+    system: str,
+    metric: str,
+) -> str:
     system_key = system.lower().replace(" ", "")
     metric_key = metric.lower().replace(" ", "")
 
@@ -187,14 +229,17 @@ def find_metric_column(df: pd.DataFrame, system: str, metric: str) -> str:
 
     if not candidates:
         raise ValueError(
-            f"Could not find column for system={system!r}, metric={metric!r}.\n"
+            f"Could not find column for system={system!r}, "
+            f"metric={metric!r}.\n"
             f"Available columns:\n{list(df.columns)}"
         )
 
     return candidates[0]
 
 
-def compute_category_summary(df: pd.DataFrame) -> pd.DataFrame:
+def compute_category_summary(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
     rows = []
 
     metric_columns = {
@@ -206,21 +251,34 @@ def compute_category_summary(df: pd.DataFrame) -> pd.DataFrame:
     }
 
     for category, prompts in PROMPT_CATEGORIES.items():
-        normalized_prompts = [normalize_prompt(p) for p in prompts]
-        category_df = df[df["Prompt"].isin(normalized_prompts)].copy()
+        normalized_prompts = [
+            normalize_prompt(prompt)
+            for prompt in prompts
+        ]
+
+        category_df = df[
+            df["Prompt"].isin(normalized_prompts)
+        ].copy()
 
         if category_df.empty:
-            print(f"Warning: no rows found for category {category!r}")
+            print(
+                f"Warning: no rows found for category {category!r}"
+            )
             continue
+
+        present_prompts = set(category_df["Prompt"])
 
         missing_prompts = [
             prompt
             for prompt in normalized_prompts
-            if prompt not in set(category_df["Prompt"])
+            if prompt not in present_prompts
         ]
 
         if missing_prompts:
-            print(f"Warning: missing prompts for category {category!r}:")
+            print(
+                f"Warning: missing prompts for category "
+                f"{category!r}:"
+            )
             for prompt in missing_prompts:
                 print(f"  - {prompt}")
 
@@ -232,91 +290,179 @@ def compute_category_summary(df: pd.DataFrame) -> pd.DataFrame:
 
             for metric in METRICS:
                 col = metric_columns[system][metric]
-                value = pd.to_numeric(category_df[col], errors="coerce").mean()
 
+                values = pd.to_numeric(
+                    category_df[col],
+                    errors="coerce",
+                )
+
+                mean = values.mean()
+                std = values.std(ddof=1)
+
+                # Convert macro usage proportion to percentage.
                 if metric == "Macro Usage":
-                    value *= 100
+                    mean *= 100
+                    std *= 100
 
-                row[metric] = value
+                row[metric] = mean
+                row[f"{metric} Std"] = std
 
             rows.append(row)
 
     return pd.DataFrame(rows)
 
 
-def format_number(value: float, bold: bool) -> str:
-    if pd.isna(value):
-        formatted = "--"
+def format_number(
+    mean: float,
+    std: float,
+    bold: bool,
+) -> str:
+    if pd.isna(mean):
+        text = "--"
+    elif pd.isna(std):
+        text = f"{mean:.2f}"
     else:
-        formatted = f"{value:.2f}"
+        text = f"{mean:.2f} $\\pm$ {std:.2f}"
 
-    if bold and formatted != "--":
-        return r"\textbf{" + formatted + "}"
+    if bold and text != "--":
+        return rf"\textbf{{{text}}}"
 
-    return formatted
+    return text
 
 
-def make_latex_table(summary: pd.DataFrame) -> str:
+def get_best_values(
+    category_df: pd.DataFrame,
+) -> dict[str, float]:
+    best_values = {}
+
+    for metric in METRICS:
+        if metric in DO_NOT_BOLD:
+            continue
+
+        comparison_df = category_df
+
+        # Macro usage is only applicable to macro-enabled systems.
+        if metric == "Macro Usage":
+            comparison_df = category_df[
+                ~category_df["System"].isin(
+                    NO_MACRO_USAGE_SYSTEMS
+                )
+            ]
+
+        if comparison_df.empty:
+            best_values[metric] = np.nan
+        elif metric == "Runtime":
+            best_values[metric] = comparison_df[metric].min()
+        else:
+            best_values[metric] = comparison_df[metric].max()
+
+    return best_values
+
+
+def make_latex_table(
+    summary: pd.DataFrame,
+) -> str:
     lines = []
 
     lines.append(r"\begin{table*}[t]")
     lines.append(r"\centering")
     lines.append(r"\small")
     lines.append(
-        r"\caption{Summary of ablation experiments for each prompt category, averaged over all trials and environments.}"
+        r"\caption{Summary of ablation experiments for each "
+        r"prompt category, averaged over all trials and "
+        r"environments. A representative prompt from each "
+        r"category is provided for reference.}"
     )
     lines.append(r"\label{tab:ablation_results}")
     lines.append(r"\resizebox{\textwidth}{!}{%")
-    lines.append(r"\begin{tabular}{llrrrr}")
+    lines.append(r"\begin{tabular}{lllcccc}")
     lines.append(r"\toprule")
     lines.append(
-        r"Prompt Category & System & Success Rate & Program Length & Macro Usage (\%) & Runtime (s) \\"
+        r"Prompt Category & Example Prompt & System & "
+        r"Success Rate & Program Length & Macro Usage (\%) "
+        r"& Runtime (s) \\"
     )
     lines.append(r"\midrule")
 
     categories = list(PROMPT_CATEGORIES.keys())
 
     for category_idx, category in enumerate(categories):
-        category_df = summary[summary["Category"] == category].copy()
+        category_df = summary[
+            summary["Category"] == category
+        ].copy()
 
         if category_df.empty:
             continue
 
-        best_values = {}
+        best_values = get_best_values(category_df)
+        row_count = len(category_df)
 
-        for metric in METRICS:
-            if metric in DO_NOT_BOLD:
-                continue
+        category_text = latex_escape(category)
+        example_text = latex_escape(
+            EXAMPLE_PROMPTS[category]
+        )
 
-            if metric == "Runtime":
-                best_values[metric] = category_df[metric].min()
+        for row_idx, (_, row) in enumerate(
+            category_df.iterrows()
+        ):
+            if row_idx == 0:
+                category_cell = (
+                    rf"\multirow{{{row_count}}}{{*}}"
+                    rf"{{{category_text}}}"
+                )
+
+                example_cell = (
+                    rf"\multirow{{{row_count}}}{{*}}"
+                    rf"{{\parbox{{3cm}}{{\raggedright"
+                    rf"\emph{{{example_text}}}}}}}"
+                )
             else:
-                best_values[metric] = category_df[metric].max()
+                category_cell = ""
+                example_cell = ""
 
-        for row_idx, (_, row) in enumerate(category_df.iterrows()):
-            category_cell = (
-                rf"\multirow{{{len(category_df)}}}{{*}}{{{latex_escape(category)}}}"
-                if row_idx == 0
-                else ""
-            )
-
-            values = []
+            formatted_values = []
 
             for metric in METRICS:
-                value = row[metric]
+                # Macro usage does not apply to these systems.
+                if (
+                    metric == "Macro Usage"
+                    and row["System"]
+                    in NO_MACRO_USAGE_SYSTEMS
+                ):
+                    formatted_values.append("--")
+                    continue
+
+                mean = row[metric]
+                std = row[f"{metric} Std"]
 
                 should_bold = (
                     metric not in DO_NOT_BOLD
-                    and pd.notna(value)
-                    and np.isclose(value, best_values[metric])
+                    and pd.notna(mean)
+                    and pd.notna(best_values.get(metric))
+                    and np.isclose(
+                        mean,
+                        best_values[metric],
+                    )
                 )
 
-                values.append(format_number(value, should_bold))
+                formatted_values.append(
+                    format_number(
+                        mean,
+                        std,
+                        should_bold,
+                    )
+                )
 
             line = (
-                f"{category_cell} & {latex_escape(row['System'])} & "
-                f"{values[0]} & {values[1]} & {values[2]} & {values[3]} \\\\"
+                f"{category_cell} & "
+                f"{example_cell} & "
+                f"{latex_escape(row['System'])} & "
+                f"{formatted_values[0]} & "
+                f"{formatted_values[1]} & "
+                f"{formatted_values[2]} & "
+                f"{formatted_values[3]} \\\\"
             )
+
             lines.append(line)
 
         if category_idx != len(categories) - 1:
@@ -339,7 +485,15 @@ def main():
 
     latex = make_latex_table(summary)
 
-    OUTPUT_FILE.write_text(latex)
+    OUTPUT_FILE.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    OUTPUT_FILE.write_text(
+        latex,
+        encoding="utf-8",
+    )
 
     print(f"Wrote {OUTPUT_FILE}")
 

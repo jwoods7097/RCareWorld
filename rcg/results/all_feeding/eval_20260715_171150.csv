@@ -1,0 +1,75 @@
+prompt,code,program_length,macro_usage,num_macros,duration_seconds
+Give a strawberry to the user,"{""function"": ""grasp_object"", ""args"": {""name"": ""Strawberry2"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 3.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,0,45.71779
+Hand the human something to drink,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cup"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,0,49.188003
+Move the dangerous item away from the human,"{""function"": ""grasp_object"", ""args"": {""name"": ""Knife"", ""lift_height"": 0.4}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.0, ""z"": -0.5, ""relative"": true}}
+{""function"": ""release_object"", ""args"": {}}",3,0,1,61.805701
+Place the peach on the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Peach""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.25, ""offset_z"": 0.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,1,25.802907
+Put the fork up to the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Fork"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}",2,0,1,68.148373
+Pick up the spoon and hand it to the user,"{""function"": ""move_to_object"", ""args"": {""name"": ""Spoon""}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Spoon"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.60, ""z"": -0.07, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",4,0,0,44.297735
+Swap the fork with the knife,"{""function"": ""grasp_object"", ""args"": {""name"": ""Fork"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Knife"", ""offset_y"": 0.25}}
+{""function"": ""release_object"", ""args"": {}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Knife"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Fork"", ""offset_y"": 0.25}}
+{""function"": ""release_object"", ""args"": {}}",6,0,1,35.409135
+Move the glass to the left of the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Cup""}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.30, ""y"": 1.50, ""z"": -0.37, ""duration"": 2.0, ""relative"": false}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,1,45.442465
+Feed the strawberry closest to the ham to the user,"{""function"": ""hand_object_to_user"", ""args"": {""duration"": 3.0, ""name"": ""Strawberry3""}}",1,1,1,33.091953
+Put the largest fruit onto the plate,"{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_x"": 0.0, ""offset_y"": 0.25, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}",3,0,1,28.424231
+Collect all strawberries onto the plate,"{""function"": ""place_object_on_plate"", ""args"": {""name"": ""Strawberry1""}}
+{""function"": ""place_object_on_plate"", ""args"": {""name"": ""Strawberry2""}}
+{""function"": ""place_object_on_plate"", ""args"": {""name"": ""Strawberry3""}}
+",3,3,2,41.272691
+Put the peach on the plate and use the knife to cut it,"{""function"": ""place_object_on_plate"", ""args"": {""name"": ""Peach""}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Knife""}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Peach"", ""offset_x"": 0.0, ""offset_y"": 0.15, ""offset_z"": 0.0, ""duration"": 2.0}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": -0.08, ""z"": 0.0, ""duration"": 1.5, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.0, ""z"": 0.03, ""duration"": 0.8, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.0, ""z"": -0.06, ""duration"": 0.8, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.0, ""z"": 0.03, ""duration"": 0.8, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.0, ""y"": 0.08, ""z"": 0.0, ""duration"": 1.5, ""relative"": true}}",8,1,2,32.411791
+Feed the peach first and then the banana to the user,"{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Peach""}}
+{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Banana""}}",2,2,2,46.856347
+Assemble a ham sandwich on the plate,"{""function"": ""place_object_on_plate"", ""args"": {""name"": ""Bread1""}}
+{""function"": ""place_object_on_plate"", ""args"": {""name"": ""Ham""}}
+{""function"": ""place_object_on_plate"", ""args"": {""name"": ""Bread2""}}",3,3,2,31.394407
+Grasp the napkin and wipe the user's mouth,"{""function"": ""grasp_object"", ""args"": {""name"": ""Napkin"", ""lift_height"": 0.5}}
+{""function"": ""move_to_position"", ""args"": {""x"": -1.02, ""y"": 1.6, ""z"": -0.07, ""duration"": 3.0, ""relative"": false}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.03, ""y"": 0.0, ""z"": 0.0, ""duration"": 1.0, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": 0.06, ""y"": 0.0, ""z"": 0.0, ""duration"": 1.0, ""relative"": true}}
+{""function"": ""move_to_position"", ""args"": {""x"": -0.03, ""y"": 0.0, ""z"": 0.0, ""duration"": 1.0, ""relative"": true}}",5,0,2,32.44808
+Feed all the food on the table to the user,"{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Banana""}}
+{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Strawberry1""}}
+{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Strawberry2""}}
+{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Strawberry3""}}
+{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Peach""}}
+{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Ham""}}
+{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Bread1""}}
+{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Bread2""}}
+{""function"": ""hand_object_to_user"", ""args"": {""duration"": 4.0, ""name"": ""Cup""}}",9,9,2,33.506148
+Put all yellow fruits onto the plate,"{""function"": ""place_object_on_plate"", ""args"": {""name"": ""Banana""}}
+{""function"": ""place_object_on_plate"", ""args"": {""name"": ""Peach""}}",2,2,3,28.591148
+"Make a small snack by placing bread, ham, and a strawberry on the plate","{""function"": ""place_three_objects_on_plate_in_order"", ""args"": {""name"": ""Strawberry1"", ""name_2"": ""Ham"", ""name_3"": ""Bread2""}}",1,1,2,6.683406
+"Put the peach and banana on the plate, then feed the banana to the user","{""function"": ""grasp_object"", ""args"": {""name"": ""Peach"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_y"": 0.25}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.5}}
+{""function"": ""move_to_object"", ""args"": {""name"": ""Plate"", ""offset_y"": 0.25}}
+{""function"": ""release_object"", ""args"": {""lift_before_release"": false}}
+{""function"": ""grasp_object"", ""args"": {""name"": ""Banana"", ""lift_height"": 0.5}}
+{""function"": ""deliver_object_to_user_and_release"", ""args"": {""name"": ""Banana"", ""duration"": 3.0}}",8,1,2,86.310211
+Prepare a healthy meal,"{""function"": ""place_three_items_on_plate"", ""args"": {""name"": ""Banana"", ""name_2"": ""Peach"", ""name_3"": ""Strawberry1""}}",1,1,3,17.809815
